@@ -1,14 +1,7 @@
-import { NextResponse } from "next/server";
+import { type NextRequest } from 'next/server';
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json() as any;
-    return NextResponse.json({ success: true, data: body });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
-}
+export const dynamic = 'force-dynamic';
 
-export async function GET() {
-  return NextResponse.json({ success: true, data: [] });
+export async function GET(req: NextRequest): Promise<Response> {
+  return Response.json({ error: 'غير متاح حالياً' }, { status: 503 });
 }
