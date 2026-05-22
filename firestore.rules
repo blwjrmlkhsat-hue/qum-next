@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth()           { return request.auth != null; }
+    function isOwner(uid)       { return isAuth() && request.auth.uid == uid; }
+    function isTenantAdmin(tid) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/tenants/$(tid)/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/tenants/$(tid)/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+    function isTenantMember(tid) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/tenants/$(tid)/users/$(request.auth.uid));
+    }
+    function isTenantOwner(tid) {
+      return isAuth() &&
+        get(/databases/$(database)/documents/tenants/$(tid)).data.ownerId == request.auth.uid;
+    }
+    function isStr(v)  { return v is string && v.size() > 0 && v.size() < 256; }
+    function isNum(v)  { return v is number && v >= 0; }
+    function isBool(v) { return v is bool; }
+
+    match /tenants/{tenantId} {
+      allow read:   if isTenantMember(tenantId);
+      allow create: if isAuth()
+        && isStr(request.resource.data.name)
+        && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isTenantOwner(tenantId) && isStr(request.resource.data.name);
+      allow delete: if false;
+
+      match /users/{uid} {
+        allow read:   if isOwner(uid) || isTenantAdmin(tenantId);
+        allow create: if isOwner(uid)
+          && request.resource.data.tenantId == tenantId
+          && isStr(request.resource.data.name)
+          && isStr(request.resource.data.email)
+          && isBool(request.resource.data.isAdmin)
+          && isNum(request.resource.data.totalSpent)
+          && isNum(request.resource.data.ordersCount);
+        allow update: if (isOwner(uid) || isTenantAdmin(tenantId))
+          && request.resource.data.tenantId == tenantId
+          && request.resource.data.uid      == uid
+          && request.resource.data.email    == resource.data.email;
+        allow delete: if false;
+      }
+
+      match /products/{productId} {
+        allow read:   if isTenantMember(tenantId) || resource.data.active == true;
+        allow create: if isTenantAdmin(tenantId)
+          && request.resource.data.tenantId == tenantId
+          && isStr(request.resource.data.title)
+          && isNum(request.resource.data.price)
+          && isBool(request.resource.data.active);
+        allow update: if isTenantAdmin(tenantId)
+          && request.resource.data.tenantId == tenantId;
+        allow delete: if isTenantOwner(tenantId);
+      }
+
+      match /orders/{orderId} {
+        allow read:   if isTenantAdmin(tenantId)
+          || (isAuth() && resource.data.uid == request.auth.uid);
+        allow create: if isAuth()
+          && request.resource.data.tenantId == tenantId
+          && isStr(request.resource.data.email)
+          && isNum(request.resource.data.total)
+          && request.resource.data.status == 'pending';
+        allow update,
+              delete: if false;
+      }
+
+      match /coupons/{code} {
+        allow read:   if isTenantMember(tenantId);
+        allow create,
+              update: if isTenantAdmin(tenantId)
+          && request.resource.data.tenantId == tenantId
+          && isStr(request.resource.data.code)
+          && isNum(request.resource.data.value)
+          && isBool(request.resource.data.active);
+        allow delete: if isTenantAdmin(tenantId);
+      }
+
+      match /logs/{logId} {
+        allow read:   if isTenantAdmin(tenantId);
+        allow create: if isTenantMember(tenantId)
+          && request.resource.data.tenantId == tenantId
+          && isStr(request.resource.data.event)
+          && request.resource.data.keys().hasOnly(
+               ['logId','tenantId','event','uid','meta','ip','createdAt']);
+        allow update,
+              delete: if false;
+      }
+
+      match /config/{doc} {
+        allow read:  if true;
+        allow write: if isTenantOwner(tenantId);
+      }
+    }
+  }
+}
