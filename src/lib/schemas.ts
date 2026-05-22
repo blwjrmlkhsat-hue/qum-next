@@ -83,7 +83,7 @@ import { Err } from '@/lib/errors';
 export function parse<T>(schema: z.ZodType<T>, data: unknown): T {
   const result = schema.safeParse(data);
   if (!result.success) {
-    const first = result.error.errors[0];
+    const first = result.error.issues[0];
     throw Err.input(first?.message ?? 'بيانات غير صحيحة', result.error.flatten());
   }
   return result.data;
