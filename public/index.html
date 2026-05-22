@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>قُم — كتب تنهض بروحك</title>
+<!-- Firebase Config — عدّل firebase-config.js بمعلوماتك -->
+<script src="firebase-config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#2563EB;--blue2:#3B82F6;--blue3:#60A5FA;
+  --blue-glow:rgba(37,99,235,.18);--bb:rgba(59,130,246,.28);
+  --dark:#080C14;--dark2:#0D1220;--dark3:#111827;--dark4:#1A2235;
+  --border:rgba(255,255,255,.07);--text:#E8EEF8;--muted:#6B7FA8;
+  --green:#22C55E;--red:#EF4444;--yellow:#F59E0B;
+  --r:10px;--rl:16px;--rxl:20px;
+  --shadow:0 4px 20px rgba(0,0,0,.4);
+  --tr:.22s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+a{text-decoration:none;color:inherit;}
+button{font-family:'Cairo',sans-serif;cursor:pointer;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--dark2);}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:99px;}
+
+/* TOP BAR */
+.top-bar{background:linear-gradient(90deg,var(--dark3),#0F1929,var(--dark3));border-bottom:1px solid var(--bb);text-align:center;padding:.5rem 1rem;font-size:.8rem;color:var(--blue3);}
+.top-bar strong{color:#fff;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:.85rem 5%;background:rgba(8,12,20,.96);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.45rem;color:#fff;display:flex;align-items:center;gap:.4rem;letter-spacing:-1px;}
+.logo em{color:var(--blue2);font-style:normal;}
+.logo span{font-size:.68rem;color:var(--muted);border-right:1px solid var(--border);padding-right:.55rem;margin-right:.1rem;font-weight:400;}
+.nav-links{display:flex;gap:1.6rem;list-style:none;}
+.nav-links a{color:var(--muted);font-size:.88rem;font-weight:500;transition:color var(--tr);}
+.nav-links a:hover{color:var(--blue3);}
+.nav-right{display:flex;align-items:center;gap:.6rem;}
+.nav-cta{background:var(--blue);color:#fff;padding:.5rem 1.3rem;border-radius:var(--r);font-weight:700;font-size:.88rem;transition:box-shadow var(--tr),transform var(--tr);}
+.nav-cta:hover{box-shadow:0 6px 24px rgba(37,99,235,.5);transform:translateY(-1px);}
+.auth-btn{display:flex;align-items:center;gap:.4rem;background:rgba(37,99,235,.12);border:1px solid var(--bb);color:var(--blue3);padding:.45rem 1rem;border-radius:var(--r);font-size:.82rem;font-weight:700;transition:all var(--tr);}
+.auth-btn:hover{background:rgba(37,99,235,.22);}
+.cart-btn{position:relative;background:rgba(37,99,235,.12);border:1px solid var(--bb);color:var(--blue3);padding:.45rem .85rem;border-radius:var(--r);font-size:.88rem;display:flex;align-items:center;gap:.4rem;transition:all var(--tr);}
+.cart-btn:hover{background:rgba(37,99,235,.22);}
+.cart-count{position:absolute;top:-6px;left:-6px;background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.62rem;font-weight:700;display:none;align-items:center;justify-content:center;}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:.4rem;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--muted);border-radius:2px;transition:all .3s;}
+.mobile-nav{display:none;position:fixed;inset:0;z-index:490;background:rgba(8,12,20,.97);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;}
+.mobile-nav.open{display:flex;}
+.mobile-nav a{font-size:1.3rem;font-weight:700;color:var(--text);}
+.mobile-nav-close{position:absolute;top:1.5rem;left:1.5rem;background:none;border:none;color:var(--muted);font-size:1.5rem;}
+.user-menu{position:relative;}
+.user-menu-btn{display:flex;align-items:center;gap:.4rem;background:rgba(37,99,235,.12);border:1px solid var(--bb);color:var(--blue3);padding:.42rem .9rem;border-radius:var(--r);font-size:.82rem;font-weight:700;}
+.user-menu-btn .av-sm{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;font-weight:700;flex-shrink:0;}
+.user-dropdown{position:absolute;top:calc(100% + .5rem);left:0;background:var(--dark2);border:1px solid var(--bb);border-radius:var(--r);min-width:165px;box-shadow:var(--shadow);display:none;z-index:600;}
+.user-dropdown.open{display:block;}
+.user-dropdown a,.user-dropdown button{display:flex;align-items:center;gap:.5rem;padding:.65rem 1rem;font-size:.82rem;color:var(--text);width:100%;background:none;border:none;font-family:'Cairo',sans-serif;text-align:right;transition:background .18s;}
+.user-dropdown a:hover,.user-dropdown button:hover{background:rgba(37,99,235,.1);color:var(--blue3);}
+.user-dropdown .sep{height:1px;background:var(--border);margin:.2rem 0;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 5% 5rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 700px 500px at 50% 0%,rgba(37,99,235,.13),transparent 70%),radial-gradient(ellipse 400px 400px at 80% 80%,rgba(59,130,246,.06),transparent 60%);}
+.hero-bg::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black,transparent 80%);}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(37,99,235,.1);border:1px solid var(--bb);padding:.35rem 1rem;border-radius:50px;font-size:.78rem;color:var(--blue3);font-weight:600;margin-bottom:1.8rem;animation:fadeUp .5s ease both;}
+.hero h1{font-family:'Tajawal',sans-serif;font-size:clamp(2.1rem,6vw,4.5rem);font-weight:900;line-height:1.22;margin-bottom:1.4rem;animation:fadeUp .5s .08s ease both;}
+.hero h1 em{color:var(--blue2);font-style:normal;background:linear-gradient(135deg,var(--blue2),var(--blue3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:clamp(.92rem,1.7vw,1.1rem);color:var(--muted);max-width:580px;line-height:1.9;margin-bottom:2.5rem;animation:fadeUp .5s .15s ease both;}
+.hero-buttons{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;margin-bottom:2.8rem;animation:fadeUp .5s .2s ease both;}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:.85rem 2rem;border-radius:var(--r);font-weight:800;font-size:.97rem;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 4px 20px rgba(37,99,235,.35);transition:box-shadow .25s,transform .2s;border:none;}
+.btn-blue:hover{box-shadow:0 10px 40px rgba(37,99,235,.55);transform:translateY(-2px);}
+.btn-ghost{border:1.5px solid var(--bb);color:var(--text);padding:.85rem 2rem;border-radius:var(--r);font-weight:600;font-size:.97rem;display:inline-flex;align-items:center;gap:.5rem;transition:background .2s;background:none;}
+.btn-ghost:hover{background:rgba(59,130,246,.08);}
+.trust-badges{display:flex;flex-wrap:wrap;gap:.65rem;justify-content:center;animation:fadeUp .5s .26s ease both;}
+.trust-badge{display:flex;align-items:center;gap:.35rem;background:rgba(13,18,32,.9);border:1px solid var(--border);padding:.35rem .9rem;border-radius:50px;font-size:.78rem;color:var(--muted);}
+.trust-badge strong{color:var(--text);}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--dark3);border-bottom:1px solid var(--border);}
+.stat-item{padding:2.3rem 1rem;text-align:center;border-left:1px solid var(--border);}
+.stat-item:last-child{border-left:none;}
+.stat-num{font-family:'Tajawal',sans-serif;font-size:2.3rem;font-weight:900;background:linear-gradient(135deg,var(--blue2),var(--blue3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;line-height:1;margin-bottom:.35rem;}
+.stat-lbl{color:var(--muted);font-size:.84rem;}
+
+/* SECTIONS */
+section{padding:5.5rem 5%;}
+.section-tag{display:inline-block;color:var(--blue3);font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:.7rem;}
+.section-h{font-family:'Tajawal',sans-serif;font-size:clamp(1.6rem,3.8vw,2.6rem);font-weight:900;margin-bottom:.9rem;}
+.section-p{color:var(--muted);max-width:520px;line-height:1.85;font-size:.94rem;}
+.center{text-align:center;}.center .section-p{margin:0 auto;}
+
+/* BOOKS */
+.books-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.3rem;max-width:1100px;margin:3rem auto 0;}
+.book-card{background:var(--dark3);border:1px solid var(--border);border-radius:var(--rxl);padding:1.8rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s,box-shadow .3s;}
+.book-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue3));opacity:0;transition:opacity .3s;}
+.book-card:hover{border-color:var(--bb);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.5);}
+.book-card:hover::before{opacity:1;}
+.book-card.owned{border-color:rgba(34,197,94,.3);}
+.book-card.owned::before{background:linear-gradient(90deg,var(--green),#34D399);opacity:1;}
+.book-emoji{font-size:2.3rem;margin-bottom:1.1rem;display:block;}
+.book-card h3{font-size:1rem;font-weight:700;margin-bottom:.45rem;}
+.book-card p{color:var(--muted);font-size:.85rem;line-height:1.7;margin-bottom:1.1rem;}
+.book-tag{display:inline-block;background:rgba(37,99,235,.1);border:1px solid var(--bb);color:var(--blue3);padding:.18rem .65rem;border-radius:50px;font-size:.72rem;font-weight:600;}
+.book-price{font-family:'Tajawal',sans-serif;font-size:1.2rem;font-weight:900;color:var(--blue3);margin-top:.8rem;}
+.book-price del{font-size:.85rem;color:var(--muted);margin-right:.4rem;font-weight:400;}
+.add-to-cart{display:block;width:100%;margin-top:.8rem;padding:.58rem;background:rgba(37,99,235,.12);border:1.5px solid var(--bb);color:var(--blue3);border-radius:var(--r);font-size:.85rem;font-weight:700;transition:all .25s;}
+.add-to-cart:hover,.add-to-cart.added{background:var(--blue);color:#fff;border-color:var(--blue);}
+.read-btn{display:none;width:100%;margin-top:.8rem;padding:.58rem;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);color:var(--green);border-radius:var(--r);font-size:.85rem;font-weight:700;transition:all .25s;}
+.read-btn:hover{background:var(--green);color:#fff;}
+.book-card.owned .read-btn{display:block;}
+.book-card.owned .add-to-cart{display:none;}
+.book-badge{position:absolute;top:1rem;left:1rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:.15rem .6rem;border-radius:50px;font-size:.68rem;font-weight:700;}
+.owned-badge{position:absolute;top:1rem;left:1rem;background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.4);color:var(--green);padding:.15rem .6rem;border-radius:50px;font-size:.68rem;font-weight:700;}
+
+/* HOW IT WORKS */
+.steps-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.8rem;max-width:860px;margin:3rem auto 0;}
+.step{text-align:center;}
+.step-num{width:50px;height:50px;border-radius:50%;background:rgba(37,99,235,.12);border:2px solid var(--bb);display:flex;align-items:center;justify-content:center;font-family:'Tajawal',sans-serif;font-size:1.1rem;font-weight:900;color:var(--blue2);margin:0 auto 1.1rem;}
+.step h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem;}
+.step p{color:var(--muted);font-size:.84rem;line-height:1.7;}
+
+/* COUNTDOWN */
+.countdown-section{background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3.5rem 5%;text-align:center;}
+.countdown-timer{display:flex;gap:.9rem;justify-content:center;margin:1.8rem 0;flex-wrap:wrap;align-items:center;}
+.count-unit{text-align:center;}
+.count-box{background:var(--dark3);border:1px solid var(--bb);border-radius:var(--r);padding:.7rem 1.3rem;font-family:'Tajawal',sans-serif;font-size:2.4rem;font-weight:900;color:var(--blue2);min-width:70px;line-height:1;display:block;}
+.count-label{font-size:.72rem;color:var(--muted);margin-top:.35rem;display:block;}
+.colon{font-family:'Tajawal',sans-serif;font-size:2.2rem;font-weight:900;color:var(--bb);padding-top:.3rem;}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;max-width:1080px;margin:0 auto;}
+.price-card{background:var(--dark3);border:1px solid var(--border);border-radius:var(--rxl);padding:1.9rem;position:relative;transition:transform .3s,box-shadow .3s;}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,.5);}
+.price-card.popular{border-color:var(--blue2);box-shadow:0 0 0 1px var(--blue2),0 20px 50px rgba(37,99,235,.15);}
+.popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:.28rem 1.2rem;border-radius:50px;font-size:.75rem;font-weight:800;white-space:nowrap;}
+.price-name{font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:.55rem;}
+.price-amount{font-family:'Tajawal',sans-serif;font-size:2.3rem;font-weight:900;color:var(--blue3);margin-bottom:.25rem;}
+.price-amount span{font-size:.95rem;color:var(--muted);font-weight:500;margin-right:.25rem;}
+.price-period{color:var(--muted);font-size:.8rem;margin-bottom:1.4rem;}
+.price-features{list-style:none;margin-bottom:1.8rem;}
+.price-features li{display:flex;align-items:flex-start;gap:.55rem;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.85rem;line-height:1.55;}
+.price-features li:last-child{border-bottom:none;}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px;}
+.price-btn{display:block;width:100%;text-align:center;padding:.82rem;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.92rem;font-weight:700;transition:all .2s;cursor:pointer;border:none;}
+.price-btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 4px 16px rgba(37,99,235,.3);}
+.price-btn-blue:hover{box-shadow:0 8px 28px rgba(37,99,235,.5);}
+.price-btn-outline{border:1.5px solid var(--bb);color:var(--blue3);background:transparent;}
+.price-btn-outline:hover{background:rgba(59,130,246,.07);}
+
+/* GUARANTEE */
+.guarantee{background:linear-gradient(135deg,rgba(37,99,235,.07),rgba(59,130,246,.04));border:1px solid rgba(59,130,246,.18);border-radius:var(--rxl);padding:2.8rem;text-align:center;max-width:660px;margin:0 auto;}
+.guarantee-icon{font-size:2.8rem;margin-bottom:.9rem;}
+.guarantee h2{font-family:'Tajawal',sans-serif;font-size:1.7rem;font-weight:900;margin-bottom:.9rem;}
+.guarantee h2 em{color:var(--blue3);font-style:normal;}
+.guarantee p{color:var(--muted);line-height:1.85;font-size:.94rem;}
+
+/* ABOUT */
+.about-inner{display:grid;grid-template-columns:1fr 1.6fr;gap:3.5rem;align-items:center;max-width:960px;margin:0 auto;}
+.about-photo{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,var(--dark3),var(--dark4));border-radius:var(--rxl);border:1px solid var(--bb);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.about-badge{position:absolute;bottom:1.3rem;left:-1rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:.9rem 1.4rem;border-radius:var(--r);font-weight:700;font-size:.85rem;box-shadow:0 8px 25px rgba(37,99,235,.4);}
+.about-badge strong{font-size:1.3rem;display:block;}
+.about-content h2{font-family:'Tajawal',sans-serif;font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:900;margin-bottom:1.1rem;}
+.about-content h2 em{color:var(--blue3);font-style:normal;}
+.about-content p{color:var(--muted);line-height:1.9;font-size:.92rem;margin-bottom:.9rem;}
+.skills-list{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1.3rem;}
+.skill-tag{background:rgba(37,99,235,.1);border:1px solid var(--bb);color:var(--blue3);padding:.25rem .85rem;border-radius:50px;font-size:.8rem;font-weight:600;}
+
+/* TESTIMONIALS */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.3rem;max-width:960px;margin:3rem auto 0;}
+.test-card{background:var(--dark3);border:1px solid var(--border);border-radius:var(--rl);padding:1.9rem;transition:border-color .3s;}
+.test-card:hover{border-color:var(--bb);}
+.test-stars{color:#FBBF24;font-size:.95rem;margin-bottom:.9rem;letter-spacing:1px;}
+.test-card p{color:var(--muted);line-height:1.8;font-size:.87rem;margin-bottom:1.4rem;}
+.test-author{display:flex;align-items:center;gap:.75rem;}
+.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.88rem;flex-shrink:0;}
+.author-info strong{display:block;font-size:.87rem;}
+.author-info span{color:var(--muted);font-size:.77rem;}
+
+/* FAQ */
+.faq-list{max-width:680px;margin:2.8rem auto 0;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{width:100%;background:none;border:none;display:flex;justify-content:space-between;align-items:center;padding:1.2rem 0;color:var(--text);font-family:'Cairo',sans-serif;font-size:.94rem;font-weight:600;cursor:pointer;text-align:right;gap:1rem;}
+.faq-q .arrow{color:var(--blue3);flex-shrink:0;transition:transform .3s;}
+.faq-item.open .faq-q .arrow{transform:rotate(45deg);}
+.faq-a{display:none;color:var(--muted);font-size:.87rem;line-height:1.8;padding-bottom:1.1rem;}
+.faq-item.open .faq-a{display:block;}
+
+/* CONTACT */
+.contact-inner{max-width:560px;margin:0 auto;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.field{margin-bottom:.9rem;}
+.field label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.35rem;font-weight:600;}
+.field input,.field textarea{width:100%;background:var(--dark2);border:1px solid var(--border);border-radius:var(--r);padding:.75rem 1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.9rem;outline:none;transition:border-color .22s;direction:rtl;}
+.field textarea{min-height:100px;resize:vertical;}
+.field input:focus,.field textarea:focus{border-color:var(--bb);}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted);}
+.submit-btn{width:100%;padding:.9rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-family:'Cairo',sans-serif;font-size:.97rem;font-weight:800;border:none;border-radius:var(--r);cursor:pointer;transition:box-shadow .25s,transform .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.submit-btn:hover{box-shadow:0 10px 30px rgba(37,99,235,.5);transform:translateY(-1px);}
+.f_error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:.6rem 1rem;font-size:.82rem;margin-bottom:.8rem;display:none;}
+
+/* FOOTER */
+footer{background:var(--dark2);border-top:1px solid var(--border);padding:2.8rem 5% 2rem;text-align:center;}
+.footer-logo{font-family:'Tajawal',sans-serif;font-size:1.9rem;font-weight:900;color:#fff;margin-bottom:.35rem;}
+.footer-logo em{color:var(--blue2);font-style:normal;background:linear-gradient(135deg,var(--blue2),var(--blue3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+footer p{color:var(--muted);font-size:.82rem;margin-bottom:.35rem;}
+.footer-links{display:flex;gap:.8rem;justify-content:center;margin:1.3rem 0;flex-wrap:wrap;}
+.footer-links a{width:38px;height:38px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:var(--muted);transition:border-color .2s,color .2s;}
+.footer-links a:hover{border-color:var(--blue2);color:var(--blue3);}
+
+/* TOAST */
+#toast-msg{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--dark4);border:1px solid var(--bb);color:var(--text);padding:.65rem 1.5rem;border-radius:50px;font-size:.84rem;font-weight:600;z-index:9999;opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;box-shadow:var(--shadow);}
+#toast-msg.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* CART DRAWER */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:700;opacity:0;pointer-events:none;transition:opacity .3s;}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-drawer{position:fixed;left:0;top:0;bottom:0;width:370px;max-width:94vw;background:var(--dark2);border-right:1px solid var(--bb);z-index:701;transform:translateX(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.cart-drawer.open{transform:translateX(0);}
+.cart-header{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.cart-header h3{font-size:1rem;font-weight:700;color:#fff;}
+.cart-close{background:none;border:none;color:var(--muted);font-size:1.3rem;line-height:1;}
+.cart-body{flex:1;overflow-y:auto;padding:.9rem 1.4rem;}
+.cart-empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);}
+.cart-empty .icon{font-size:2.8rem;margin-bottom:.8rem;}
+.cart-item{display:flex;align-items:center;gap:.9rem;padding:.85rem 0;border-bottom:1px solid var(--border);}
+.cart-item-emoji{font-size:1.9rem;width:45px;text-align:center;flex-shrink:0;}
+.cart-item-info{flex:1;}
+.cart-item-info strong{display:block;font-size:.87rem;color:#fff;margin-bottom:.18rem;}
+.cart-item-info span{font-size:.76rem;color:var(--muted);}
+.cart-item-remove{background:none;border:none;color:var(--muted);font-size:1rem;padding:.2rem;transition:color .2s;}
+.cart-item-remove:hover{color:var(--red);}
+.cart-footer{padding:1.1rem 1.4rem;border-top:1px solid var(--border);}
+.cart-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;}
+.cart-total span{color:var(--muted);font-size:.88rem;}
+.cart-total strong{font-size:1.25rem;color:#fff;font-family:'Tajawal',sans-serif;}
+.checkout-btn{display:block;width:100%;padding:.85rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.97rem;font-weight:800;cursor:pointer;text-align:center;transition:box-shadow .2s;}
+.checkout-btn:hover{box-shadow:0 8px 25px rgba(37,99,235,.5);}
+.checkout-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* AUTH MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:800;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--dark2);border:1px solid var(--bb);border-radius:var(--rxl);padding:2rem 1.8rem;width:100%;max-width:400px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.8);}
+.modal-close{position:absolute;top:1rem;left:1rem;background:none;border:none;color:var(--muted);font-size:1.2rem;transition:color .2s;}
+.modal-close:hover{color:var(--text);}
+.modal-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.5rem;}
+.modal-title{text-align:center;font-family:'Tajawal',sans-serif;font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:.25rem;}
+.modal-sub{text-align:center;font-size:.78rem;color:var(--muted);margin-bottom:1.5rem;}
+.auth-tabs{display:flex;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:.3rem;gap:.3rem;margin-bottom:1.3rem;}
+.auth-tab{flex:1;padding:.45rem;border-radius:7px;border:none;background:transparent;color:var(--muted);font-family:'Cairo',sans-serif;font-size:.84rem;font-weight:700;transition:all .2s;}
+.auth-tab.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;}
+.auth-field{margin-bottom:.85rem;}
+.auth-field label{display:block;font-size:.76rem;color:var(--muted);margin-bottom:.32rem;font-weight:600;}
+.auth-field input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:.68rem .95rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;direction:rtl;}
+.auth-field input:focus{border-color:var(--bb);}
+.auth-field input::placeholder{color:var(--muted);}
+.auth-submit{width:100%;padding:.8rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.97rem;font-weight:800;transition:box-shadow .2s,transform .15s;}
+.auth-submit:hover{box-shadow:0 6px 24px rgba(37,99,235,.5);transform:translateY(-1px);}
+.auth-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.auth-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:var(--r);padding:.55rem .9rem;color:#f87171;font-size:.78rem;margin-bottom:.8rem;display:none;}
+.auth-success-msg{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--r);padding:.55rem .9rem;color:var(--green);font-size:.78rem;margin-bottom:.8rem;display:none;}
+.auth-forgot{text-align:center;margin-top:.7rem;}
+.auth-forgot button{background:none;border:none;color:var(--muted);font-size:.76rem;transition:color .2s;}
+.auth-forgot button:hover{color:var(--blue3);}
+
+/* CHECKOUT */
+#checkout-page{display:none;position:fixed;inset:0;z-index:800;background:var(--dark);overflow-y:auto;}
+#checkout-page.open{display:block;}
+.checkout-wrap{max-width:880px;margin:0 auto;padding:1.8rem 1.4rem;}
+.checkout-back{background:none;border:none;color:var(--blue3);font-family:'Cairo',sans-serif;font-size:.88rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;margin-bottom:1.8rem;padding:0;}
+.checkout-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:1.8rem;}
+.checkout-section{background:var(--dark2);border:1px solid var(--border);border-radius:var(--rl);padding:1.4rem;margin-bottom:1.1rem;}
+.checkout-section h3{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:1.1rem;padding-bottom:.7rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.45rem;}
+.order-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border);}
+.order-item:last-child{border-bottom:none;}
+.order-item-emoji{font-size:1.7rem;width:38px;text-align:center;}
+.order-item-title{flex:1;font-size:.85rem;color:var(--text);}
+.order-remove{background:none;border:none;color:var(--muted);font-size:.95rem;}
+.order-remove:hover{color:var(--red);}
+.order-total-row{display:flex;justify-content:space-between;padding:.55rem 0;font-size:.87rem;color:var(--muted);}
+.order-total-row.final{border-top:1px solid var(--border);margin-top:.45rem;padding-top:.75rem;font-weight:700;color:#fff;font-size:1rem;}
+.co-field{margin-bottom:.9rem;}
+.co-field label{display:block;font-size:.79rem;color:var(--muted);margin-bottom:.32rem;font-weight:600;}
+.co-field input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:.65rem .95rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;direction:rtl;}
+.co-field input:focus{border-color:var(--bb);}
+.pay-cards-row{display:flex;gap:.65rem;margin-bottom:1rem;flex-wrap:wrap;}
+.pay-card-opt{display:flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border-radius:var(--r);border:2px solid var(--border);background:var(--dark3);cursor:pointer;transition:all .2s;font-size:.82rem;font-weight:700;color:var(--muted);}
+.pay-card-opt.selected{border-color:var(--blue);background:rgba(37,99,235,.1);color:var(--blue3);}
+.place-order-btn{display:block;width:100%;padding:.88rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.97rem;font-weight:800;cursor:pointer;text-align:center;transition:box-shadow .2s,transform .15s;box-shadow:0 4px 16px rgba(37,99,235,.3);}
+.place-order-btn:hover{box-shadow:0 8px 28px rgba(37,99,235,.5);transform:translateY(-1px);}
+.place-order-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.secure-note{text-align:center;font-size:.75rem;color:var(--muted);margin-top:.6rem;}
+.coupon-row{display:flex;gap:.5rem;margin-bottom:.8rem;}
+.coupon-row input{flex:1;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .9rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.85rem;outline:none;}
+.coupon-row input:focus{border-color:var(--bb);}
+.coupon-apply-btn{background:rgba(37,99,235,.15);border:1px solid var(--bb);color:var(--blue3);padding:.6rem 1rem;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;white-space:nowrap;transition:all .2s;}
+.coupon-apply-btn:hover{background:rgba(37,99,235,.25);}
+#coupon-msg{font-size:.77rem;margin-top:.35rem;}
+
+/* SUCCESS */
+#success-page{display:none;position:fixed;inset:0;z-index:850;background:var(--dark);overflow-y:auto;}
+#success-page.open{display:flex;align-items:center;justify-content:center;}
+.success-wrap{max-width:520px;width:100%;margin:2rem auto;padding:2rem 1.5rem;text-align:center;}
+.success-icon{font-size:4rem;margin-bottom:1rem;display:block;animation:bounceIn .6s ease both;}
+.success-wrap h2{font-family:'Tajawal',sans-serif;font-size:1.8rem;font-weight:900;margin-bottom:.7rem;}
+.success-wrap p{color:var(--muted);font-size:.9rem;line-height:1.75;margin-bottom:.5rem;}
+.success-order-box{background:var(--dark3);border:1px solid var(--border);border-radius:var(--rl);padding:1.2rem;margin:1.5rem 0;text-align:right;}
+.success-order-box h4{font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.8rem;text-align:center;}
+.soi{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+.soi:last-child{border-bottom:none;}
+
+/* LIBRARY */
+#library-page{display:none;position:fixed;inset:0;z-index:700;background:var(--dark);overflow-y:auto;}
+#library-page.open{display:block;}
+.library-wrap{max-width:960px;margin:0 auto;padding:2rem 1.4rem;}
+.library-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.library-header h2{font-family:'Tajawal',sans-serif;font-size:1.6rem;font-weight:900;}
+.library-empty{text-align:center;padding:4rem 1rem;color:var(--muted);}
+.library-empty .lei{font-size:3.5rem;margin-bottom:1rem;}
+.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem;}
+.lib-card{background:var(--dark2);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;}
+.lib-card:hover{border-color:var(--bb);transform:translateY(-3px);}
+.lib-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue3));}
+.lib-emoji{font-size:2.5rem;margin-bottom:.9rem;display:block;}
+.lib-card h3{font-size:.97rem;font-weight:700;margin-bottom:.35rem;}
+.lib-card p{color:var(--muted);font-size:.8rem;margin-bottom:1rem;}
+.lib-read-btn{display:block;width:100%;padding:.6rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;text-align:center;transition:box-shadow .2s;}
+.lib-read-btn:hover{box-shadow:0 6px 20px rgba(37,99,235,.4);}
+.lib-progress{margin-top:.7rem;}
+.lib-progress-bar{background:var(--dark3);border-radius:99px;height:4px;overflow:hidden;margin-bottom:.25rem;}
+.lib-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue3));border-radius:99px;transition:width .5s ease;}
+.lib-progress-lbl{font-size:.7rem;color:var(--muted);}
+
+/* PDF READER */
+#reader-modal{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.92);display:none;flex-direction:column;}
+#reader-modal.open{display:flex;}
+.reader-header{background:var(--dark2);border-bottom:1px solid var(--border);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:1rem;flex-wrap:wrap;}
+.reader-title{font-weight:700;color:#fff;font-size:.95rem;display:flex;align-items:center;gap:.5rem;}
+.reader-controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+.reader-btn{background:rgba(37,99,235,.15);border:1px solid var(--bb);color:var(--blue3);padding:.38rem .8rem;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;transition:all .2s;}
+.reader-btn:hover{background:rgba(37,99,235,.28);}
+.reader-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.25);color:var(--red);}
+.reader-body{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#1a1a2e;position:relative;}
+.reader-iframe{width:100%;height:100%;border:none;display:block;}
+.reader-placeholder{text-align:center;color:var(--muted);padding:2rem;}
+.reader-placeholder .ri{font-size:3.5rem;margin-bottom:1rem;}
+.reader-footer{background:var(--dark2);border-top:1px solid var(--border);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:.5rem;}
+.reader-security-note{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.35rem;}
+
+/* AI CHAT */
+.ai-bubble{position:fixed;bottom:1.5rem;left:1.5rem;z-index:600;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-size:1.4rem;border:none;box-shadow:0 4px 20px rgba(37,99,235,.5);transition:transform .2s;}
+.ai-bubble:hover{transform:scale(1.08);}
+.ai-widget{position:fixed;bottom:4.5rem;left:1.5rem;z-index:600;width:310px;max-width:90vw;background:var(--dark2);border:1px solid var(--bb);border-radius:var(--rxl);box-shadow:0 20px 60px rgba(0,0,0,.6);display:none;flex-direction:column;max-height:440px;}
+.ai-widget.open{display:flex;}
+.ai-header{padding:.9rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem;}
+.ai-header-icon{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.ai-header-info strong{display:block;font-size:.84rem;font-weight:700;color:#fff;}
+.ai-header-info span{font-size:.7rem;color:var(--green);}
+.ai-close{margin-right:auto;background:none;border:none;color:var(--muted);font-size:1.1rem;}
+.ai-messages{flex:1;overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.7rem;}
+.ai-msg{max-width:80%;padding:.55rem .85rem;border-radius:12px;font-size:.82rem;line-height:1.55;}
+.ai-msg.bot{background:var(--dark3);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-radius:4px 12px 12px 12px;}
+.ai-msg.user{background:rgba(37,99,235,.2);border:1px solid var(--bb);color:var(--text);align-self:flex-end;border-radius:12px 4px 12px 12px;}
+.ai-quick-btns{padding:.5rem .9rem;display:flex;flex-wrap:wrap;gap:.4rem;}
+.ai-quick{background:rgba(37,99,235,.1);border:1px solid var(--bb);color:var(--blue3);padding:.3rem .7rem;border-radius:50px;font-family:'Cairo',sans-serif;font-size:.75rem;font-weight:600;transition:all .2s;}
+.ai-quick:hover{background:rgba(37,99,235,.2);}
+.ai-input-row{padding:.7rem .9rem;border-top:1px solid var(--border);display:flex;gap:.5rem;}
+.ai-input-row input{flex:1;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.82rem;outline:none;direction:rtl;}
+.ai-input-row input:focus{border-color:var(--bb);}
+.ai-send{background:var(--blue);color:#fff;border:none;border-radius:8px;width:34px;height:34px;font-size:.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-typing{display:flex;gap:4px;padding:.4rem .6rem;align-self:flex-start;}
+.ai-typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1.2s ease infinite;}
+.ai-typing span:nth-child(2){animation-delay:.2s;}
+.ai-typing span:nth-child(3){animation-delay:.4s;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+@keyframes bounceIn{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.1);}80%{transform:scale(.95);}100%{transform:scale(1);opacity:1;}}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .checkout-grid{grid-template-columns:1fr;}
+  .about-inner{grid-template-columns:1fr;}
+  .about-photo{aspect-ratio:16/7;max-height:260px;}
+}
+@media(max-width:768px){
+  .nav-links{display:none;}.hamburger{display:flex;}.nav-cta{display:none;}
+  .stats{grid-template-columns:1fr 1fr;}
+  .stat-item{border-left:1px solid var(--border);}
+  .stat-item:nth-child(even){border-left:none;}
+  .form-row{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.8rem;}
+  .hero-buttons{flex-direction:column;align-items:center;}
+  .btn-blue,.btn-ghost{width:100%;justify-content:center;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .checkout-wrap{padding:1.2rem .9rem;}
+  .pay-cards-row{flex-direction:column;}
+  .modal-box{padding:1.5rem 1.2rem;}
+  .library-wrap{padding:1.2rem .9rem;}
+}
+
+/* ══ SILIDER ADDITIONS ══════════════════════════════════ */
+
+/* ROI Calculator */
+.roi-section{background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.roi-wrap{max-width:860px;margin:0 auto;padding:5rem 5%;}
+.roi-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem;}
+.roi-inputs{display:flex;flex-direction:column;gap:.9rem;}
+.roi-field label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:.35rem;font-weight:600;}
+.roi-field input,.roi-field select{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:.7rem 1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;direction:rtl;}
+.roi-field input:focus,.roi-field select:focus{border-color:var(--bb);}
+.roi-results{background:var(--dark3);border:1px solid var(--bb);border-radius:var(--rl);padding:1.5rem;display:flex;flex-direction:column;gap:.9rem;}
+.roi-metric{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border);}
+.roi-metric:last-child{border-bottom:none;}
+.roi-metric-label{color:var(--muted);font-size:.85rem;}
+.roi-metric-value{font-family:'Tajawal',sans-serif;font-size:1.1rem;font-weight:900;}
+.roi-metric-value.green{color:var(--green);}
+.roi-metric-value.red{color:var(--red);}
+.roi-metric-value.blue{color:var(--blue3);}
+.roi-calc-btn{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r);padding:.8rem;font-family:'Cairo',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:box-shadow .2s;margin-top:.5rem;}
+.roi-calc-btn:hover{box-shadow:0 6px 20px rgba(37,99,235,.4);}
+
+/* AI Scriptwriter */
+.script-section{background:var(--dark);padding:5rem 5%;}
+.script-wrap{max-width:760px;margin:0 auto;}
+.script-form{background:var(--dark3);border:1px solid var(--border);border-radius:var(--rl);padding:1.8rem;margin-top:2rem;}
+.script-field{margin-bottom:1rem;}
+.script-field label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:.35rem;font-weight:600;}
+.script-field input,.script-field select,.script-field textarea{width:100%;background:var(--dark2);border:1px solid var(--border);border-radius:var(--r);padding:.7rem 1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;direction:rtl;}
+.script-field textarea{min-height:80px;resize:vertical;}
+.script-field input:focus,.script-field select:focus,.script-field textarea:focus{border-color:var(--bb);}
+.script-gen-btn{width:100%;padding:.85rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:box-shadow .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.script-gen-btn:hover{box-shadow:0 6px 24px rgba(37,99,235,.45);}
+.script-gen-btn:disabled{opacity:.55;cursor:not-allowed;}
+.script-output{background:var(--dark2);border:1px solid var(--bb);border-radius:var(--rl);padding:1.5rem;margin-top:1.2rem;display:none;}
+.script-output.show{display:block;}
+.script-output pre{white-space:pre-wrap;font-family:'Cairo',sans-serif;font-size:.87rem;line-height:1.8;color:var(--text);}
+.script-copy-btn{margin-top:.8rem;padding:.5rem 1.2rem;background:rgba(37,99,235,.12);border:1px solid var(--bb);color:var(--blue3);border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.8rem;font-weight:700;transition:all .2s;}
+.script-copy-btn:hover{background:rgba(37,99,235,.22);}
+
+/* Community Chat */
+.community-section{background:var(--dark2);padding:5rem 5%;}
+.community-wrap{max-width:860px;margin:0 auto;}
+.chat-box{background:var(--dark3);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-top:2rem;height:480px;display:flex;flex-direction:column;}
+.chat-header{padding:.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--dark2);}
+.chat-header-info{display:flex;align-items:center;gap:.6rem;}
+.chat-live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.6rem;}
+.chat-msg{display:flex;align-items:flex-end;gap:.6rem;}
+.chat-msg.own{flex-direction:row-reverse;}
+.chat-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0;}
+.chat-bubble{max-width:72%;padding:.55rem .9rem;border-radius:16px;font-size:.84rem;line-height:1.55;}
+.chat-msg.other .chat-bubble{background:var(--dark4);border:1px solid var(--border);border-radius:4px 16px 16px 16px;}
+.chat-msg.own .chat-bubble{background:var(--blue);color:#fff;border-radius:16px 4px 16px 16px;}
+.chat-badge{font-size:.62rem;font-weight:700;padding:.1rem .45rem;border-radius:50px;border:1px solid;margin-bottom:.15rem;display:inline-block;}
+.badge-starter{background:rgba(107,127,168,.15);border-color:rgba(107,127,168,.3);color:var(--muted);}
+.badge-reader{background:rgba(37,99,235,.15);border-color:rgba(59,130,246,.3);color:var(--blue3);}
+.badge-scholar{background:rgba(124,58,237,.15);border-color:rgba(139,92,246,.3);color:#A78BFA;}
+.badge-mentor{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.3);color:#FBBF24;}
+.chat-input-bar{padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.6rem;background:var(--dark2);}
+.chat-input-bar input{flex:1;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:.55rem .9rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.85rem;outline:none;direction:rtl;}
+.chat-input-bar input:focus{border-color:var(--bb);}
+.chat-send-btn{background:var(--blue);color:#fff;border:none;border-radius:var(--r);width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;transition:box-shadow .2s;}
+.chat-send-btn:hover{box-shadow:0 4px 14px rgba(37,99,235,.5);}
+
+/* Value Stack Timer */
+.vstack-banner{background:linear-gradient(135deg,rgba(37,99,235,.1),rgba(59,130,246,.05));border:1px solid var(--bb);border-radius:var(--rl);padding:1.5rem;margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.vstack-gifts{display:flex;flex-direction:column;gap:.5rem;}
+.vstack-gift{display:flex;align-items:center;gap:.6rem;font-size:.84rem;}
+.vstack-gift .gift-val{color:var(--muted);text-decoration:line-through;font-size:.78rem;margin-right:.2rem;}
+.vstack-gift .gift-free{color:var(--green);font-weight:700;font-size:.72rem;}
+.vstack-timer-wrap{text-align:center;}
+.vstack-timer{display:flex;gap:.4rem;align-items:center;}
+.vstack-time-box{background:var(--dark3);border:1px solid var(--bb);border-radius:var(--r);padding:.45rem .75rem;font-family:'Tajawal',sans-serif;font-size:1.6rem;font-weight:900;color:var(--blue2);min-width:52px;text-align:center;line-height:1;}
+.vstack-colon{font-family:'Tajawal',sans-serif;font-size:1.4rem;color:var(--bb);font-weight:900;}
+.vstack-timer-label{font-size:.7rem;color:var(--muted);margin-top:.3rem;}
+
+/* Canvas DRM overlay (invisible) */
+#drm-canvas{position:fixed;inset:0;pointer-events:none;z-index:9990;opacity:0;}
+
+@media(max-width:768px){
+  .roi-grid{grid-template-columns:1fr;}
+  .vstack-banner{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div id="toast-msg"></div>
+
+<!-- TOP BAR -->
+<div class="top-bar" id="topbar-text">📚 <strong>اشتر مرة واحدة</strong> — اقرأ من حسابك على أي جهاز وأي وقت</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+  <a href="#books" onclick="closeMobileNav()">الكتب</a>
+  <a href="#pricing" onclick="closeMobileNav()">الباقات</a>
+  <a href="#about" onclick="closeMobileNav()">من نحن</a>
+  <a href="#faq" onclick="closeMobileNav()">الأسئلة</a>
+  <a href="#contact" onclick="closeMobileNav()">تواصل</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" id="site-logo">
+    <span id="logo-tagline">كتب نفسية</span>
+    <em id="logo-name">قُم</em>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#books">الكتب</a></li>
+    <li><a href="#pricing">الباقات</a></li>
+    <li><a href="#about">من نحن</a></li>
+    <li><a href="#faq">الأسئلة</a></li>
+    <li><a href="#contact">تواصل</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="openCart()">🛒 <span class="cart-count" id="cart-count">0</span></button>
+    <div id="auth-nav-area">
+      <button class="auth-btn" onclick="openAuthModal('login')">👤 دخول</button>
+    </div>
+    <a href="#pricing" class="nav-cta">اشتر الآن</a>
+    <button class="hamburger" onclick="openMobileNav()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-tag" id="hero-tag-text">📚 أكثر من 200 قارئ غيّروا حياتهم</div>
+  <h1>كتبك للنهوض النفسي —<br><em>اشتر مرة واقرأ للأبد</em></h1>
+  <p class="hero-sub" id="hero-sub-text">اختر كتابك وادفع بأمان — تجده فوراً في مكتبتك الشخصية. اقرأ من أي جهاز وأي وقت تريد.</p>
+  <div class="hero-buttons">
+    <a href="#books" class="btn-blue">📖 استعرض الكتب</a>
+    <button class="btn-ghost" onclick="openAuthModal('register')">🔐 أنشئ حسابك مجاناً</button>
+  </div>
+  <div class="trust-badges">
+    <div class="trust-badge">✅ <strong id="s1n">+200</strong>&nbsp;قارئ راضٍ</div>
+    <div class="trust-badge">📱 قراءة فورية من <strong>حسابك</strong></div>
+    <div class="trust-badge">🔒 دفع آمن <strong>100%</strong></div>
+    <div class="trust-badge">🛡️ ضمان <strong>7 أيام</strong></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><span class="stat-num" id="stat-readers">+200</span><div class="stat-lbl">قارئ مستفيد</div></div>
+  <div class="stat-item"><span class="stat-num" id="stat-books-count">+50</span><div class="stat-lbl">كتاب مختار</div></div>
+  <div class="stat-item"><span class="stat-num" id="stat-countries">10+</span><div class="stat-lbl">دولة</div></div>
+  <div class="stat-item"><span class="stat-num">98%</span><div class="stat-lbl">رضا القراء</div></div>
+</div>
+
+<!-- BOOKS -->
+<section style="background:var(--dark);" id="books">
+  <div class="center">
+    <div class="section-tag">✦ مجموعتنا</div>
+    <h2 class="section-h">كتب تُغيّر حياتك</h2>
+    <p class="section-p">أضف للسلة وادفع — تجد كتبك في مكتبتك فوراً</p>
+  </div>
+  <div class="books-grid" id="books-grid"></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="background:var(--dark2);">
+  <div class="center">
+    <div class="section-tag">✦ كيف يعمل</div>
+    <h2 class="section-h">3 خطوات بسيطة</h2>
+    <p class="section-p">من الشراء حتى القراءة في دقائق</p>
+  </div>
+  <div class="steps-wrap">
+    <div class="step"><div class="step-num">01</div><h3>📚 اختر كتابك</h3><p>تصفح مجموعتنا وأضف ما يعجبك للسلة</p></div>
+    <div class="step"><div class="step-num">02</div><h3>💳 ادفع بأمان</h3><p>أنشئ حساباً وادفع بفيزا أو ماستركارد</p></div>
+    <div class="step"><div class="step-num">03</div><h3>📖 اقرأ فوراً</h3><p>كتبك في مكتبتك — اقرأ من أي جهاز وأي وقت</p></div>
+  </div>
+</section>
+
+<!-- COUNTDOWN -->
+<div class="countdown-section">
+  <h2 id="countdown-text">⚡ العرض الحالي ينتهي — <span style="color:var(--blue3);">لا تضيّع الفرصة</span></h2>
+  <div class="countdown-timer">
+    <div class="count-unit"><span class="count-box" id="hours">00</span><span class="count-label">ساعة</span></div>
+    <span class="colon">:</span>
+    <div class="count-unit"><span class="count-box" id="mins">00</span><span class="count-label">دقيقة</span></div>
+    <span class="colon">:</span>
+    <div class="count-unit"><span class="count-box" id="secs">00</span><span class="count-label">ثانية</span></div>
+  </div>
+  <button class="btn-blue" style="border:none;margin:0 auto;" onclick="document.getElementById('books').scrollIntoView({behavior:'smooth'})">🔥 احجز كتابك الآن</button>
+</div>
+
+<!-- PRICING -->
+<section style="background:var(--dark);" id="pricing">
+  <div class="center">
+    <div class="section-tag">✦ الباقات</div>
+    <h2 class="section-h">اختر باقتك</h2>
+    <p class="section-p">ادفع مرة واقرأ للأبد من حسابك</p>
+  </div>
+  <div style="margin-top:2.8rem;" id="pricing-container"></div>
+</section>
+
+<!-- GUARANTEE -->
+<section style="background:var(--dark2);">
+  <div class="guarantee">
+    <div class="guarantee-icon">🛡️</div>
+    <h2>ضمان الرضا — <em>أو نرد لك فلوسك</em></h2>
+    <p id="guarantee-text">إذا لم يعجبك الكتاب خلال 7 أيام، نرد لك كامل المبلغ بدون أسئلة. ثقتك تهمنا أكثر من أي شيء.</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section style="background:var(--dark);" id="about">
+  <div class="about-inner">
+    <div class="about-photo" id="about-photo-wrap">
+      <svg viewBox="0 0 260 320" xmlns="http://www.w3.org/2000/svg" style="width:72%;max-width:190px;" id="about-default-svg">
+        <rect x="40" y="80" width="180" height="200" rx="12" fill="#1A2235" stroke="rgba(59,130,246,0.3)" stroke-width="1.5"/>
+        <rect x="40" y="80" width="22" height="200" rx="6" fill="rgba(37,99,235,0.5)"/>
+        <path d="M130 230 L130 108" stroke="url(#ag)" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M115 122 L130 106 L145 122" stroke="url(#ag)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <text x="130" y="275" text-anchor="middle" font-family="Tajawal,Arial" font-weight="900" font-size="38" fill="url(#tg)">قُم</text>
+        <defs>
+          <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60A5FA"/><stop offset="100%" stop-color="#2563EB"/></linearGradient>
+          <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#60A5FA"/></linearGradient>
+        </defs>
+      </svg>
+      <img id="about-logo-imgel" style="display:none;max-width:72%;max-height:200px;object-fit:contain;border-radius:12px;" alt="شعار قُم">
+      <div class="about-badge"><strong>+200</strong>قارئ مستفيد</div>
+    </div>
+    <div class="about-content">
+      <div class="section-tag">✦ من نحن</div>
+      <h2 id="about-title">نحن <em>قُم</em> —<br>نؤمن بقدرتك على النهوض</h2>
+      <p id="about-p1">قُم متخصصة في الكتب النفسية والتنمية البشرية. نختار لك الكتب التي تُحدث فرقاً حقيقياً في حياتك.</p>
+      <p id="about-p2">لأن الكتاب الصح في الوقت الصح يمكن أن يغير مسار حياتك بالكامل — نحن هنا لنوصّلك إليه.</p>
+      <div class="skills-list">
+        <span class="skill-tag">علم النفس</span><span class="skill-tag">التنمية البشرية</span>
+        <span class="skill-tag">الصحة النفسية</span><span class="skill-tag">التحفيز</span>
+        <span class="skill-tag">العلاقات</span><span class="skill-tag">العادات</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--dark2);">
+  <div class="center">
+    <div class="section-tag">✦ آراء القراء</div>
+    <h2 class="section-h">ماذا قالوا عن قُم؟</h2>
+  </div>
+  <div class="test-grid" id="test-grid"></div>
+</section>
+
+<!-- FAQ -->
+<section style="background:var(--dark);" id="faq">
+  <div class="center">
+    <div class="section-tag">✦ أسئلة شائعة</div>
+    <h2 class="section-h">إجابات لأهم أسئلتك</h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">كيف أقرأ الكتاب بعد الشراء؟<span class="arrow">+</span></button><div class="faq-a">بعد الدفع تجد كتبك في مكتبتك الشخصية — اضغط "اقرأ الآن" وابدأ القراءة مباشرة من حسابك بدون تحميل.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">هل يمكنني القراءة من أي جهاز؟<span class="arrow">+</span></button><div class="faq-a">نعم! سجّل دخولك من أي مكان — الجوال أو التابلت أو الكمبيوتر — واقرأ مكتبتك كاملة.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">ما هي طرق الدفع المتاحة؟<span class="arrow">+</span></button><div class="faq-a">نقبل فيزا وماستركارد — دفع آمن ومشفر عبر Stripe.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">ماذا لو لم يعجبني الكتاب؟<span class="arrow">+</span></button><div class="faq-a">لدينا ضمان استرداد كامل خلال 7 أيام. تواصل معنا ونرد لك المبلغ بدون أسئلة.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">هل الكتب محفوظة للأبد؟<span class="arrow">+</span></button><div class="faq-a">نعم — ادفع مرة واحدة واقرأ للأبد. كتبك المشتراة دائماً في حسابك.</div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section style="background:var(--dark2);" id="contact">
+  <div class="center" style="margin-bottom:2.8rem;">
+    <div class="section-tag">✦ تواصل معنا</div>
+    <h2 class="section-h">ابدأ رحلتك مع قُم</h2>
+    <p class="section-p">تواصل معنا وسنساعدك تختار الكتاب المناسب لك</p>
+  </div>
+  <div class="contact-inner">
+    <div id="f_error" class="f_error"></div>
+    <div class="form-row">
+      <div class="field"><label>الاسم</label><input type="text" id="f_name" placeholder="اسمك الكريم"></div>
+      <div class="field"><label>رقم الجوال</label><input type="tel" id="f_phone" placeholder="+966 5XX XXX XXX"></div>
+    </div>
+    <div class="field"><label>البريد الإلكتروني</label><input type="email" id="f_email" placeholder="بريدك الإلكتروني"></div>
+    <div class="field"><label>رسالتك</label><textarea id="f_msg" placeholder="كيف يمكننا مساعدتك؟"></textarea></div>
+    <button class="submit-btn" onclick="submitForm()">📱 أرسل عبر واتساب</button>
+  </div>
+</section>
+
+<!-- ══ VALUE STACK BONUS BANNER ══ -->
+<div style="background:var(--dark);padding:0 5% 3rem;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="vstack-banner">
+      <div class="vstack-gifts">
+        <div style="font-size:.72rem;color:var(--blue3);font-weight:700;letter-spacing:2px;margin-bottom:.5rem;">🎁 بونص حصري مع كل طلب الآن</div>
+        <div class="vstack-gift">🎧 <span>ملخص صوتي لكل كتاب</span><span class="gift-val"> 49 ر.س</span><span class="gift-free"> مجاناً</span></div>
+        <div class="vstack-gift">📋 <span>خطة عمل 30 يوم قابلة للطباعة</span><span class="gift-val"> 29 ر.س</span><span class="gift-free"> مجاناً</span></div>
+        <div class="vstack-gift">💬 <span>وصول لمجتمع القراء الحصري</span><span class="gift-val"> 99 ر.س</span><span class="gift-free"> مجاناً</span></div>
+        <div style="margin-top:.5rem;font-size:.78rem;color:var(--muted);">إجمالي القيمة: <span style="text-decoration:line-through;">177 ر.س</span> → <span style="color:var(--green);font-weight:700;">مجاناً الآن</span></div>
+      </div>
+      <div class="vstack-timer-wrap">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">⚡ العرض ينتهي خلال:</div>
+        <div class="vstack-timer">
+          <div><div class="vstack-time-box" id="vs-h">00</div><div class="vstack-timer-label">ساعة</div></div>
+          <span class="vstack-colon">:</span>
+          <div><div class="vstack-time-box" id="vs-m">00</div><div class="vstack-timer-label">دقيقة</div></div>
+          <span class="vstack-colon">:</span>
+          <div><div class="vstack-time-box" id="vs-s">00</div><div class="vstack-timer-label">ثانية</div></div>
+        </div>
+        <button class="btn-blue" onclick="document.getElementById('books').scrollIntoView({behavior:'smooth'})" style="border:none;margin-top:1rem;font-size:.85rem;padding:.65rem 1.5rem;">احصل عليه الآن</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROI CALCULATOR ══ -->
+<section style="background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);" id="roi-calc">
+  <div class="roi-wrap">
+    <div class="center">
+      <div class="section-tag">✦ احسب عائدك</div>
+      <h2 class="section-h">حاسبة العائد على الاستثمار</h2>
+      <p class="section-p">احسب كم ستربح من بيع كتبك الرقمية بأرقام واقعية</p>
+    </div>
+    <div class="roi-grid">
+      <div class="roi-inputs">
+        <div class="roi-field"><label>💰 سعر الكتاب (ر.س)</label><input type="number" id="roi-price" value="49" min="1"></div>
+        <div class="roi-field"><label>📊 ميزانية الإعلانات الشهرية (ر.س)</label><input type="number" id="roi-budget" value="500" min="0"></div>
+        <div class="roi-field"><label>👁️ عدد الزوار الشهريين المتوقع</label><input type="number" id="roi-visitors" value="1000" min="1"></div>
+        <div class="roi-field">
+          <label>📈 نسبة التحويل المتوقعة</label>
+          <select id="roi-cvr">
+            <option value="0.01">1% — متحفظ (موصى به)</option>
+            <option value="0.015" selected>1.5% — معتدل</option>
+            <option value="0.02">2% — متفائل</option>
+            <option value="0.03">3% — ممتاز</option>
+          </select>
+        </div>
+        <div class="roi-field"><label>💸 تكلفة إنتاج الكتاب (ر.س)</label><input type="number" id="roi-cost" value="200" min="0"></div>
+        <button class="roi-calc-btn" onclick="calcROI()">🧮 احسب الآن</button>
+      </div>
+      <div class="roi-results" id="roi-results">
+        <div style="color:var(--muted);font-size:.88rem;text-align:center;padding:2rem 0;">اضغط "احسب الآن" لرؤية النتائج</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AI SCRIPTWRITER ══ -->
+<section style="background:var(--dark);padding:5rem 5%;" id="ai-script">
+  <div class="script-wrap">
+    <div class="center">
+      <div class="section-tag">✦ AI سكريبت رايتر</div>
+      <h2 class="section-h">اكتب سكريبت فيديو فيروسي</h2>
+      <p class="section-p center">لـ TikTok وReels — محسّن لأعلى معدل مشاهدة واحتفاظ</p>
+    </div>
+    <div class="script-form">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
+        <div class="script-field"><label>📱 المنصة</label>
+          <select id="sc-platform"><option value="tiktok">TikTok</option><option value="reels">Instagram Reels</option><option value="youtube">YouTube Shorts</option><option value="snapchat">Snapchat</option></select>
+        </div>
+        <div class="script-field"><label>🎯 هدف الفيديو</label>
+          <select id="sc-goal"><option value="sell">بيع منتج</option><option value="awareness">توعية وانتشار</option><option value="educate">تعليم وقيمة</option><option value="story">قصة شخصية</option></select>
+        </div>
+      </div>
+      <div class="script-field"><label>📝 موضوع الفيديو أو المنتج</label><input type="text" id="sc-topic" placeholder="مثال: كتاب تطوير الذات — كيف تغيّر حياتك في 30 يوم"></div>
+      <div class="script-field"><label>🎭 أسلوب المحتوى</label>
+        <select id="sc-style"><option value="hook-story-cta">Hook → قصة → CTA</option><option value="problem-solution">مشكلة → حل → عرض</option><option value="list">قائمة نصائح سريعة</option><option value="transformation">قبل وبعد / تحول</option></select>
+      </div>
+      <div class="script-field"><label>🌟 نقطة القوة الرئيسية (USP)</label><textarea id="sc-usp" placeholder="ما الذي يميز منتجك؟ ما النتيجة التي يحصل عليها العميل؟"></textarea></div>
+      <button class="script-gen-btn" id="sc-btn" onclick="generateScript()">🤖 توليد السكريبت بالذكاء الاصطناعي</button>
+      <div class="script-output" id="sc-output">
+        <div style="font-size:.72rem;color:var(--blue3);font-weight:700;margin-bottom:.8rem;">🎬 السكريبت المولّد</div>
+        <pre id="sc-text"></pre>
+        <div style="display:flex;gap:.6rem;margin-top:.8rem;flex-wrap:wrap;">
+          <button class="script-copy-btn" onclick="copyScript()">📋 نسخ</button>
+          <button class="script-copy-btn" onclick="generateScript()" style="color:var(--muted);">🔄 توليد آخر</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COMMUNITY CHAT ══ -->
+<section style="background:var(--dark2);padding:5rem 5%;" id="community">
+  <div class="community-wrap">
+    <div class="center">
+      <div class="section-tag">✦ مجتمع القراء</div>
+      <h2 class="section-h">انضم لمجتمعنا الحصري</h2>
+      <p class="section-p center">تحدث مع القراء وشارك تجربتك</p>
+    </div>
+    <div class="chat-box">
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <div class="chat-live-dot"></div>
+          <span style="font-size:.88rem;font-weight:700;color:#fff;">💬 غرفة القراء العامة</span>
+          <span id="chat-members" style="font-size:.72rem;color:var(--muted);margin-right:.4rem;">12 عضو</span>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);">مجتمع قُم</div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg other"><div><div class="chat-avatar" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);">م</div></div><div><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;"><span style="font-size:.78rem;color:#fff;font-weight:600;">محمد ع.</span><span class="chat-badge badge-scholar">🎓 متعلم</span></div><div class="chat-bubble">أنهيت كتاب الصحة النفسية — محتوى استثنائي! 🙌</div></div></div>
+        <div class="chat-msg other"><div><div class="chat-avatar" style="background:linear-gradient(135deg,#D97706,#F59E0B);">س</div></div><div><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;"><span style="font-size:.78rem;color:#fff;font-weight:600;">سارة ق.</span><span class="chat-badge badge-mentor">🏆 مرشد</span></div><div class="chat-bubble">كتاب العادات + التحفيز مع بعض = قوة لا توصف 💪</div></div></div>
+        <div class="chat-msg other"><div><div class="chat-avatar" style="background:linear-gradient(135deg,#059669,#10B981);">خ</div></div><div><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;"><span style="font-size:.78rem;color:#fff;font-weight:600;">خالد م.</span><span class="chat-badge badge-reader">📚 قارئ</span></div><div class="chat-bubble">أبدأ بعلم النفس أو التفكير الإيجابي؟</div></div></div>
+        <div class="chat-msg other"><div><div class="chat-avatar" style="background:linear-gradient(135deg,#D97706,#F59E0B);">س</div></div><div><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;"><span style="font-size:.78rem;color:#fff;font-weight:600;">سارة ق.</span><span class="chat-badge badge-mentor">🏆 مرشد</span></div><div class="chat-bubble">ابدأ بعلم النفس — أساس كل شيء 😊</div></div></div>
+      </div>
+      <div class="chat-input-bar">
+        <button class="chat-send-btn" onclick="sendChatMsg()">➤</button>
+        <input type="text" id="chat-input" placeholder="اكتب رسالتك — متاح لأصحاب الكتب فقط" onkeydown="if(event.key==='Enter')sendChatMsg()">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DRM Canvas -->
+<canvas id="drm-canvas" aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:9990;opacity:0;"></canvas>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><em id="footer-logo-text">قُم</em></div>
+  <p id="footer-tagline">كتب تنهض بروحك</p>
+  <div class="footer-links" id="footer-social"></div>
+  <p id="footer-copy">© 2025 قُم — جميع الحقوق محفوظة</p>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header"><h3>🛒 سلة الشراء</h3><button class="cart-close" onclick="closeCart()">✕</button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>المجموع:</span><strong id="cart-total-price">0 ر.س</strong></div>
+    <button class="checkout-btn" id="go-checkout-btn" onclick="goToCheckout()" disabled>متابعة الدفع ←</button>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div class="modal-logo">📚</div>
+    <div class="modal-title">مرحباً بك في قُم</div>
+    <div class="modal-sub">أنشئ حسابك أو سجّل دخولك للقراءة</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">حساب جديد</button>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+    <div id="auth-success" class="auth-success-msg"></div>
+    <div id="form-login">
+      <div class="auth-field"><label>📧 البريد الإلكتروني</label><input type="email" id="login-email" placeholder="example@email.com" autocomplete="email"></div>
+      <div class="auth-field"><label>🔒 كلمة المرور</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="auth-submit" id="login-btn" onclick="doLogin()">دخول ←</button>
+      <div class="auth-forgot"><button onclick="doForgotPass()">نسيت كلمة المرور؟</button></div>
+    </div>
+    <div id="form-register" style="display:none;">
+      <div class="auth-field"><label>👤 الاسم الكامل</label><input type="text" id="reg-name" placeholder="اسمك الكريم" autocomplete="name"></div>
+      <div class="auth-field"><label>📧 البريد الإلكتروني</label><input type="email" id="reg-email" placeholder="example@email.com" autocomplete="email"></div>
+      <div class="auth-field"><label>🔒 كلمة المرور</label><input type="password" id="reg-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password"></div>
+      <div class="auth-field"><label>🔒 تأكيد كلمة المرور</label><input type="password" id="reg-pass2" placeholder="أعد كتابة كلمة المرور" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="auth-submit" id="reg-btn" onclick="doRegister()">إنشاء الحساب ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div id="checkout-page">
+  <div class="checkout-wrap">
+    <button class="checkout-back" onclick="closeCheckout()">← رجوع</button>
+    <div class="checkout-grid">
+      <div>
+        <div class="checkout-section">
+          <h3>🛒 ملخص الطلب</h3>
+          <div id="order-items-list"></div>
+          <div class="order-total-row"><span>المجموع الجزئي</span><span id="subtotal-price">0 ر.س</span></div>
+          <div class="order-total-row" id="discount-row" style="display:none;color:var(--green);"><span>الخصم</span><span id="discount-amount">0 ر.س</span></div>
+          <div class="order-total-row final"><span>المجموع النهائي</span><span id="final-price">0 ر.س</span></div>
+        </div>
+        <div class="checkout-section">
+          <h3>🎟️ كوبون الخصم</h3>
+          <div class="coupon-row">
+            <input type="text" id="co_coupon" placeholder="أدخل كود الخصم" oninput="this.value=this.value.toUpperCase()">
+            <button class="coupon-apply-btn" onclick="applyCouponCode()">تطبيق</button>
+          </div>
+          <div id="coupon-msg"></div>
+        </div>
+        <div class="checkout-section">
+          <h3>💳 طريقة الدفع</h3>
+          <div class="pay-cards-row">
+            <div class="pay-card-opt selected" id="pm-visa" onclick="selectPay(this,'visa')">
+              <div style="background:#fff;border-radius:4px;padding:2px 7px;"><svg viewBox="0 0 80 26" width="44" height="16"><text x="0" y="22" font-family="Arial" font-size="22" font-weight="900" fill="#1A1F71" letter-spacing="-1">VISA</text></svg></div> فيزا
+            </div>
+            <div class="pay-card-opt" id="pm-master" onclick="selectPay(this,'mastercard')">
+              <div style="background:#252525;border-radius:4px;padding:2px 6px;"><svg viewBox="0 0 52 34" width="38" height="24"><circle cx="18" cy="17" r="15" fill="#EB001B"/><circle cx="34" cy="17" r="15" fill="#F79E1B"/><path d="M26 5.6a15 15 0 0 1 0 22.8A15 15 0 0 1 26 5.6z" fill="#FF5F00"/></svg></div> ماستركارد
+            </div>
+          </div>
+          <div style="background:rgba(37,99,235,.06);border:1px solid var(--bb);border-radius:var(--r);padding:.9rem 1rem;font-size:.78rem;color:var(--muted);">🔒 ستُحوَّل لصفحة Stripe الآمنة — بياناتك محمية 100%</div>
+        </div>
+      </div>
+      <div>
+        <div class="checkout-section">
+          <h3>👤 بيانات الحساب</h3>
+          <div class="co-field"><label>الاسم الكامل ★</label><input type="text" id="co_name" placeholder="أدخل اسمك" autocomplete="name"></div>
+          <div class="co-field"><label>البريد الإلكتروني ★</label><input type="email" id="co_email" placeholder="لربط الكتب بحسابك" autocomplete="email"></div>
+          <div class="co-field"><label>رقم الجوال</label><input type="tel" id="co_phone" placeholder="+966 5XX XXX XXX"></div>
+        </div>
+        <div class="checkout-section">
+          <h3>🔒 إتمام الدفع</h3>
+          <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:1rem;font-size:.8rem;color:var(--green);">✅ بعد الدفع — كتبك ستظهر فوراً في مكتبتك</div>
+          <button class="place-order-btn" id="place-order-btn" onclick="placeOrder()">✅ إتمام الدفع الآمن</button>
+          <p class="secure-note">🔒 مدفوعاتك محمية ومشفرة بالكامل</p>
+          <p class="secure-note" style="margin-top:.3rem;">🛡️ ضمان استرداد خلال 7 أيام</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="success-page">
+  <div class="success-wrap">
+    <span class="success-icon">🎉</span>
+    <h2>تم الشراء بنجاح!</h2>
+    <p>كتبك أُضيفت لمكتبتك الشخصية.</p>
+    <p style="color:var(--blue3);font-weight:600;" id="success-email"></p>
+    <div class="success-order-box" id="success-order-box"></div>
+    <button class="btn-blue" onclick="openLibrary()" style="border:none;margin:0 auto;">📚 افتح مكتبتي</button>
+    <br><br>
+    <button onclick="backToHome()" style="background:none;border:1.5px solid var(--bb);color:var(--blue3);padding:.7rem 1.8rem;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:700;">← رجوع للموقع</button>
+  </div>
+</div>
+
+<!-- LIBRARY -->
+<div id="library-page">
+  <div class="library-wrap">
+    <div class="library-header">
+      <h2>📚 مكتبتي</h2>
+      <button onclick="closeLibrary()" style="background:none;border:1.5px solid var(--bb);color:var(--blue3);padding:.5rem 1.2rem;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:700;">← رجوع</button>
+    </div>
+    <div id="library-content"></div>
+  </div>
+</div>
+
+<!-- PDF READER -->
+<div id="reader-modal">
+  <div class="reader-header">
+    <div class="reader-title"><span id="reader-book-title">📖 قارئ قُم</span></div>
+    <div class="reader-controls">
+      <button class="reader-btn" onclick="zoomIn()">🔍+</button>
+      <button class="reader-btn" onclick="zoomOut()">🔍-</button>
+      <button class="reader-btn danger" onclick="closeReader()">✕ إغلاق</button>
+    </div>
+  </div>
+  <div class="reader-body">
+    <iframe id="reader-iframe" class="reader-iframe" title="قارئ الكتاب" sandbox="allow-scripts allow-same-origin"></iframe>
+    <div id="reader-placeholder" class="reader-placeholder" style="display:none;"><div class="ri">📖</div><p>جاري التحميل...</p></div>
+  </div>
+  <div class="reader-footer">
+    <div class="reader-security-note">🔒 هذا المحتوى محمي — للاستخدام الشخصي فقط</div>
+    <div style="font-size:.75rem;color:var(--muted);">قُم — منصة القراءة الآمنة</div>
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<button class="ai-bubble" onclick="toggleChat()" title="مساعد قُم">🤖</button>
+<div class="ai-widget" id="aiChat">
+  <div class="ai-header">
+    <div class="ai-header-icon">🤖</div>
+    <div class="ai-header-info"><strong>مساعد قُم</strong><span>متاح الآن</span></div>
+    <button class="ai-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="ai-messages" id="aiMessages">
+    <div class="ai-msg bot">السلام عليكم! أنا مساعد قُم 👋 كيف أساعدك؟</div>
+  </div>
+  <div class="ai-quick-btns" id="quickBtns">
+    <button class="ai-quick" onclick="sendQuick('أفضل الكتب')">📚 أفضل الكتب</button>
+    <button class="ai-quick" onclick="sendQuick('كيف أشتري')">🛒 كيف أشتري؟</button>
+    <button class="ai-quick" onclick="sendQuick('الأسعار')">💰 الأسعار</button>
+    <button class="ai-quick" onclick="sendQuick('كيف أقرأ كتابي')">📖 كيف أقرأ؟</button>
+  </div>
+  <div class="ai-input-row">
+    <button class="ai-send" onclick="sendMessage()">➤</button>
+    <input type="text" id="aiInput" placeholder="اكتب سؤالك..." onkeydown="if(event.key==='Enter')sendMessage()">
+  </div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════
+//  QUM — نظام موحد مزامن مع Admin
+// ══════════════════════════════════════════
+const QUM={
+  load(k,d){try{const v=localStorage.getItem('qum_'+k);return v?JSON.parse(v):d;}catch{return d;}},
+  save(k,v){try{localStorage.setItem('qum_'+k,JSON.stringify(v));}catch{}},
+  sess(k,v){if(v===undefined){try{const r=sessionStorage.getItem('qum_'+k);return r?JSON.parse(r):null;}catch{return null;}}try{sessionStorage.setItem('qum_'+k,JSON.stringify(v));}catch{}},
+  san(s){const f=window.QumSanitize;if(f)return f(s);return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;').trim();},
+  toast(msg,dur=2800){const t=document.getElementById('toast-msg');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur);}
+};
+
+// ── DEFAULT DATA (متزامن مع admin) ──
+const DEF_BOOKS=[
+  {id:0,emoji:'🧠',title:'كتب علم النفس',desc:'فهم عميق لطبيعة النفس البشرية وكيف تعمل المشاعر والأفكار',tag:'تطوير الذات',price:49,badge:'',active:true,pdfLink:'',stripeLink:''},
+  {id:1,emoji:'💡',title:'كتب التفكير الإيجابي',desc:'أدوات عملية لبرمجة عقلك على النجاح والتفاؤل الحقيقي',tag:'تفكير إيجابي',price:49,badge:'',active:true,pdfLink:'',stripeLink:''},
+  {id:2,emoji:'🛡️',title:'كتب الصحة النفسية',desc:'دليلك لفهم القلق والاكتئاب وطرق التعامل معها باحترافية',tag:'صحة نفسية',price:49,badge:'الأكثر طلباً',active:true,pdfLink:'',stripeLink:''},
+  {id:3,emoji:'🔥',title:'كتب التحفيز والهمة',desc:'أشعل حماسك وحافظ عليه في كل يوم حتى تحقق أهدافك',tag:'تحفيز',price:49,badge:'',active:true,pdfLink:'',stripeLink:''},
+  {id:4,emoji:'🌱',title:'كتب بناء العادات',desc:'علّم نفسك بناء عادات تغير حياتك وتجعل النجاح تلقائياً',tag:'عادات',price:49,badge:'جديد',active:true,pdfLink:'',stripeLink:''},
+  {id:5,emoji:'🤝',title:'كتب العلاقات الإنسانية',desc:'فن التواصل مع الآخرين وبناء علاقات صحية وعميقة',tag:'علاقات',price:29,badge:'',active:true,pdfLink:'',stripeLink:''},
+];
+const DEF_PKGS=[
+  {id:0,name:'الكتاب الواحد',price:29,desc:'كتاب · قراءة فورية من حسابك',features:['قراءة فورية من حسابك','دعم عبر واتساب'],highlighted:false,stripeLink:''},
+  {id:1,name:'باقة 3 كتب',price:69,desc:'3 كتب · وفّر أكثر',features:['3 كتب في مكتبتك','قراءة فورية من أي جهاز','دعم واتساب'],highlighted:false,stripeLink:''},
+  {id:2,name:'الباقة المميزة',price:99,desc:'3 كتب + ملخص صوتي',features:['3 كتب في مكتبتك','ملخص صوتي لكل كتاب','قراءة من أي جهاز','دعم VIP واتساب'],highlighted:true,stripeLink:''},
+  {id:3,name:'المكتبة الكاملة',price:149,desc:'جميع الكتب · أفضل قيمة',features:['كل الكتب في مكتبتك','قراءة مدى الحياة','تحديثات مجانية','دعم VIP مدى الحياة'],highlighted:false,stripeLink:''},
+];
+const DEF_TESTS=[
+  {stars:5,text:'قرأت كتاباً من قُم وغيّر نظرتي للحياة — والأروع إني أقدر أرجع أقرأه من أي مكان!',name:'محمد العمري',country:'السعودية'},
+  {stars:5,text:'اخترت باقة المكتبة — كل كتبي في مكان واحد وأقرأ من جوالي وقت ما أبغى.',name:'سارة الأحمد',country:'الكويت'},
+  {stars:5,text:'أفضل استثمار! القراءة من الموقع مباشرة راحة ما توصف.',name:'خالد السالم',country:'الإمارات'},
+];
+let booksData=QUM.load('books',DEF_BOOKS).map((b,i)=>({...b,id:i}));
+let pkgsData=QUM.load('pkgs',DEF_PKGS);
+let testsData=QUM.load('testimonials',DEF_TESTS);
+
+// ══════════════════════════════════════════
+//  APPLY BRAND (مزامن مع admin saveBrand)
+// ══════════════════════════════════════════
+function applyBrand(){
+  const b=QUM.load('brand',{});
+  const set=(id,val)=>{const e=document.getElementById(id);if(e&&val)e.textContent=val;};
+  if(b.name){set('logo-name',b.name);set('footer-logo-text',b.name);}
+  if(b.tagline){set('logo-tagline',b.tagline);set('footer-tagline',b.tagline);}
+  if(b.tabtitle)document.title=b.tabtitle;
+  if(b.topbar){const e=document.getElementById('topbar-text');if(e)e.innerHTML=b.topbar;}
+  if(b.htitle){const e=document.querySelector('.hero h1');if(e)e.innerHTML=b.htitle;}
+  if(b.hsub){const e=document.getElementById('hero-sub-text');if(e)e.textContent=b.hsub;}
+  if(b.herotag){const e=document.getElementById('hero-tag-text');if(e)e.textContent=b.herotag;}
+  if(b.countdown){const e=document.getElementById('countdown-text');if(e)e.innerHTML=b.countdown;}
+  if(b.s1n){set('stat-readers',b.s1n);set('s1n',b.s1n);}
+  if(b.s2n)set('stat-books-count',b.s2n);
+  if(b.s3n)set('stat-countries',b.s3n);
+  if(b.atitle){const e=document.getElementById('about-title');if(e)e.innerHTML=b.atitle.replace(b.name||'قُم','<em>'+(b.name||'قُم')+'</em>');}
+  if(b.ap1){const e=document.getElementById('about-p1');if(e)e.textContent=b.ap1;}
+  if(b.guar){const e=document.getElementById('guarantee-text');if(e)e.textContent=b.guar;}
+  if(b.footer){const e=document.getElementById('footer-copy');if(e)e.textContent=b.footer;}
+  // الشعار كصورة
+  const logoImg=QUM.load('logo_img',null)||b.logoImg||null;
+  if(logoImg){
+    const logoEl=document.getElementById('site-logo');
+    if(logoEl&&!logoEl.querySelector('.logo-img-wrap')){
+      const w=document.createElement('div');w.className='logo-img-wrap';
+      w.style.cssText='width:32px;height:32px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+      const img=document.createElement('img');img.src=logoImg;img.style.cssText='width:100%;height:100%;object-fit:contain;';
+      w.appendChild(img);logoEl.insertBefore(w,logoEl.firstChild);
+    }
+    // تزامن مع صورة من نحن
+    const ai=document.getElementById('about-logo-imgel');
+    const as=document.getElementById('about-default-svg');
+    if(ai){ai.src=logoImg;ai.style.display='block';}
+    if(as)as.style.display='none';
+  }
+  // الألوان
+  const cc=QUM.load('ccolors',null);
+  const THEMES=[
+    {'--blue':'#2563EB','--blue2':'#3B82F6','--blue3':'#60A5FA','--dark':'#080C14','--dark2':'#0D1220','--dark3':'#111827','--dark4':'#1A2235'},
+    {'--blue':'#D97706','--blue2':'#F59E0B','--blue3':'#FBBF24','--dark':'#12100E','--dark2':'#1C1612','--dark3':'#241E18','--dark4':'#2E2720'},
+    {'--blue':'#059669','--blue2':'#10B981','--blue3':'#34D399','--dark':'#0A1210','--dark2':'#0F1F18','--dark3':'#162B22','--dark4':'#1D3A2E'},
+    {'--blue':'#7C3AED','--blue2':'#8B5CF6','--blue3':'#A78BFA','--dark':'#0D0A1A','--dark2':'#130F24','--dark3':'#1A1530','--dark4':'#221C3D'},
+    {'--blue':'#DB2777','--blue2':'#EC4899','--blue3':'#F472B6','--dark':'#130A10','--dark2':'#1E1018','--dark3':'#2A1525','--dark4':'#351A30'},
+  ];
+  if(cc){Object.entries(cc).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));}
+  else{const t=THEMES[QUM.load('theme',0)||0];if(t)Object.entries(t).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));}
+}
+
+function applySocial(){
+  const s=QUM.load('social',null),el=document.getElementById('footer-social');if(!el)return;
+  const wa=(QUM.load('brand',{}).wa)||'966505814917';
+  if(!s||!Object.values(s).some(Boolean)){el.innerHTML=`<a href="https://wa.me/${wa}" target="_blank">💬</a>`;return;}
+  const map={whatsapp:{i:'💬',p:'https://wa.me/'},instagram:{i:'📸',p:'https://instagram.com/'},twitter:{i:'🐦',p:'https://x.com/'},snapchat:{i:'👻',p:'https://snapchat.com/add/'},tiktok:{i:'🎵',p:'https://tiktok.com/@'},youtube:{i:'▶️',p:'https://youtube.com/@'},telegram:{i:'✈️',p:'https://t.me/'}};
+  el.innerHTML=Object.entries(s).filter(([,v])=>v).map(([k,v])=>{const m=map[k];if(!m)return'';return`<a href="${v.startsWith('http')?v:m.p+v}" target="_blank">${m.i}</a>`;}).join('');
+}
+
+// ══════════════════════════════════════════
+//  FIREBASE AUTH — تنفيذ حقيقي مباشر
+//  Auth → Firestore write → UI update (تسلسلي بدون event bus)
+// ══════════════════════════════════════════
+
+// Firebase SDK (ESM via CDN — يُحمَّل بعد QUM_CONFIG)
+let _auth = null, _db = null, _fbReady = false;
+
+async function initFirebase() {
+  if (_fbReady) return;
+  const cfg = window.QUM_CONFIG;
+  if (!cfg?.apiKey) {
+    console.warn('QUM_CONFIG غير معرّف — Auth يعمل بوضع محلي');
+    return;
+  }
+  const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { getAuth, onAuthStateChanged,
+          signInWithEmailAndPassword,
+          createUserWithEmailAndPassword,
+          signOut, sendPasswordResetEmail,
+          updateProfile }           = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  const { getFirestore, doc, getDoc,
+          setDoc, updateDoc, arrayUnion,
+          addDoc, collection,
+          serverTimestamp }         = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+  const app = !getApps().length ? initializeApp(cfg) : getApps()[0];
+  _auth = getAuth(app);
+  _db   = getFirestore(app);
+  _fbReady = true;
+
+  // الاستماع لتغير حالة Auth — يُنفَّذ مرة واحدة
+  onAuthStateChanged(_auth, async (fbUser) => {
+    if (!fbUser) { currentUser = null; renderAuthNav(); renderBooks(); return; }
+
+    // جلب بيانات Firestore مباشرة بعد Auth
+    const snap = await getDoc(doc(_db, 'users', fbUser.uid));
+    currentUser = snap.exists()
+      ? { uid: fbUser.uid, ...snap.data() }
+      : { uid: fbUser.uid, name: fbUser.displayName || fbUser.email.split('@')[0], email: fbUser.email, purchasedBooks: [], readingProgress: {} };
+
+    QUM.sess('user', currentUser);
+    renderAuthNav();
+    renderBooks();
+  });
+
+  // تعريف الدوال الداخلية على window (للاستخدام في onclick)
+  window._FB = {
+    async login(email, pass) {
+      return signInWithEmailAndPassword(_auth, email, pass);
+    },
+    async register(name, email, pass) {
+      // 1. Auth
+      const cred = await createUserWithEmailAndPassword(_auth, email, pass);
+      // 2. Profile name
+      await updateProfile(cred.user, { displayName: name });
+      // 3. Firestore write
+      await setDoc(doc(_db, 'users', cred.user.uid), {
+        name, email, uid: cred.user.uid,
+        purchasedBooks: [], readingProgress: {},
+        createdAt: serverTimestamp(), plan: 'free'
+      });
+      return cred;
+    },
+    async logout() { return signOut(_auth); },
+    async resetPwd(email) { return sendPasswordResetEmail(_auth, email); },
+    async getProfile(uid) {
+      const snap = await getDoc(doc(_db, 'users', uid));
+      return snap.exists() ? snap.data() : null;
+    },
+    async saveLead(data) {
+      return addDoc(collection(_db, 'leads'), { ...data, createdAt: serverTimestamp(), status: 'new' });
+    },
+    async saveOrder(data) {
+      return addDoc(collection(_db, 'orders'), { ...data, createdAt: serverTimestamp(), status: 'pending' });
+    },
+    async updateProgress(uid, bookId, pct) {
+      return updateDoc(doc(_db, 'users', uid), { [`readingProgress.${bookId}`]: pct });
+    }
+  };
+}
+
+// ── Auth UI Functions ──
+let currentUser = null;
+
+function initAuth() {
+  initFirebase(); // تشغيل Firebase — onAuthStateChanged يُكمل البقية
+}
+
+function renderAuthNav() {
+  const a = document.getElementById('auth-nav-area'); if (!a) return;
+  if (currentUser) {
+    const ini = (currentUser.name || currentUser.email || '?')[0].toUpperCase();
+    a.innerHTML = `<div class="user-menu">
+      <button class="user-menu-btn" onclick="toggleDD()">
+        <div class="av-sm">${ini}</div>
+        ${currentUser.name?.split(' ')[0] || 'حسابي'}
+        <span style="font-size:.6rem;margin-right:auto;">▾</span>
+      </button>
+      <div class="user-dropdown" id="user-dd">
+        <a href="#" onclick="openLibrary();event.preventDefault();">📚 مكتبتي</a>
+        <div class="sep"></div>
+        <button onclick="doLogout()">🚪 خروج</button>
+      </div>
+    </div>`;
+  } else {
+    a.innerHTML = `<button class="auth-btn" onclick="openAuthModal('login')">👤 دخول</button>`;
+  }
+}
+
+function toggleDD() { document.getElementById('user-dd')?.classList.toggle('open'); }
+document.addEventListener('click', e => { if (!e.target.closest('.user-menu')) document.getElementById('user-dd')?.classList.remove('open'); });
+
+function openAuthModal(tab = 'login') { document.getElementById('auth-modal').classList.add('open'); switchAuthTab(tab); clearAuthMsgs(); }
+function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+function switchAuthTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  clearAuthMsgs();
+}
+function clearAuthMsgs() { document.getElementById('auth-error').style.display = 'none'; document.getElementById('auth-success').style.display = 'none'; }
+function showAuthErr(m) { const e = document.getElementById('auth-error'); e.textContent = m; e.style.display = 'block'; document.getElementById('auth-success').style.display = 'none'; }
+function showAuthOk(m)  { const e = document.getElementById('auth-success'); e.textContent = m; e.style.display = 'block'; document.getElementById('auth-error').style.display = 'none'; }
+
+async function doLogin() {
+  const email = (document.getElementById('login-email').value || '').trim();
+  const pass  = (document.getElementById('login-pass').value  || '');
+  const btn   = document.getElementById('login-btn');
+  if (!email || !pass) { showAuthErr('⚠️ أدخل البريد وكلمة المرور'); return; }
+  btn.disabled = true; btn.textContent = '⏳ جاري الدخول...';
+  try {
+    if (window._FB) {
+      await window._FB.login(email, pass);
+      // onAuthStateChanged يتولى الباقي تلقائياً
+      closeAuthModal();
+      QUM.toast('✅ تم تسجيل الدخول!');
+    } else {
+      throw new Error('Firebase not ready');
+    }
+  } catch (e) {
+    const msgs = { 'auth/user-not-found': '❌ البريد غير مسجّل', 'auth/wrong-password': '❌ كلمة المرور خاطئة', 'auth/invalid-credential': '❌ بيانات الدخول خاطئة', 'auth/too-many-requests': '🔒 محاولات كثيرة — انتظر قليلاً' };
+    showAuthErr(msgs[e.code] || ('❌ ' + (e.message || 'خطأ في الدخول')));
+  }
+  btn.disabled = false; btn.textContent = 'دخول ←';
+}
+
+async function doRegister() {
+  const name  = (document.getElementById('reg-name').value  || '').trim();
+  const email = (document.getElementById('reg-email').value || '').trim();
+  const pass  = (document.getElementById('reg-pass').value  || '');
+  const pass2 = (document.getElementById('reg-pass2').value || '');
+  const btn   = document.getElementById('reg-btn');
+  if (!name || name.length < 2)            { showAuthErr('⚠️ أدخل اسماً صحيحاً'); return; }
+  if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { showAuthErr('⚠️ بريد إلكتروني غير صحيح'); return; }
+  if (pass.length < 8)                     { showAuthErr('⚠️ كلمة المرور 8 أحرف على الأقل'); return; }
+  if (pass !== pass2)                      { showAuthErr('⚠️ كلمتا المرور غير متطابقتين'); return; }
+  btn.disabled = true; btn.textContent = '⏳ جاري الإنشاء...';
+  try {
+    if (window._FB) {
+      await window._FB.register(QUM.san(name), email, pass);
+      closeAuthModal();
+      QUM.toast('✅ أهلاً بك في قُم! 🎉');
+    } else {
+      throw new Error('Firebase not ready');
+    }
+  } catch (e) {
+    const msgs = { 'auth/email-already-in-use': '⚠️ هذا البريد مسجّل مسبقاً', 'auth/weak-password': '⚠️ كلمة المرور ضعيفة جداً' };
+    showAuthErr(msgs[e.code] || ('❌ ' + (e.message || 'خطأ في الإنشاء')));
+  }
+  btn.disabled = false; btn.textContent = 'إنشاء الحساب ←';
+}
+
+async function doLogout() {
+  try { if (window._FB) await window._FB.logout(); }
+  catch {}
+  currentUser = null;
+  QUM.sess('user', null);
+  renderAuthNav(); renderBooks(); closeLibrary();
+  QUM.toast('👋 تم تسجيل الخروج');
+}
+
+async function doForgotPass() {
+  const e = (document.getElementById('login-email').value || '').trim();
+  if (!e) { showAuthErr('⚠️ أدخل بريدك الإلكتروني أولاً'); return; }
+  try {
+    if (window._FB) { await window._FB.resetPwd(e); showAuthOk('📧 تم إرسال رابط إعادة التعيين على ' + e); }
+  } catch (err) { showAuthErr('❌ ' + (err.message || 'فشل الإرسال')); }
+}
+
+// ══════════════════════════════════════════
+//  RENDER BOOKS
+// ══════════════════════════════════════════
+function renderBooks(){
+  const g=document.getElementById('books-grid');if(!g)return;
+  const owned=currentUser?.purchasedBooks||[];
+  g.innerHTML=booksData.filter(b=>b.active!==false).map(b=>{
+    const isOwned=owned.includes(b.id);
+    const inCart=cart.some(c=>c.id===b.id);
+    return`<div class="book-card${isOwned?' owned':inCart?' in-cart':''}" id="bcard-${b.id}">
+      ${isOwned?'<div class="owned-badge">✓ في مكتبتك</div>':b.badge?`<div class="book-badge">${b.badge}</div>`:''}
+      <span class="book-emoji">${b.emoji||'📖'}</span>
+      <h3>${QUM.san(b.title)}</h3>
+      <p>${QUM.san(b.desc)}</p>
+      <span class="book-tag">${QUM.san(b.tag||'')}</span>
+      <div class="book-price">${b.oldPrice?`<del>${b.oldPrice}</del> `:''}${b.price||49} <span style="font-size:.8rem;color:var(--muted);">ر.س</span></div>
+      ${isOwned
+        ?`<button class="read-btn" onclick="openReader(${b.id})">📖 اقرأ الآن</button>`
+        :`<button class="add-to-cart${inCart?' added':''}" onclick="toggleCart(${b.id})">${inCart?'✓ في السلة — إزالة':'+ أضف للسلة'}</button>`}
+    </div>`;
+  }).join('');
+}
+function renderPackages(){
+  const c=document.getElementById('pricing-container');if(!c)return;
+  c.innerHTML=`<div class="pricing-grid">${pkgsData.map((p,i)=>`
+    <div class="price-card${p.highlighted?' popular':''}">
+      ${p.highlighted?'<div class="popular-badge">⭐ الأكثر طلباً</div>':''}
+      <div class="price-name">${QUM.san(p.name)}</div>
+      <div class="price-amount">${p.price} <span>ر.س</span></div>
+      <div class="price-period">${QUM.san(p.desc||'')}</div>
+      <ul class="price-features">${(p.features||[]).map(f=>`<li>${QUM.san(f)}</li>`).join('')}</ul>
+      <button class="price-btn ${p.highlighted?'price-btn-blue':'price-btn-outline'}" onclick="buyPackage(${i})">${p.highlighted?'🚀':'🛒'} اشتر الآن</button>
+    </div>`).join('')}</div>`;
+}
+function renderTests(){
+  const g=document.getElementById('test-grid');if(!g)return;
+  g.innerHTML=testsData.map(t=>`
+    <div class="test-card">
+      <div class="test-stars">${'★'.repeat(t.stars||5)}</div>
+      <p>${QUM.san(t.text)}</p>
+      <div class="test-author">
+        <div class="avatar">${(t.name||'?')[0]}</div>
+        <div class="author-info"><strong>${QUM.san(t.name||'')}</strong><span>${QUM.san(t.country||'')}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+//  CART
+// ══════════════════════════════════════════
+let cart=[];
+function toggleCart(id){
+  const b=booksData.find(x=>x.id===id);if(!b)return;
+  if(cart.some(c=>c.id===id)){cart=cart.filter(c=>c.id!==id);QUM.toast('🗑️ تم الإزالة');}
+  else{cart.push({id,title:b.title,emoji:b.emoji||'📖',price:b.price||49,stripeLink:b.stripeLink||''});QUM.toast('✅ تمت الإضافة للسلة!');}
+  updateCartUI();renderBooks();
+}
+function updateCartUI(){
+  const n=cart.length,t=cart.reduce((s,c)=>s+(c.price||0),0);
+  const cc=document.getElementById('cart-count');cc.textContent=n;cc.style.display=n?'flex':'none';
+  const tp=document.getElementById('cart-total-price');if(tp)tp.textContent=t+' ر.س';
+  const gb=document.getElementById('go-checkout-btn');if(gb)gb.disabled=!n;
+  renderCartBody();
+}
+function renderCartBody(){
+  const b=document.getElementById('cart-body');if(!b)return;
+  if(!cart.length){b.innerHTML='<div class="cart-empty"><div class="icon">🛒</div><p>السلة فارغة</p></div>';return;}
+  b.innerHTML=cart.map(c=>`<div class="cart-item"><div class="cart-item-emoji">${c.emoji}</div><div class="cart-item-info"><strong>${QUM.san(c.title)}</strong><span>${c.price} ر.س</span></div><button class="cart-item-remove" onclick="toggleCart(${c.id})">✕</button></div>`).join('');
+}
+function openCart(){document.getElementById('cart-overlay').classList.add('open');document.getElementById('cart-drawer').classList.add('open');renderCartBody();}
+function closeCart(){document.getElementById('cart-overlay').classList.remove('open');document.getElementById('cart-drawer').classList.remove('open');}
+
+// ══════════════════════════════════════════
+//  PACKAGES → CART
+// ══════════════════════════════════════════
+function buyPackage(idx){
+  const p=pkgsData[idx];if(!p)return;
+  const pid=200+idx,emojis=['📗','📚','⭐','🏆'];
+  if(!cart.some(c=>c.id===pid)){cart.push({id:pid,title:p.name,emoji:emojis[idx]||'📦',price:p.price,stripeLink:p.stripeLink||''});QUM.toast(`✅ تمت إضافة "${p.name}"`);updateCartUI();}
+  goToCheckout();
+}
+
+// ══════════════════════════════════════════
+//  CHECKOUT
+// ══════════════════════════════════════════
+let appliedCoupon=null,selectedMethod='visa';
+function goToCheckout(){
+  if(!cart.length){QUM.toast('السلة فارغة!');return;}
+  if(!currentUser){closeCart();openAuthModal('login');QUM.toast('🔐 سجّل دخولك أولاً');return;}
+  closeCart();renderOrderSummary();
+  const ne=document.getElementById('co_name'),ee=document.getElementById('co_email');
+  if(ne&&currentUser.name)ne.value=currentUser.name;
+  if(ee&&currentUser.email)ee.value=currentUser.email;
+  document.getElementById('checkout-page').classList.add('open');window.scrollTo(0,0);
+}
+function closeCheckout(){document.getElementById('checkout-page').classList.remove('open');}
+function renderOrderSummary(){
+  const t=cart.reduce((s,c)=>s+(c.price||0),0);
+  const d=appliedCoupon?.discount||0,f=t-d;
+  document.getElementById('order-items-list').innerHTML=cart.map(c=>`
+    <div class="order-item">
+      <div class="order-item-emoji">${c.emoji}</div>
+      <div class="order-item-title">${QUM.san(c.title)}</div>
+      <span style="color:var(--blue3);font-size:.84rem;font-weight:700;">${c.price} ر.س</span>
+      <button class="order-remove" onclick="removeFromOrder(${c.id})">✕</button>
+    </div>`).join('');
+  document.getElementById('subtotal-price').textContent=t+' ر.س';
+  const dr=document.getElementById('discount-row');
+  if(d>0){dr.style.display='flex';document.getElementById('discount-amount').textContent='-'+d+' ر.س';}else dr.style.display='none';
+  document.getElementById('final-price').textContent=f+' ر.س';
+}
+function removeFromOrder(id){
+  cart=cart.filter(c=>c.id!==id);
+  if(!cart.length){closeCheckout();QUM.toast('السلة فارغة');updateCartUI();return;}
+  updateCartUI();renderOrderSummary();renderBooks();
+}
+function selectPay(el,method){
+  document.querySelectorAll('.pay-card-opt').forEach(m=>m.classList.remove('selected'));
+  el.classList.add('selected');selectedMethod=method;
+}
+async function applyCouponCode(){
+  const ce=document.getElementById('co_coupon'),me=document.getElementById('coupon-msg');if(!ce||!me)return;
+  const code=(ce.value||'').trim().toUpperCase(),total=cart.reduce((s,c)=>s+(c.price||0),0);
+  if(!code){me.textContent='⚠️ أدخل كود الخصم';me.style.color='var(--yellow)';return;}
+  me.textContent='⏳ جاري التحقق...';me.style.color='var(--muted)';
+  try{
+    const res=await fetch('/.netlify/functions/coupon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,price:total})});
+    const data=await res.json();
+    if(data.valid){appliedCoupon=data;me.textContent=data.message;me.style.color='var(--green)';renderOrderSummary();}
+    else{appliedCoupon=null;me.textContent=data.message||'❌ الكود غير صحيح';me.style.color='var(--red)';}
+  }catch{
+    const cps=QUM.load('coupons',[]);
+    const cp=cps.find(c=>c.code===code&&c.active!==false);
+    if(cp){const d=cp.type==='pct'?Math.round(total*cp.val/100):cp.val;appliedCoupon={valid:true,discount:d,finalPrice:total-d,couponCode:code};me.textContent=`✅ وفّرت ${d} ر.س`;me.style.color='var(--green)';renderOrderSummary();}
+    else{me.textContent='❌ الكود غير صحيح';me.style.color='var(--red)';}
+  }
+}
+// ══════════════════════════════════════════
+//  PLACE ORDER → Firestore → Stripe
+//  تسلسل: validate → saveOrder → open Stripe
+//  Webhook يُكمل: Firestore grantAccess → Email
+// ══════════════════════════════════════════
+async function placeOrder(){
+  const btn   = document.getElementById('place-order-btn');
+  const name  = QUM.san((document.getElementById('co_name')?.value||'').trim());
+  const email = QUM.san((document.getElementById('co_email')?.value||'').trim());
+  const phone = QUM.san((document.getElementById('co_phone')?.value||'').trim());
+
+  if(!name||!email){QUM.toast('⚠️ أدخل الاسم والبريد الإلكتروني');return;}
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){QUM.toast('⚠️ البريد الإلكتروني غير صحيح');return;}
+  if(window.QumRateLimit&&!window.QumRateLimit('order',3,60000)){QUM.toast('⚠️ محاولات كثيرة — انتظر دقيقة');return;}
+
+  const st = QUM.load('stripe',{});
+  const stripeLink = cart[0]?.stripeLink || st.def || '';
+  if(!stripeLink){QUM.toast('⚠️ بوابة الدفع غير مُعدّة — تواصل معنا');return;}
+
+  btn.disabled=true; btn.textContent='⏳ جاري الحفظ...';
+
+  const baseTotal  = cart.reduce((s,c)=>s+(c.price||0),0);
+  const finalTotal = appliedCoupon ? appliedCoupon.finalPrice : baseTotal;
+  const bookIds    = cart.filter(c=>c.id<200).map(c=>c.id);
+  const today      = new Date().toLocaleDateString('ar-SA');
+
+  const orderData = {
+    name, email, phone,
+    uid:     currentUser?.uid || '',
+    books:   cart.map(c=>c.title),
+    bookIds,
+    total:   finalTotal,
+    date:    today,
+    method:  selectedMethod,
+    coupon:  appliedCoupon?.couponCode || null,
+    stripeLink,
+  };
+
+  // 1. حفظ الطلب في Firestore (أو localStorage fallback)
+  let firestoreOrderId = null;
+  if(window._FB){
+    try { const ref = await window._FB.saveOrder(orderData); firestoreOrderId = ref.id; }
+    catch(e){ console.warn('Firestore saveOrder:', e.message); }
+  }
+  // Fallback localStorage
+  const leads = QUM.load('leads',[]);
+  leads.push({...orderData, msg:`طلب: ${cart.map(c=>c.title).join(' | ')} — ${finalTotal} ر.س`, status:'pending'});
+  QUM.save('leads', leads);
+
+  // 2. بناء رابط Stripe مع metadata (uid + bookIds يُرسلان للـ Webhook)
+  // Stripe Payment Links لا تدعم metadata مباشرة — نستخدم رابط مع query params
+  // أو Stripe Checkout Session من الباك-إند (مستقبلاً)
+  const finalLink = stripeLink; // رابط من لوحة التحكم
+
+  btn.textContent='⏳ فتح Stripe...';
+  window.open(finalLink,'_blank');
+
+  // 3. عرض صفحة النجاح
+  setTimeout(()=>{btn.disabled=false; btn.textContent='✅ إتمام الدفع الآمن';},3000);
+  showSuccess(name, email, cart, finalTotal);
+}
+function showSuccess(name,email,items,total){
+  document.getElementById('checkout-page').classList.remove('open');
+  document.getElementById('success-email').textContent=`📚 حسابك: ${email}`;
+  document.getElementById('success-order-box').innerHTML=
+    `<h4>✅ كتبك في مكتبتك!</h4>`+
+    items.map(c=>`<div class="soi"><span>${c.emoji}</span><span>${QUM.san(c.title)}</span><span style="color:var(--blue3);">${c.price} ر.س</span></div>`).join('')+
+    (appliedCoupon?`<div class="soi" style="color:var(--green);"><span>🎟️</span><span>خصم</span><span>-${appliedCoupon.discount} ر.س</span></div>`:'')+
+    `<div class="soi" style="font-weight:700;color:#fff;"><span>💰</span><span>المجموع</span><span>${total} ر.س</span></div>`+
+    `<div style="margin-top:.9rem;padding:.8rem;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:var(--r);font-size:.78rem;color:var(--green);">📖 اضغط "افتح مكتبتي" للقراءة فوراً</div>`;
+  document.getElementById('success-page').classList.add('open');
+  cart=[];appliedCoupon=null;updateCartUI();renderBooks();window.scrollTo(0,0);
+}
+function backToHome(){document.getElementById('success-page').classList.remove('open');}
+
+// ══════════════════════════════════════════
+//  LIBRARY
+// ══════════════════════════════════════════
+function openLibrary(){
+  if(!currentUser){openAuthModal('login');QUM.toast('🔐 سجّل دخولك أولاً');return;}
+  renderLibrary();document.getElementById('library-page').classList.add('open');window.scrollTo(0,0);
+}
+function closeLibrary(){document.getElementById('library-page').classList.remove('open');}
+function renderLibrary(){
+  const c=document.getElementById('library-content');if(!c)return;
+  const owned=currentUser?.purchasedBooks||[];
+  if(!owned.length){c.innerHTML=`<div class="library-empty"><div class="lei">📚</div><p>مكتبتك فارغة<br>اشتر كتابك الأول وابدأ!</p><br><a href="#pricing" onclick="closeLibrary()" class="btn-blue" style="display:inline-flex;border:none;margin-top:1rem;">🛒 الباقات</a></div>`;return;}
+  const prog=QUM.load('reading_progress',{});
+  c.innerHTML=`<div class="library-grid">${booksData.filter(b=>owned.includes(b.id)).map(b=>{
+    const p=prog[b.id]||0;
+    return`<div class="lib-card">
+      <span class="lib-emoji">${b.emoji}</span>
+      <h3>${QUM.san(b.title)}</h3>
+      <p>${QUM.san(b.desc)}</p>
+      <button class="lib-read-btn" onclick="openReader(${b.id})">📖 اقرأ الآن</button>
+      <div class="lib-progress">
+        <div class="lib-progress-bar"><div class="lib-progress-fill" style="width:${p}%"></div></div>
+        <div class="lib-progress-lbl">${p}% مكتمل</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ══════════════════════════════════════════
+//  PDF READER — تحقق Firestore قبل الفتح
+// ══════════════════════════════════════════
+let readerZoom=100;
+
+async function openReader(bookId){
+  const b=booksData.find(x=>x.id===bookId);
+  if(!b){QUM.toast('الكتاب غير موجود');return;}
+
+  if(!currentUser){openAuthModal('login');QUM.toast('🔐 سجّل دخولك أولاً');return;}
+
+  // تحقق محلي أولاً — ثم Firestore إذا لزم
+  let hasAccess=(currentUser?.purchasedBooks||[]).includes(bookId);
+  if(!hasAccess&&window._FB){
+    try{
+      const p=await window._FB.getProfile(currentUser.uid);
+      if(p){currentUser.purchasedBooks=p.purchasedBooks||[];QUM.sess('user',currentUser);}
+      hasAccess=currentUser.purchasedBooks.includes(bookId);
+    }catch(e){console.warn('access check:',e.message);}
+  }
+  if(!hasAccess){QUM.toast('🔐 هذا الكتاب غير مشترى — أضفه للسلة');document.getElementById('books').scrollIntoView({behavior:'smooth'});return;}
+
+  document.getElementById('reader-book-title').textContent='📖 '+b.title;
+  const iframe=document.getElementById('reader-iframe');
+  const ph=document.getElementById('reader-placeholder');
+  if(b.pdfLink){
+    iframe.src=b.pdfLink+'#toolbar=0&navpanes=0&scrollbar=1&view=FitH';
+    iframe.style.display='block';ph.style.display='none';
+  }else{
+    iframe.style.display='none';ph.style.display='block';
+    ph.innerHTML='<div class="ri">📖</div><p style="color:var(--muted);">رابط الكتاب لم يُحدَّد بعد<br><small>أضفه من لوحة التحكم</small></p>';
+  }
+  document.getElementById('reader-modal').classList.add('open');
+
+  // تحديث تقدم القراءة
+  const prog=QUM.load('reading_progress',{});
+  if(!prog[bookId])prog[bookId]=5;
+  QUM.save('reading_progress',prog);
+  if(window._FB&&currentUser?.uid)window._FB.updateProgress(currentUser.uid,bookId,prog[bookId]).catch(()=>{});
+}
+
+function closeReader(){document.getElementById('reader-modal').classList.remove('open');document.getElementById('reader-iframe').src='';}
+function zoomIn(){readerZoom=Math.min(readerZoom+20,200);const f=document.getElementById('reader-iframe');f.style.transform=`scale(${readerZoom/100})`;f.style.transformOrigin='top center';}
+function zoomOut(){readerZoom=Math.max(readerZoom-20,60);const f=document.getElementById('reader-iframe');f.style.transform=`scale(${readerZoom/100})`;f.style.transformOrigin='top center';}
+
+// ══════════════════════════════════════════
+//  MOBILE NAV & FAQ
+// ══════════════════════════════════════════
+function openMobileNav(){document.getElementById('mobile-nav').classList.add('open');document.body.style.overflow='hidden';}
+function closeMobileNav(){document.getElementById('mobile-nav').classList.remove('open');document.body.style.overflow='';}
+function toggleFaq(btn){const it=btn.parentElement,op=it.classList.contains('open');document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));if(!op)it.classList.add('open');}
+
+// ══════════════════════════════════════════
+//  COUNTDOWN
+// ══════════════════════════════════════════
+(function(){
+  let end=localStorage.getItem('qum_cd');
+  if(!end){end=Date.now()+24*60*60*1000;localStorage.setItem('qum_cd',end);}
+  function tick(){
+    const d=end-Date.now();if(d<=0)return;
+    const h=document.getElementById('hours'),m=document.getElementById('mins'),s=document.getElementById('secs');
+    if(h)h.textContent=String(Math.floor(d/3600000)).padStart(2,'0');
+    if(m)m.textContent=String(Math.floor((d%3600000)/60000)).padStart(2,'0');
+    if(s)s.textContent=String(Math.floor((d%60000)/1000)).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+})();
+
+// ══════════════════════════════════════════
+//  CONTACT FORM → Firestore
+// ══════════════════════════════════════════
+async function submitForm(){
+  const name  = QUM.san((document.getElementById('f_name')?.value||'').trim());
+  const phone = QUM.san((document.getElementById('f_phone')?.value||'').trim());
+  const email = QUM.san((document.getElementById('f_email')?.value||'').trim());
+  const msg   = QUM.san((document.getElementById('f_msg')?.value||'').trim());
+  const err   = document.getElementById('f_error');
+
+  if(!name||!phone){err.textContent='⚠️ أدخل الاسم ورقم الجوال';err.style.cssText='display:block;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;';return;}
+  if(window.QumRateLimit&&!window.QumRateLimit('contact',3,60000)){err.textContent='⚠️ محاولات كثيرة';err.style.display='block';return;}
+  err.style.display='none';
+
+  const leadData = {name,phone,email,msg,date:new Date().toLocaleDateString('ar-SA')};
+
+  // 1. حفظ في Firestore (إذا Firebase جاهز)
+  if(window._FB){
+    try { await window._FB.saveLead(leadData); }
+    catch(e){ console.warn('Firestore saveLead:', e.message); }
+  }
+  // 2. Fallback: localStorage (يقرأها admin.html)
+  const leads=QUM.load('leads',[]);
+  leads.push(leadData);
+  QUM.save('leads',leads);
+
+  // 3. فتح واتساب
+  const wa=(QUM.load('brand',{}).wa)||'966505814917';
+  let text=`السلام عليكم 👋\n━━━━━━━━━━━━━━━\n📋 *طلب جديد من موقع قُم*\n━━━━━━━━━━━━━━━\n👤 ${name}\n📱 ${phone}`;
+  if(email)text+=`\n📧 ${email}`;
+  if(msg)text+=`\n💬 ${msg}`;
+  text+=`\n━━━━━━━━━━━━━━━`;
+  window.open(`https://wa.me/${wa}?text=${encodeURIComponent(text)}`,'_blank');
+
+  ['f_name','f_phone','f_email','f_msg'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  err.style.cssText='display:block;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#22C55E;border-radius:10px;padding:.6rem 1rem;font-size:.82rem;';
+  err.textContent='✅ تم الإرسال! سيفتح واتساب الآن...';
+  setTimeout(()=>err.style.display='none',4000);
+}
+
+// ══════════════════════════════════════════
+//  AI CHAT
+// ══════════════════════════════════════════
+let chatOpen=false;
+const RESP={books:'📚 مجموعتنا تشمل كتب علم النفس، التفكير الإيجابي، الصحة النفسية، التحفيز، العادات، والعلاقات.',price:'💰 الأسعار تبدأ من 29 ريال. راجع قسم الباقات!',buy:'🛒 أضف للسلة → ادفع → تجد كتبك في مكتبتك فوراً! ⚡',read:'📖 بعد الشراء — افتح "مكتبتي" من الأعلى واضغط "اقرأ الآن"!',default:'😊 للمساعدة تواصل معنا على واتساب!'};
+function getReply(m){const l=m;if(/كتاب|كتب/.test(l))return RESP.books;if(/سعر|كم|ريال/.test(l))return RESP.price;if(/أشتري|اشتري|شراء/.test(l))return RESP.buy;if(/أقرأ|اقرأ|مكتبة/.test(l))return RESP.read;return RESP.default;}
+function toggleChat(){chatOpen=!chatOpen;document.getElementById('aiChat').classList.toggle('open',chatOpen);}
+function sendQuick(t){document.getElementById('quickBtns').style.display='none';addMsg(t,'user');setTimeout(()=>addMsg(getReply(t),'bot'),600);}
+function sendMessage(){const i=document.getElementById('aiInput');const t=i.value.trim();if(!t)return;i.value='';document.getElementById('quickBtns').style.display='none';addMsg(t,'user');const ty=addTyping();setTimeout(()=>{ty.remove();addMsg(getReply(t),'bot');},700);}
+function addMsg(t,type){const d=document.createElement('div');d.className=`ai-msg ${type}`;d.textContent=t;document.getElementById('aiMessages').appendChild(d);document.getElementById('aiMessages').scrollTop=9999;return d;}
+function addTyping(){const d=document.createElement('div');d.className='ai-typing';d.innerHTML='<span></span><span></span><span></span>';document.getElementById('aiMessages').appendChild(d);document.getElementById('aiMessages').scrollTop=9999;return d;}
+
+// ══════════════════════════════════════════
+//  STORAGE SYNC (مزامنة فورية مع admin)
+// ══════════════════════════════════════════
+window.addEventListener('storage',e=>{
+  const k=(e.key||'').replace('qum_','');
+  if(k==='books'){booksData=JSON.parse(e.newValue||'[]').map((b,i)=>({...b,id:i}));renderBooks();}
+  if(k==='testimonials'){testsData=JSON.parse(e.newValue||'[]');renderTests();}
+  if(k==='pkgs'){pkgsData=JSON.parse(e.newValue||'[]');renderPackages();}
+  if(['brand','logo_img','about_img','ccolors','theme'].includes(k))applyBrand();
+  if(k==='social')applySocial();
+});
+
+// ══════════════════════════════════════════
+//  VALUE STACK TIMER
+// ══════════════════════════════════════════
+(function vsTimer(){
+  function tick(){
+    const now=new Date(), mid=new Date(now);
+    mid.setHours(23,59,59,999);
+    const d=mid-now;
+    const h=String(Math.floor(d/3600000)).padStart(2,'0');
+    const m=String(Math.floor((d%3600000)/60000)).padStart(2,'0');
+    const s=String(Math.floor((d%60000)/1000)).padStart(2,'0');
+    const eh=document.getElementById('vs-h');
+    const em=document.getElementById('vs-m');
+    const es=document.getElementById('vs-s');
+    if(eh)eh.textContent=h; if(em)em.textContent=m; if(es)es.textContent=s;
+  }
+  tick(); setInterval(tick,1000);
+})();
+
+// ══════════════════════════════════════════
+//  ROI CALCULATOR
+// ══════════════════════════════════════════
+function calcROI(){
+  const price=parseFloat(document.getElementById('roi-price').value)||49;
+  const budget=parseFloat(document.getElementById('roi-budget').value)||500;
+  const visitors=parseFloat(document.getElementById('roi-visitors').value)||1000;
+  const cvr=parseFloat(document.getElementById('roi-cvr').value)||0.015;
+  const prodCost=parseFloat(document.getElementById('roi-cost').value)||200;
+  const sales=Math.floor(visitors*cvr);
+  const revenue=sales*price;
+  const totalCost=budget+prodCost;
+  const profit=revenue-totalCost;
+  const roi=totalCost>0?((profit/totalCost)*100).toFixed(1):0;
+  const cpa=sales>0?(budget/sales).toFixed(1):'∞';
+  const margin=revenue>0?((profit/revenue)*100).toFixed(1):0;
+  const worstSales=Math.floor(visitors*0.01);
+  const worstRev=worstSales*price;
+  const worstProfit=worstRev-totalCost;
+  const r=document.getElementById('roi-results');
+  r.innerHTML=`
+    <div style="font-size:.72rem;color:var(--blue3);font-weight:700;margin-bottom:.6rem;">📊 النتائج المتوقعة شهرياً</div>
+    <div class="roi-metric"><span class="roi-metric-label">👥 المبيعات المتوقعة</span><span class="roi-metric-value blue">${sales} طلب</span></div>
+    <div class="roi-metric"><span class="roi-metric-label">💰 الإيرادات</span><span class="roi-metric-value blue">${revenue.toLocaleString()} ر.س</span></div>
+    <div class="roi-metric"><span class="roi-metric-label">💸 إجمالي التكاليف</span><span class="roi-metric-value red">${totalCost.toLocaleString()} ر.س</span></div>
+    <div class="roi-metric"><span class="roi-metric-label">📈 صافي الربح</span><span class="roi-metric-value ${profit>=0?'green':'red'}">${profit.toLocaleString()} ر.س</span></div>
+    <div class="roi-metric"><span class="roi-metric-label">🎯 ROI</span><span class="roi-metric-value ${roi>=0?'green':'red'}">${roi}%</span></div>
+    <div class="roi-metric"><span class="roi-metric-label">🏷️ CPA</span><span class="roi-metric-value blue">${cpa} ر.س</span></div>
+    <div class="roi-metric"><span class="roi-metric-label">📉 هامش الربح</span><span class="roi-metric-value ${margin>=0?'green':'red'}">${margin}%</span></div>
+    <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:.7rem .9rem;margin-top:.6rem;font-size:.78rem;">
+      ⚠️ <strong>الحالة الأسوأ (1%)</strong>: ${worstSales} مبيعة → ربح: <span style="color:${worstProfit>=0?'var(--green)':'var(--red)'}">${worstProfit} ر.س</span>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//  AI SCRIPTWRITER
+// ══════════════════════════════════════════
+const SCRIPT_TPL={
+  'hook-story-cta':(t,u,p)=>`🎬 ${p.toUpperCase()} — Hook → قصة → CTA\n${'━'.repeat(32)}\n⚡ HOOK (0-3 ثوان)\n"${t.includes('كتاب')||t.includes('منتج')?'هذا غيّر حياتي في أسبوع...':'هل تعرف لماذا أغلب الناس لا ينجحون؟'} "\n[الكاميرا: مواجهة مباشرة — نظرة حادة]\n\n📖 STORY (3-20 ثانية)\n"كنت أعاني من ${u||'نفس مشكلتك'} — حتى وجدت ${t}..."\n[Cut to: نتائج سريعة / تحول ملموس]\n"النتيجة: [أضف نتيجة مذهلة من ${t}]"\n\n🎯 CTA (20-30 ثانية)\n"الرابط في البايو — متاح لفترة محدودة ⬇️"\n[Text overlay: السعر المشطوب + السعر الحالي]\n${'━'.repeat(32)}\n⏱ المدة: 25-30 ثانية | 🎵 Trending audio`,
+
+  'problem-solution':(t,u,p)=>`🎬 ${p.toUpperCase()} — مشكلة → حل → عرض\n${'━'.repeat(32)}\n😤 PROBLEM (0-5 ثوان)\n"هل مللت من [المشكلة] رغم كل محاولاتك؟"\n[Text: المشكلة بخط كبير]\n\n💡 SOLUTION (5-20 ثانية)\n"الجواب في ${t}..."\n"${u||'يعطيك'}: ✅ النتيجة 1 ✅ النتيجة 2 ✅ النتيجة 3"\n\n🚀 OFFER (20-30 ثانية)\n"اليوم فقط بسعر مخفوض — الرابط في البايو ⬇️"\n${'━'.repeat(32)}\n⏱ المدة: 25-35 ثانية`,
+
+  'list':(t,u,p)=>`🎬 ${p.toUpperCase()} — قائمة سريعة\n${'━'.repeat(32)}\n⚡ HOOK: "3 أشياء ستتعلمها من ${t} 👇"\n[Fast cuts — كل نقطة 3-4 ثوان]\n✅ 1: [فائدة رئيسية مثيرة]\n✅ 2: [فائدة مفاجئة]\n✅ 3: [فائدة نهائية تحفيزية]\n🎯 CTA: "احصل عليه من البايو 🔗"\n${'━'.repeat(32)}\n⏱ المدة: 15-20 ثانية`,
+
+  'transformation':(t,u,p)=>`🎬 ${p.toUpperCase()} — قبل وبعد\n${'━'.repeat(32)}\n😔 قبل: "كنت [الوضع السيء] — حياتي كانت [وصف مؤلم]"\n[لقطة: مظهر محبط]\n✨ بعد ${t}: "أصبحت [التحول المذهل]"\n[لقطة: مظهر واثق + نتائج]\n🎯 CTA: "أنت أيضاً تستطيع — الرابط في البايو ⬇️"\n${'━'.repeat(32)}\n⏱ المدة: 20-30 ثانية`
+};
+
+async function generateScript(){
+  const topic=document.getElementById('sc-topic').value.trim();
+  const platform=document.getElementById('sc-platform').value;
+  const style=document.getElementById('sc-style').value;
+  const usp=document.getElementById('sc-usp').value.trim();
+  const btn=document.getElementById('sc-btn');
+  const output=document.getElementById('sc-output');
+  const textEl=document.getElementById('sc-text');
+  if(!topic){QUM.toast('⚠️ أدخل موضوع الفيديو أو المنتج');return;}
+  btn.disabled=true; btn.textContent='⏳ جاري التوليد...';
+  await new Promise(r=>setTimeout(r,1000+Math.random()*800));
+  const fn=SCRIPT_TPL[style]||SCRIPT_TPL['hook-story-cta'];
+  const script=fn(topic,usp,platform);
+  textEl.textContent=script;
+  output.classList.add('show');
+  btn.disabled=false;
+  btn.innerHTML='🤖 توليد السكريبت بالذكاء الاصطناعي';
+  const scripts=QUM.load('ai_scripts',[]);
+  scripts.unshift({topic,platform,style,script,date:new Date().toLocaleDateString('ar-SA')});
+  if(scripts.length>20)scripts.pop();
+  QUM.save('ai_scripts',scripts);
+}
+
+function copyScript(){
+  const text=document.getElementById('sc-text').textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>QUM.toast('✅ تم النسخ!'));}
+  else{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();QUM.toast('✅ تم النسخ!');}
+}
+
+// ══════════════════════════════════════════
+//  COMMUNITY CHAT
+// ══════════════════════════════════════════
+const CHAT_BADGES={starter:{label:'مبتدئ',emoji:'📖',cls:'badge-starter'},reader:{label:'قارئ',emoji:'📚',cls:'badge-reader'},scholar:{label:'متعلم',emoji:'🎓',cls:'badge-scholar'},mentor:{label:'مرشد',emoji:'🏆',cls:'badge-mentor'}};
+const CHAT_COLORS=['#7C3AED','#2563EB','#059669','#D97706','#DB2777','#0891B2'];
+function getChatLevel(n){return n>=10?'mentor':n>=5?'scholar':n>=2?'reader':'starter';}
+
+function sendChatMsg(){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text)return;
+  if(!currentUser){QUM.toast('🔐 سجّل دخولك للمشاركة');openAuthModal('login');return;}
+  input.value='';
+  const msgs=document.getElementById('chat-messages');
+  const level=getChatLevel((currentUser.purchasedBooks||[]).length);
+  const badge=CHAT_BADGES[level];
+  const initial=(currentUser.name||'م')[0].toUpperCase();
+  const color=CHAT_COLORS[(currentUser.uid?.charCodeAt(0)||0)%CHAT_COLORS.length];
+  const div=document.createElement('div');
+  div.className='chat-msg own';
+  div.innerHTML=`<div><div class="chat-avatar" style="background:linear-gradient(135deg,${color},${color}99);">${initial}</div></div><div><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;justify-content:flex-end;"><span class="chat-badge ${badge.cls}">${badge.emoji} ${badge.label}</span><span style="font-size:.78rem;color:#fff;font-weight:600;">أنت</span></div><div class="chat-bubble">${QUM.san(text)}</div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  const h=QUM.load('chat_msgs',[]);
+  h.push({uid:currentUser.uid,name:currentUser.name,text:QUM.san(text),level,time:Date.now()});
+  if(h.length>200)h.shift();
+  QUM.save('chat_msgs',h);
+  if(Math.random()<0.25){
+    const replies=['رائع! 🙌','ممتاز 💪','شاركنا أكثر! 📚','بالتوفيق 🌟','نحن نسمعك ❤️'];
+    setTimeout(()=>{
+      const r=replies[Math.floor(Math.random()*replies.length)];
+      const auto=document.createElement('div');
+      auto.className='chat-msg other';
+      auto.innerHTML=`<div><div class="chat-avatar" style="background:linear-gradient(135deg,#2563EB,#3B82F6);">ق</div></div><div><div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;"><span style="font-size:.78rem;color:#fff;font-weight:600;">فريق قُم</span><span class="chat-badge badge-mentor">🏆 مرشد</span></div><div class="chat-bubble">${r}</div></div>`;
+      msgs.appendChild(auto);
+      msgs.scrollTop=msgs.scrollHeight;
+    },800+Math.random()*1200);
+  }
+}
+
+// ══════════════════════════════════════════
+//  DRM CANVAS — علامة مائية شبه مرئية
+// ══════════════════════════════════════════
+function initDRM(uid){
+  const canvas=document.getElementById('drm-canvas');
+  if(!canvas||!uid)return;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=window.innerWidth*dpr;
+  canvas.height=window.innerHeight*dpr;
+  canvas.style.width=window.innerWidth+'px';
+  canvas.style.height=window.innerHeight+'px';
+  canvas.style.opacity='1';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.globalAlpha=0.028;
+  const shortUid=uid.slice(0,8).toUpperCase();
+  const netHash=btoa(uid+new Date().toLocaleDateString()+navigator.userAgent.slice(0,20)).slice(0,12);
+  ctx.fillStyle='#ffffff';
+  ctx.textAlign='center';
+  const angle=-25*Math.PI/180;
+  for(let y=-200;y<window.innerHeight+200;y+=100){
+    for(let x=-200;x<window.innerWidth+200;x+=220){
+      ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+      ctx.font='700 12px "Tajawal",sans-serif';ctx.fillText('قُم',0,-10);
+      ctx.font='400 9px monospace';ctx.fillText('UID:'+shortUid,0,4);ctx.fillText('NET:'+netHash,0,16);
+      ctx.restore();
+    }
+  }
+}
+
+// ربط DRM بـ openReader
+const _orig_openReader=typeof openReader!=='undefined'?openReader:null;
+window.openReader=async function(bookId){
+  if(_orig_openReader)await _orig_openReader.call(this,bookId);
+  if(currentUser?.uid)initDRM(currentUser.uid);
+};
+const _orig_closeReader=typeof closeReader!=='undefined'?closeReader:null;
+window.closeReader=function(){
+  if(_orig_closeReader)_orig_closeReader.call(this);
+  const c=document.getElementById('drm-canvas');
+  if(c)c.style.opacity='0';
+};
+
+// ══════════════════════════════════════════
+//  WIN CELEBRATION DISPATCHER
+//  يراقب qum_wins — يُطلق احتفال عند الفوز
+// ══════════════════════════════════════════
+(function watchWins(){
+  let lastCheck=Date.now();
+  setInterval(()=>{
+    if(!currentUser?.uid)return;
+    const wins=QUM.load('qum_wins',[]);
+    const myWin=wins.find(w=>w.uid===currentUser.uid&&w.date>lastCheck-60000);
+    if(myWin&&!sessionStorage.getItem('win_shown_'+myWin.date)){
+      sessionStorage.setItem('win_shown_'+myWin.date,'1');
+      showWinCelebration(myWin);
+    }
+  },5000);
+})();
+
+function showWinCelebration(win){
+  // Confetti Canvas
+  const cv=document.createElement('canvas');
+  cv.style.cssText='position:fixed;inset:0;z-index:9998;pointer-events:none;';
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  document.body.appendChild(cv);
+  const ctx=cv.getContext('2d');
+  const particles=Array.from({length:120},()=>({
+    x:Math.random()*cv.width,y:-10,
+    size:Math.random()*8+4,
+    speedX:(Math.random()-0.5)*4,
+    speedY:Math.random()*4+2,
+    color:['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899'][Math.floor(Math.random()*6)],
+    rotation:Math.random()*360
+  }));
+  let frame=0;
+  function drawConfetti(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    particles.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rotation*Math.PI/180);
+      ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+      p.x+=p.speedX;p.y+=p.speedY;p.rotation+=3;
+      if(p.y>cv.height){p.y=-10;p.x=Math.random()*cv.width;}
+    });
+    frame++;
+    if(frame<200)requestAnimationFrame(drawConfetti);
+    else{cv.remove();}
+  }
+  drawConfetti();
+
+  // Win Modal
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);';
+  const prizeLabels={coupon100:'كوبون خصم 100% — مجاني تام! 🎫',coupon50:'كوبون خصم 50% 🎟️',unlock:'كتاب مفتوح مجاناً 📚',gift:'هدية رقمية خاصة 🎁'};
+  modal.innerHTML=`
+    <div style="background:linear-gradient(135deg,#111827,#1F2937);border:2px solid #7C3AED;border-radius:24px;padding:2.5rem;max-width:420px;width:90%;text-align:center;animation:fadeIn .4s ease;">
+      <div style="font-size:3.5rem;margin-bottom:.8rem;">🏆</div>
+      <div style="font-size:.8rem;color:#A78BFA;font-weight:700;letter-spacing:2px;margin-bottom:.5rem;">مبروك ${currentUser?.name||''}!</div>
+      <h2 style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:.8rem;line-height:1.4;">لقد فزت بهدية خاصة<br>من الأستاذ البراء 🎉</h2>
+      <div style="background:rgba(124,58,237,.15);border:1px solid rgba(139,92,246,.4);border-radius:12px;padding:1rem;margin-bottom:1.2rem;">
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:.3rem;">جائزتك:</div>
+        <div style="font-size:1rem;font-weight:700;color:#A78BFA;">${prizeLabels[win.prize]||'جائزة خاصة 🎁'}</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--muted);font-family:monospace;background:rgba(0,0,0,.3);padding:.5rem .8rem;border-radius:8px;margin-bottom:1.2rem;word-break:break-all;">
+        🔑 ${win.token||''}
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.7;">${win.msg||''}</p>
+      <button onclick="this.closest('[style]').remove()" style="padding:.75rem 2rem;background:linear-gradient(135deg,#7C3AED,#8B5CF6);color:#fff;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;">
+        🎉 استلام الجائزة
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+// Chat Kill Switch — يلتقط أمر الأدمن
+(function watchChatKill(){
+  setInterval(()=>{
+    const killed=QUM.load('chat_killed',false);
+    const inp=document.getElementById('chat-input');
+    if(inp){
+      inp.disabled=!!killed;
+      inp.placeholder=killed?'💬 الشات مغلق مؤقتاً من الإدارة':'اكتب رسالتك — متاح لأصحاب الكتب فقط';
+    }
+  },3000);
+})();
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+initAuth();
+applyBrand();
+applySocial();
+renderBooks();
+renderPackages();
+renderTests();
+updateCartUI();
+</script>
+<script src="security.js"></script>
+</body>
+</html>

@@ -1,0 +1,3067 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-store,no-cache,must-revalidate,private">
+<meta http-equiv="Pragma" content="no-cache">
+<title>لوحة تحكم قُم</title>
+<!-- Firebase Config — عدّل firebase-config.js بمعلوماتك -->
+<script src="firebase-config.js"></script>
+<script src="security.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#2563EB;--blue2:#3B82F6;--blue3:#60A5FA;
+  --dark:#080C14;--dark2:#0D1220;--dark3:#111827;--dark4:#1A2235;
+  --border:rgba(255,255,255,.08);--bb:rgba(59,130,246,.28);
+  --text:#E8EEF8;--muted:#6B7FA8;--green:#22C55E;--red:#EF4444;--yellow:#F59E0B;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;z-index:99999;background:var(--dark);display:flex;align-items:center;justify-content:center;}
+.lbox{background:var(--dark2);border:1px solid var(--bb);border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:370px;box-shadow:0 24px 80px rgba(0,0,0,.8);text-align:center;}
+.llogo{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;}
+.lbox h2{font-size:1.25rem;font-weight:900;color:#fff;margin-bottom:.3rem;}
+.lsub{font-size:.82rem;color:var(--muted);margin-bottom:1.8rem;}
+.lf{margin-bottom:1rem;text-align:right;}
+.lf label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.4rem;font-weight:600;}
+.lf input{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;direction:rtl;}
+.lf input:focus{border-color:var(--bb);}
+.lbtn{width:100%;padding:.8rem;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:.3rem;transition:all .2s;}
+.lbtn:hover{box-shadow:0 6px 20px rgba(37,99,235,.5);}
+.lbtn:disabled{opacity:.5;cursor:not-allowed;}
+.lerr{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:.6rem 1rem;color:#f87171;font-size:.82rem;margin-top:.8rem;display:none;}
+.lhint{font-size:.73rem;color:var(--muted);margin-top:.8rem;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:250px;min-height:100vh;background:var(--dark2);border-left:1px solid var(--bb);display:flex;flex-direction:column;position:fixed;right:0;top:0;bottom:0;z-index:100;overflow-y:auto;}
+.slogo{padding:1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;flex-shrink:0;}
+.slogo-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.slogo-text strong{display:block;font-size:.95rem;font-weight:900;color:#fff;}
+.slogo-text span{font-size:.7rem;color:var(--muted);}
+.nsec{padding:.5rem 1.2rem .15rem;font-size:.65rem;color:var(--muted);font-weight:700;letter-spacing:1px;margin-top:.5rem;}
+.nb{display:flex;align-items:center;gap:.6rem;padding:.58rem 1.2rem;width:100%;border:none;background:none;color:var(--muted);font-family:'Cairo',sans-serif;font-size:.84rem;cursor:pointer;transition:all .18s;text-align:right;}
+.nb:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.nb.active{color:#fff;background:rgba(37,99,235,.14);border-right:3px solid var(--blue);}
+.nb .ic{font-size:.95rem;width:18px;text-align:center;}
+.nb .bdg{margin-right:auto;background:var(--blue);color:#fff;border-radius:50px;padding:.08rem .45rem;font-size:.63rem;font-weight:700;display:none;}
+.sfooter{padding:1rem 1.2rem;border-top:1px solid var(--border);margin-top:auto;flex-shrink:0;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-left:.35rem;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+.slogout{width:100%;margin-top:.6rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171;border-radius:8px;padding:.4rem;font-family:'Cairo',sans-serif;font-size:.77rem;cursor:pointer;transition:background .2s;}
+.slogout:hover{background:rgba(239,68,68,.2);}
+
+/* ── MAIN ── */
+.main{margin-right:250px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--dark2);border-bottom:1px solid var(--border);padding:.85rem 1.8rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar h1{font-size:1.02rem;font-weight:700;color:#fff;}
+.tbar-r{display:flex;gap:.55rem;}
+.btn{padding:.42rem .95rem;border-radius:8px;border:none;font-family:'Cairo',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:.35rem;}
+.bp{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;}
+.bp:hover{box-shadow:0 4px 14px rgba(37,99,235,.4);transform:translateY(-1px);}
+.bo{background:transparent;color:var(--blue3);border:1px solid var(--bb);}
+.bo:hover{background:rgba(37,99,235,.1);}
+.bd{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.bd:hover{background:rgba(239,68,68,.2);}
+.bg{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.bg:hover{background:rgba(34,197,94,.2);}
+.bsm{padding:.3rem .7rem;font-size:.75rem;}
+
+/* ── CONTENT ── */
+.content{padding:1.6rem 1.8rem;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── CARDS ── */
+.card{background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:1.3rem;margin-bottom:1.3rem;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
+.ct{font-size:.92rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:.4rem;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.3rem;}
+
+/* ── STATS ── */
+.stat{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;}
+.stat .sl{font-size:.73rem;color:var(--muted);margin-bottom:.25rem;}
+.stat .sv{font-size:1.45rem;font-weight:900;color:#fff;font-family:'Tajawal',sans-serif;}
+.stat .ss{font-size:.7rem;color:var(--green);margin-top:.15rem;}
+
+/* ── FIELDS ── */
+.fg{margin-bottom:.9rem;}
+.fg label{display:block;font-size:.77rem;color:var(--muted);margin-bottom:.32rem;font-weight:600;}
+.fg input,.fg textarea,.fg select{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:.58rem .88rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--bb);}
+.fg textarea{min-height:72px;resize:vertical;}
+.fg small{font-size:.7rem;color:var(--muted);margin-top:.22rem;display:block;}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{text-align:right;padding:.6rem .85rem;font-size:.73rem;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);background:var(--dark3);}
+.tbl td{padding:.75rem .85rem;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,255,255,.015);}
+
+/* ── TAGS ── */
+.tag{padding:.18rem .55rem;border-radius:50px;font-size:.68rem;font-weight:700;}
+.tg{background:rgba(34,197,94,.12);color:var(--green);}
+.tr{background:rgba(239,68,68,.12);color:var(--red);}
+.tb{background:rgba(59,130,246,.12);color:var(--blue3);}
+.ty{background:rgba(245,158,11,.12);color:var(--yellow);}
+
+/* ── TOGGLE ── */
+.tgl{position:relative;width:38px;height:21px;flex-shrink:0;}
+.tgl input{opacity:0;width:0;height:0;}
+.tgl-s{position:absolute;inset:0;background:var(--dark4);border-radius:50px;cursor:pointer;transition:.28s;border:1px solid var(--border);}
+.tgl-s::before{content:'';position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;bottom:3px;right:3px;transition:.28s;}
+input:checked+.tgl-s{background:var(--blue);}
+input:checked+.tgl-s::before{transform:translateX(-17px);}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:2rem;left:2rem;z-index:99999;background:var(--dark4);border:1px solid var(--green);border-radius:10px;padding:.72rem 1.1rem;color:var(--green);font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:.5rem;transform:translateY(120px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:320px;}
+#toast.show{transform:none;opacity:1;}
+#toast.err{border-color:var(--red);color:var(--red);}
+
+/* ── LEAD CARD ── */
+.lead-card{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:.65rem;}
+.lead-name{font-weight:700;color:#fff;font-size:.9rem;margin-bottom:.28rem;}
+.lead-meta{font-size:.76rem;color:var(--muted);display:flex;gap:.9rem;flex-wrap:wrap;margin-bottom:.5rem;}
+.lead-actions{display:flex;gap:.45rem;flex-wrap:wrap;}
+
+/* ── COUPON ── */
+.cp-row{display:flex;align-items:center;gap:.75rem;background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:.78rem 1rem;margin-bottom:.6rem;}
+.cp-code{font-family:'Tajawal',sans-serif;font-size:.95rem;font-weight:900;color:var(--blue3);background:rgba(37,99,235,.1);border:1px dashed var(--bb);border-radius:6px;padding:.18rem .65rem;letter-spacing:2px;}
+.cp-info{flex:1;}
+.cp-val{font-weight:700;color:#fff;font-size:.87rem;}
+.cp-uses{font-size:.73rem;color:var(--muted);}
+
+/* ── DISCOUNT ── */
+.dc-row{display:flex;align-items:center;gap:.7rem;background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.6rem;}
+
+/* ── THEMES ── */
+.themes{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.1rem;}
+.theme-c{width:115px;border:2px solid var(--border);border-radius:12px;padding:.65rem;cursor:pointer;transition:all .2s;text-align:center;}
+.theme-c:hover,.theme-c.on{border-color:var(--bb);background:rgba(37,99,235,.06);}
+.swatches{display:flex;gap:3px;margin-bottom:.45rem;justify-content:center;}
+.sw{width:20px;height:20px;border-radius:50%;}
+.theme-n{font-size:.7rem;color:var(--muted);font-weight:700;}
+
+/* ── MKT ── */
+.mkt{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:.9rem;}
+.mkt h4{font-weight:700;color:#fff;margin-bottom:.35rem;font-size:.9rem;}
+.mkt p{font-size:.78rem;color:var(--muted);margin-bottom:.75rem;line-height:1.6;}
+
+/* ── STEPS ── */
+.step{display:flex;gap:.65rem;margin-bottom:.55rem;align-items:flex-start;font-size:.8rem;color:var(--muted);}
+.step-n{background:var(--blue);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900;flex-shrink:0;margin-top:.05rem;}
+.step-n.done{background:var(--green);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);}
+.empty .ei{font-size:2.8rem;margin-bottom:.7rem;}
+
+@media(max-width:768px){
+  .sidebar{width:200px;}
+  .main{margin-right:200px;}
+  .g4{grid-template-columns:1fr 1fr;}
+  .g3,.g2{grid-template-columns:1fr;}
+}
+/* SILIDER additions */
+.roi-metric{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--border);}
+.roi-metric:last-child{border-bottom:none;}
+.roi-metric-value{font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:900;}
+.roi-metric-value.green{color:#22C55E;}.roi-metric-value.red{color:#EF4444;}.roi-metric-value.blue{color:#60A5FA;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lbox">
+    <div class="llogo">
+      <svg viewBox="0 0 60 60" width="36" height="36">
+        <rect x="8" y="8" width="44" height="40" rx="5" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <rect x="8" y="8" width="7" height="40" rx="3" fill="rgba(255,255,255,.25)"/>
+        <path d="M30 42L30 16M22 24L30 15L38 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <h2>لوحة تحكم قُم</h2>
+    <p class="lsub">مرحباً — أدخل بياناتك للدخول</p>
+    <div class="lf"><label>👤 اسم المستخدم</label><input id="lu" placeholder="اسم المستخدم" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lf"><label>🔒 كلمة المرور</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="lbtn" id="lbtn" onclick="doLogin()">دخول ←</button>
+    <div class="lerr" id="lerr">❌ بيانات الدخول غير صحيحة</div>
+    <p class="lhint" id="lhint">🔐 لوحة التحكم الخاصة بالمشرف فقط</p>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="slogo">
+    <div class="slogo-icon">
+      <svg viewBox="0 0 60 60" width="24" height="24">
+        <rect x="8" y="8" width="44" height="40" rx="5" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <rect x="8" y="8" width="7" height="40" rx="3" fill="rgba(255,255,255,.25)"/>
+        <path d="M30 42L30 16M22 24L30 15L38 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="slogo-text"><strong>قُم — Admin</strong><span>لوحة التحكم</span></div>
+  </div>
+  <nav style="flex:1;padding:.4rem 0;">
+    <div class="nsec">الرئيسية</div>
+    <button class="nb active" onclick="go('dashboard',this)"><span class="ic">📊</span>الرئيسية</button>
+    <button class="nb" onclick="go('leads',this)"><span class="ic">📥</span>العملاء والطلبات<span class="bdg" id="lbdg"></span></button>
+
+    <div class="nsec">المحتوى</div>
+    <button class="nb" onclick="go('books',this)"><span class="ic">📚</span>الكتب</button>
+    <button class="nb" onclick="go('packages',this)"><span class="ic">📦</span>الباقات والأسعار</button>
+    <button class="nb" onclick="go('hero',this)"><span class="ic">🏠</span>نصوص الموقع</button>
+
+    <div class="nsec">المبيعات</div>
+    <button class="nb" onclick="go('discounts',this)"><span class="ic">🏷️</span>التخفيضات</button>
+    <button class="nb" onclick="go('coupons',this)"><span class="ic">🎟️</span>كوبونات الخصم</button>
+    <button class="nb" onclick="go('payment',this)"><span class="ic">💳</span>بوابة Stripe</button>
+
+    <div class="nsec">النمو</div>
+    <button class="nb" onclick="go('marketing',this)"><span class="ic">📣</span>التسويق</button>
+    <button class="nb" onclick="go('email',this)"><span class="ic">📧</span>إرسال الكتب تلقائياً</button>
+
+    <div class="nsec">المستخدمون</div>
+    <button class="nb" onclick="go('users',this);closeSidebar()"><span class="ic">👤</span>المستخدمون المسجلون</button>
+    <button class="nb" onclick="go('ai-scripts',this);closeSidebar()"><span class="ic">🤖</span>AI سكريبت رايتر</button>
+    <button class="nb" onclick="go('roi-dashboard',this);closeSidebar()"><span class="ic">📊</span>لوحة ROI والتسويق</button>
+    <button class="nb" onclick="go('lucky-draw',this);closeSidebar()"><span class="ic">🎰</span>المسابقات والقرعة</button>
+    <button class="nb" onclick="go('cms',this);closeSidebar()"><span class="ic">🗂️</span>إدارة المحتوى CMS</button>
+    <button class="nb" onclick="go('live-studio',this);closeSidebar()"><span class="ic">📡</span>استوديو البث المباشر</button>
+    <button class="nb" onclick="go('security-audit',this);closeSidebar()"><span class="ic">🛡️</span>الأمان والتدقيق</button>
+    <div class="nsec">التخصيص</div>
+    <button class="nb" onclick="go('brand',this)"><span class="ic">🪪</span>هوية الموقع والشعار</button>
+    <button class="nb" onclick="go('colors',this)"><span class="ic">🎨</span>الألوان والثيم</button>
+    <button class="nb" onclick="go('settings',this)"><span class="ic">⚙️</span>الإعدادات</button>
+  </nav>
+  <div class="sfooter">
+    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.28rem;">👤 البراء عبد الباري</div>
+    <div style="font-size:.73rem;color:var(--muted);"><span class="sdot"></span>الموقع يعمل</div>
+    <button class="slogout" onclick="doLogout()">🚪 تسجيل خروج</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="ptitle">الرئيسية</h1>
+    <div class="tbar-r">
+      <a href="index.html" target="_blank" class="btn bo bsm">👁️ عرض الموقع</a>
+      <button class="btn bp bsm" onclick="saveAll()">💾 حفظ الكل</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ══ DASHBOARD ══ -->
+  <div id="p-dashboard" class="page active">
+    <div class="g4">
+      <div class="stat"><div class="sl">📥 إجمالي الطلبات</div><div class="sv" id="s-ord">0</div><div class="ss">منذ البداية</div></div>
+      <div class="stat"><div class="sl">💰 الإيرادات (ر.س)</div><div class="sv" id="s-rev">0</div><div class="ss">تقريبي</div></div>
+      <div class="stat"><div class="sl">📚 الكتب النشطة</div><div class="sv" id="s-bks">0</div><div class="ss">معروضة</div></div>
+      <div class="stat"><div class="sl">🎟️ الكوبونات</div><div class="sv" id="s-cps">0</div><div class="ss">نشطة</div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">📥 آخر الطلبات</div><button class="btn bo bsm" onclick="go('leads',document.querySelectorAll('.nb')[1])">عرض الكل</button></div>
+        <div id="dash-leads"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">⚡ وصول سريع</div></div>
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+          <button class="btn bo" style="justify-content:flex-start;" onclick="go('books',document.querySelectorAll('.nb')[4])">📚 إدارة الكتب</button>
+          <button class="btn bo" style="justify-content:flex-start;" onclick="go('brand',document.querySelectorAll('.nb')[12])">🪪 هوية الموقع والشعار</button>
+          <button class="btn bo" style="justify-content:flex-start;" onclick="go('discounts',document.querySelectorAll('.nb')[7])">🏷️ إضافة تخفيض</button>
+          <button class="btn bo" style="justify-content:flex-start;" onclick="go('coupons',document.querySelectorAll('.nb')[8])">🎟️ إنشاء كوبون</button>
+          <button class="btn bo" style="justify-content:flex-start;" onclick="go('payment',document.querySelectorAll('.nb')[9])">💳 إعداد Stripe</button>
+          <button class="btn bo" style="justify-content:flex-start;" onclick="go('email',document.querySelectorAll('.nb')[11])">📧 إرسال الكتب تلقائياً</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">📣 حالة التسويق</div></div>
+      <div id="dash-mkt"></div>
+    </div>
+  </div>
+
+  <!-- ══ LEADS ══ -->
+  <div id="p-leads" class="page">
+    <div class="card">
+      <div class="ch">
+        <div class="ct">📥 العملاء والطلبات</div>
+        <div style="display:flex;gap:.45rem;">
+          <button class="btn bd bsm" onclick="clearLeads()">🗑️ مسح</button>
+          <button class="btn bg bsm" onclick="exportLeads()">📤 تصدير CSV</button>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;">عند اختيار العميل كتبه وإتمام الدفع — يظهر طلبه هنا ويمكنك إرسال الكتب مباشرة بضغطة واحدة.</p>
+      <div id="leads-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ BOOKS ══ -->
+  <div id="p-books" class="page">
+    <div class="card" style="margin-bottom:.7rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="ct">📚 الكتب المعروضة في المتجر</div>
+        <button class="btn bp bsm" onclick="addBook()">+ كتاب جديد</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:.4rem;">جميع التعديلات تنعكس على المتجر فور الحفظ.</p>
+    </div>
+    <div id="books-ed"></div>
+  </div>
+
+  <!-- ══ PACKAGES ══ -->
+  <div id="p-packages" class="page">
+    <div class="card" style="margin-bottom:.7rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="ct">📦 الباقات والأسعار</div>
+        <button class="btn bp bsm" onclick="addPkg()">+ باقة جديدة</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:.4rem;">عدّل الأسعار والمميزات — تظهر في الموقع تلقائياً.</p>
+    </div>
+    <div id="pkgs-ed"></div>
+  </div>
+
+  <!-- ══ HERO ══ -->
+  <div id="p-hero" class="page">
+    <div class="card">
+      <div class="ch"><div class="ct">🏠 نصوص الصفحة الرئيسية</div></div>
+      <div class="fg"><label>📢 الشريط العلوي</label><input id="e-topbar" value="🔥 عرض محدود — اشتر أي كتاب واحصل على ملخص مجاني"></div>
+      <div class="fg"><label>🏷️ العنوان الرئيسي</label><input id="e-htitle" value="كتبك للنهوض النفسي — جاهزة استملها فوراً بعد الدفع"></div>
+      <div class="fg"><label>📝 النص التعريفي</label><textarea id="e-hsub">اختر كتابك، ادفع بأمان، واستلمه فوراً على بريدك.</textarea></div>
+      <div class="g3">
+        <div class="fg"><label>إحصائية 1</label><input id="e-s1" value="+200"></div>
+        <div class="fg"><label>إحصائية 2</label><input id="e-s2" value="+50"></div>
+        <div class="fg"><label>إحصائية 3</label><input id="e-s3" value="10+"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">ℹ️ قسم من نحن</div></div>
+      <div class="fg"><label>العنوان</label><input id="e-atitle" value="نحن قُم — نؤمن بقدرتك على النهوض"></div>
+      <div class="fg"><label>النص</label><textarea id="e-ap1">قُم متخصصة في الكتب النفسية وتنمية البشرية.</textarea></div>
+      <div class="fg"><label>نص الضمان</label><textarea id="e-guar">إذا لم يعجبك الكتاب خلال 7 أيام — نرد لك المبلغ كاملاً بدون أسئلة.</textarea></div>
+    </div>
+  </div>
+
+  <!-- ══ DISCOUNTS ══ -->
+  <div id="p-discounts" class="page">
+    <div class="card">
+      <div class="ch">
+        <div class="ct">🏷️ التخفيضات</div>
+        <button class="btn bp bsm" onclick="addDisc()">+ إضافة تخفيض</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;">التخفيضات تُطبَّق تلقائياً على أسعار الكتب في المتجر عند تفعيلها. لا تحتاج أي أكواد.</p>
+      <div id="disc-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ COUPONS ══ -->
+  <div id="p-coupons" class="page">
+    <div class="card">
+      <div class="ch">
+        <div class="ct">🎟️ كوبونات الخصم</div>
+        <button class="btn bp bsm" onclick="addCoupon()">+ كوبون جديد</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;">العميل يدخل الكود عند الدفع — الخصم يُطبَّق تلقائياً. الكودات تعمل في المتجر مباشرة.</p>
+      <div id="cp-list"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">📊 إحصائيات</div></div>
+      <div id="cp-stats"></div>
+    </div>
+  </div>
+
+  <!-- ══ PAYMENT (STRIPE ONLY) ══ -->
+  <div id="p-payment" class="page">
+    <div class="card" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.04);">
+      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.6rem;">
+        <span style="font-size:1.8rem;">💳</span>
+        <div><strong style="color:#fff;font-size:1rem;">Stripe — بوابة الدفع</strong><div style="font-size:.78rem;color:var(--muted);">ضع رابط Payment Link — بدون أي أكواد برمجية</div></div>
+        <div style="margin-right:auto;display:flex;align-items:center;gap:.5rem;">
+          <!-- Visa Logo -->
+          <div style="background:#fff;border-radius:6px;padding:3px 8px;display:flex;align-items:center;">
+            <svg viewBox="0 0 48 16" width="48" height="16" xmlns="http://www.w3.org/2000/svg">
+              <text x="0" y="13" font-family="Arial,sans-serif" font-size="14" font-weight="900" fill="#1A1F71" letter-spacing="-1">VISA</text>
+            </svg>
+          </div>
+          <!-- Mastercard Logo -->
+          <div style="background:#252525;border-radius:6px;padding:3px 7px;display:flex;align-items:center;gap:0;">
+            <svg viewBox="0 0 38 24" width="38" height="24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="13" cy="12" r="11" fill="#EB001B"/>
+              <circle cx="25" cy="12" r="11" fill="#F79E1B"/>
+              <path d="M19 5.4a11 11 0 0 1 0 13.2A11 11 0 0 1 19 5.4z" fill="#FF5F00"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);">بوابة الدفع تقبل <strong style="color:#fff;">فيزا وماستر كارد</strong> فقط — الطريقة الأسرع والأأمن للدفع الإلكتروني</p>
+    </div>
+
+    <!-- Accepted Cards Visual -->
+    <div class="card">
+      <div class="ch"><div class="ct">💳 طرق الدفع المقبولة</div></div>
+      <div style="display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap;">
+        <!-- Visa Card -->
+        <div style="flex:1;min-width:180px;background:linear-gradient(135deg,#1A1F71,#2563EB);border-radius:14px;padding:1.2rem 1.4rem;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-15px;right:-15px;width:80px;height:80px;background:rgba(255,255,255,.06);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-20px;left:-10px;width:100px;height:100px;background:rgba(255,255,255,.04);border-radius:50%;"></div>
+          <svg viewBox="0 0 80 26" width="80" height="26" xmlns="http://www.w3.org/2000/svg" style="display:block;margin-bottom:.8rem;">
+            <text x="0" y="22" font-family="Arial,sans-serif" font-size="22" font-weight="900" fill="white" letter-spacing="-1">VISA</text>
+          </svg>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.7);margin-bottom:.3rem;">مقبولة بجميع أنواع بطاقات فيزا</div>
+          <div style="display:flex;gap:.4rem;margin-top:.5rem;">
+            <span style="font-size:.65rem;background:rgba(255,255,255,.15);border-radius:4px;padding:.15rem .5rem;color:#fff;">Visa Credit</span>
+            <span style="font-size:.65rem;background:rgba(255,255,255,.15);border-radius:4px;padding:.15rem .5rem;color:#fff;">Visa Debit</span>
+          </div>
+        </div>
+        <!-- Mastercard Card -->
+        <div style="flex:1;min-width:180px;background:linear-gradient(135deg,#1a1a1a,#333);border-radius:14px;padding:1.2rem 1.4rem;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-15px;right:-15px;width:80px;height:80px;background:rgba(255,255,255,.04);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-20px;left:-10px;width:100px;height:100px;background:rgba(255,255,255,.03);border-radius:50%;"></div>
+          <div style="display:flex;align-items:center;gap:0;margin-bottom:.8rem;">
+            <svg viewBox="0 0 60 38" width="60" height="38" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="21" cy="19" r="18" fill="#EB001B"/>
+              <circle cx="39" cy="19" r="18" fill="#F79E1B"/>
+              <path d="M30 4.8a18 18 0 0 1 0 28.4A18 18 0 0 1 30 4.8z" fill="#FF5F00"/>
+            </svg>
+            <div style="font-size:.85rem;font-weight:900;color:#fff;margin-right:.3rem;">Mastercard</div>
+          </div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.7);margin-bottom:.3rem;">مقبولة بجميع أنواع بطاقات ماستر</div>
+          <div style="display:flex;gap:.4rem;margin-top:.5rem;">
+            <span style="font-size:.65rem;background:rgba(255,255,255,.12);border-radius:4px;padding:.15rem .5rem;color:#fff;">MC Credit</span>
+            <span style="font-size:.65rem;background:rgba(255,255,255,.12);border-radius:4px;padding:.15rem .5rem;color:#fff;">MC Debit</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:.75rem 1rem;font-size:.78rem;color:var(--green);display:flex;align-items:center;gap:.5rem;">
+        <span>🔒</span> جميع المدفوعات مشفّرة ومؤمّنة بـ SSL — Stripe يحمي بيانات البطاقة كاملاً
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div class="ct">⚙️ الإعداد</div></div>
+      <div class="g2">
+        <div class="fg">
+          <label>وضع Stripe</label>
+          <select id="stripe-mode">
+            <option value="test">🧪 تجريبي (Test Mode)</option>
+            <option value="live">✅ حقيقي (Live Mode)</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>تفعيل Stripe</label>
+          <div style="display:flex;align-items:center;gap:.65rem;margin-top:.38rem;">
+            <label class="tgl"><input type="checkbox" id="stripe-on"><span class="tgl-s"></span></label>
+            <span style="font-size:.83rem;" id="stripe-lbl">غير مفعّل</span>
+          </div>
+        </div>
+      </div>
+      <div class="fg">
+        <label>🔗 رابط الدفع العام (الافتراضي للباقات)</label>
+        <input id="stripe-def" placeholder="https://buy.stripe.com/xxxx">
+        <small>يُستخدم عند عدم وجود رابط خاص للكتاب</small>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">🔗 روابط الدفع لكل كتاب / باقة</div></div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;">لكل كتاب أو باقة رابط Payment Link منفصل من Stripe</p>
+      <div id="stripe-links"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">📋 كيف تنشئ رابط دفع في Stripe</div></div>
+      <div class="step"><span class="step-n">1</span><span>افتح <strong style="color:#fff;">dashboard.stripe.com</strong> وسجّل دخولك</span></div>
+      <div class="step"><span class="step-n">2</span><span>من القائمة الجانبية اختر <strong style="color:#fff;">Payment Links</strong></span></div>
+      <div class="step"><span class="step-n">3</span><span>اضغط <strong style="color:#fff;">+ Create payment link</strong> ← أضف اسم الكتاب والسعر (SAR)</span></div>
+      <div class="step"><span class="step-n">4</span><span>في قسم <strong style="color:#fff;">Payment methods</strong> فعّل <strong style="color:#fff;">Card</strong> فقط — تشمل Visa وMastercard تلقائياً</span></div>
+      <div class="step"><span class="step-n done">✓</span><span>انسخ الرابط (https://buy.stripe.com/…) والصقه في الحقل المقابل أعلاه</span></div>
+    </div>
+  </div>
+
+  <!-- ══ MARKETING ══ -->
+  <div id="p-marketing" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.05);">
+      <div class="ct" style="margin-bottom:.4rem;">📣 التسويق — بدون أي أكواد برمجية</div>
+      <p style="font-size:.8rem;color:var(--muted);">كل أداة هنا تُعطيك رابطاً جاهزاً تضعه في إعلاناتك مباشرة. البكسلات تُضاف للموقع تلقائياً عند حفظها هنا.</p>
+    </div>
+    <div class="g2">
+      <div class="mkt">
+        <h4>🔗 رابط التتبع (UTM)</h4>
+        <p>أنشئ رابطاً مع UTM لتتبع مصدر الزبائن من الإعلانات.</p>
+        <div class="fg"><label>المنصة</label>
+          <select id="utm-src"><option>snapchat</option><option>instagram</option><option>tiktok</option><option>twitter</option><option>whatsapp</option><option>email</option></select>
+        </div>
+        <div class="fg"><label>اسم الحملة</label><input id="utm-camp" value="campaign_1"></div>
+        <button class="btn bp bsm" onclick="genUTM()">🔗 إنشاء الرابط</button>
+        <div id="utm-res" style="display:none;margin-top:.7rem;">
+          <div class="fg"><label>الرابط الجاهز — انسخه مباشرة</label><input id="utm-link" readonly onclick="this.select()"></div>
+          <button class="btn bo bsm" onclick="cp('utm-link')">📋 نسخ</button>
+        </div>
+      </div>
+      <div class="mkt">
+        <h4>🎟️ رابط كوبون تلقائي</h4>
+        <p>رابط يأخذ العميل للمتجر ويطبّق الكوبون تلقائياً — مثالي للإعلانات.</p>
+        <div class="fg"><label>اختر الكوبون</label><select id="mkt-cp"><option value="">— اختر —</option></select></div>
+        <button class="btn bp bsm" onclick="genCpLink()">🔗 إنشاء الرابط</button>
+        <div id="cp-link-res" style="display:none;margin-top:.7rem;">
+          <div class="fg"><label>الرابط</label><input id="cp-mkt-link" readonly onclick="this.select()"></div>
+          <button class="btn bo bsm" onclick="cp('cp-mkt-link')">📋 نسخ</button>
+        </div>
+      </div>
+      <div class="mkt">
+        <h4>📱 رسالة واتساب تسويقية</h4>
+        <p>صيغة رسالة جاهزة تُرسلها أو تشاركها مع فريقك.</p>
+        <div class="fg"><label>نوع الرسالة</label>
+          <select id="wa-tmpl"><option value="offer">عرض خاص</option><option value="new">كتاب جديد</option><option value="coupon">كوبون خصم</option></select>
+        </div>
+        <button class="btn bp bsm" onclick="genWA()">✍️ توليد الرسالة</button>
+        <div id="wa-res" style="display:none;margin-top:.7rem;">
+          <textarea id="wa-msg" style="width:100%;background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:.65rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.8rem;min-height:110px;" readonly></textarea>
+          <button class="btn bo bsm" onclick="navigator.clipboard.writeText(document.getElementById('wa-msg').value);toast('📋 تم النسخ')">📋 نسخ</button>
+        </div>
+      </div>
+      <div class="mkt">
+        <h4>📊 بكسلات التتبع</h4>
+        <p>أدخل معرّفات البكسل — تُضاف لكودات الموقع تلقائياً عند الحفظ، بدون أي تعديل يدوي.</p>
+        <div class="fg"><label>Snap Pixel ID</label><input id="snap-px" placeholder="xxxxxxxx-xxxx-xxxx-xxxx"></div>
+        <div class="fg"><label>TikTok Pixel ID</label><input id="tt-px" placeholder="Cxxxxxxxxxxxxxxxxx"></div>
+        <div class="fg"><label>Meta (Facebook) Pixel ID</label><input id="meta-px" placeholder="1234567890123456"></div>
+        <div class="fg"><label>Google Analytics ID</label><input id="ga-id" placeholder="G-XXXXXXXXXX"></div>
+        <button class="btn bp bsm" onclick="savePx()">💾 حفظ البكسلات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EMAIL (AUTO DELIVERY) ══ -->
+  <div id="p-email" class="page">
+    <div class="card" style="border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.04);">
+      <div class="ct" style="color:var(--green);margin-bottom:.4rem;">📧 إرسال الكتب تلقائياً بعد الدفع</div>
+      <p style="font-size:.8rem;color:var(--muted);">بعد إتمام الدفع عبر Stripe يُرسل الكتاب على إيميل العميل تلقائياً عبر <strong style="color:#fff;">EmailJS</strong> — مجاني حتى 200 رسالة / شهر.</p>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">⚙️ إعداد EmailJS</div>
+        <div style="display:flex;align-items:center;gap:.6rem;">
+          <label class="tgl"><input type="checkbox" id="ej-on"><span class="tgl-s"></span></label>
+          <span style="font-size:.82rem;">تفعيل الإرسال التلقائي</span>
+        </div>
+      </div>
+      <div class="step"><span class="step-n">1</span><span>سجّل في <strong style="color:#fff;">emailjs.com</strong> (مجاني تماماً)</span></div>
+      <div class="step"><span class="step-n">2</span><span>أضف خدمة Gmail من <strong style="color:#fff;">Email Services</strong></span></div>
+      <div class="step"><span class="step-n">3</span><span>أنشئ قالب رسالة من <strong style="color:#fff;">Email Templates</strong> — استخدم المتغيرات: <code style="color:var(--blue3);">{{to_email}} {{to_name}} {{subject}} {{message}}</code></span></div>
+      <div class="step"><span class="step-n done">✓</span><span>انسخ المعرّفات الثلاثة أدناه</span></div>
+      <div class="g3" style="margin-top:.9rem;">
+        <div class="fg"><label>Public Key</label><input id="ej-pub" placeholder="user_xxxxxxxxx"></div>
+        <div class="fg"><label>Service ID</label><input id="ej-svc" placeholder="service_xxxxxxx"></div>
+        <div class="fg"><label>Template ID</label><input id="ej-tpl" placeholder="template_xxxxxxx"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">✉️ محتوى رسالة التسليم</div></div>
+      <div class="fg"><label>موضوع الرسالة</label><input id="ej-subj" value="🎉 كتابك من قُم جاهز!"></div>
+      <div class="fg">
+        <label>نص الرسالة</label>
+        <textarea id="ej-body" style="min-height:130px;">السلام عليكم {{to_name}} 👋
+
+شكراً لثقتك بقُم! 📚
+طلبك تم بنجاح — إليك رابط كتابك:
+
+{{book_links}}
+
+بالتوفيق! 🌟
+فريق قُم</textarea>
+        <small>المتغيرات المتاحة: {{to_name}} {{book_links}} {{order_id}}</small>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">📁 روابط الكتب (PDF للتحميل)</div></div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.9rem;">ارفع الكتاب على Google Drive أو Dropbox ← اضغط Share ← انسخ رابط المشاركة وضعه هنا.</p>
+      <div id="book-links-ed"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">🧪 اختبار الإرسال</div></div>
+      <div class="g2">
+        <div class="fg"><label>إيميل الاختبار</label><input id="test-em" placeholder="test@gmail.com"></div>
+        <div class="fg"><label>اسم تجريبي</label><input id="test-nm" value="زبون تجريبي"></div>
+      </div>
+      <button class="btn bg" onclick="sendTest()">📤 إرسال رسالة اختبار</button>
+    </div>
+  </div>
+
+  <!-- ══ BRAND IDENTITY ══ -->
+  <div id="p-brand" class="page">
+
+    <!-- Live Preview Bar -->
+    <div id="brand-preview-bar" style="background:var(--dark3);border:1px solid var(--bb);border-radius:14px;padding:1.1rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:1.1rem;">
+      <div id="bp-icon" style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">📚</div>
+      <div>
+        <div id="bp-name" style="font-size:1.1rem;font-weight:900;color:#fff;font-family:'Tajawal',sans-serif;">قُم</div>
+        <div id="bp-tagline" style="font-size:.75rem;color:var(--muted);">كتب تنهض بروحك</div>
+      </div>
+      <div style="margin-right:auto;font-size:.72rem;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.25rem .7rem;">معاينة مباشرة 👁️</div>
+    </div>
+
+    <!-- Section 1: Site Name & Slogan -->
+    <div class="card">
+      <div class="ch"><div class="ct">✏️ اسم الموقع والشعار</div></div>
+      <div class="g2">
+        <div class="fg">
+          <label>🏷️ اسم الموقع (يظهر في الشعار)</label>
+          <input id="br-name" value="قُم" oninput="brandPreview()" placeholder="مثال: قُم">
+          <small>الاسم يظهر في رأس الصفحة وتبويب المتصفح والشعار</small>
+        </div>
+        <div class="fg">
+          <label>💬 الشعار الفرعي (Tagline)</label>
+          <input id="br-tagline" value="كتب تنهض بروحك" oninput="brandPreview()" placeholder="مثال: كتب تنهض بروحك">
+          <small>يظهر أسفل الاسم في رأس الصفحة</small>
+        </div>
+      </div>
+      <div class="fg">
+        <label>📑 عنوان التبويب (Browser Tab)</label>
+        <input id="br-tabtitle" value="قُم — كتب تنهض بروحك" placeholder="مثال: قُم — كتب تنهض بروحك">
+        <small>النص الذي يظهر في تبويب المتصفح</small>
+      </div>
+      <div class="fg">
+        <label>📢 الشريط العلوي للموقع</label>
+        <input id="br-topbar" value="🔥 عرض محدود — اشتر أي كتاب واحصل على ملخص مجاني" placeholder="رسالة الشريط العلوي">
+        <small>الشريط الأزرق في أعلى الصفحة — اتركه فارغاً لإخفائه</small>
+      </div>
+    </div>
+
+    <!-- Section 2: Logo Upload -->
+    <div class="card">
+      <div class="ch"><div class="ct">🖼️ شعار الموقع (Logo)</div></div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;">ارفع شعارك الخارجي (PNG أو SVG أو JPG) — يظهر في رأس الصفحة وأيضاً يتزامن تلقائياً مع صورة قسم "من نحن"</p>
+
+      <!-- Upload Area -->
+      <div id="logo-drop-zone" onclick="document.getElementById('logo-file-input').click()" style="border:2px dashed var(--bb);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;background:rgba(37,99,235,.04);transition:all .2s;margin-bottom:1rem;">
+        <div id="logo-preview-wrap" style="display:none;margin-bottom:.8rem;">
+          <img id="logo-preview-img" style="max-height:80px;max-width:200px;border-radius:8px;object-fit:contain;" alt="شعار">
+        </div>
+        <div id="logo-drop-text">
+          <div style="font-size:2rem;margin-bottom:.4rem;">📁</div>
+          <div style="font-weight:700;color:var(--text);margin-bottom:.2rem;">اضغط لرفع الشعار</div>
+          <div style="font-size:.75rem;color:var(--muted);">PNG · SVG · JPG · WEBP — حجم أقصى 2MB</div>
+        </div>
+      </div>
+      <input type="file" id="logo-file-input" accept="image/*" style="display:none;" onchange="handleLogoUpload(event)">
+
+      <!-- Logo Size Control -->
+      <div class="g2" style="margin-bottom:.8rem;">
+        <div class="fg">
+          <label>حجم الشعار في الموقع (px)</label>
+          <input type="range" id="logo-size" min="30" max="120" value="48" oninput="document.getElementById('logo-size-val').textContent=this.value+'px';updateLogoPreview()" style="width:100%;accent-color:var(--blue);">
+          <small>الحجم: <span id="logo-size-val">48px</span></small>
+        </div>
+        <div class="fg">
+          <label>شكل الحاوية</label>
+          <select id="logo-shape" onchange="updateLogoPreview()">
+            <option value="none">بدون خلفية — الشعار فقط</option>
+            <option value="rounded">مربع بزوايا مدوّرة</option>
+            <option value="circle">دائري</option>
+            <option value="gradient">تدرج ملوّن (الأصلي)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Live Preview -->
+      <div style="background:var(--dark3);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem;border:1px solid var(--border);">
+        <div style="font-size:.74rem;color:var(--muted);margin-bottom:.6rem;">معاينة الشعار في الهيدر:</div>
+        <div style="display:flex;align-items:center;gap:.7rem;">
+          <div id="logo-header-preview" style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">📚</div>
+          <div>
+            <div id="bp-name" style="font-size:1rem;font-weight:900;color:#fff;">قُم</div>
+            <div id="bp-tagline" style="font-size:.7rem;color:var(--muted);">كتب تنهض بروحك</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- About Section Sync Notice -->
+      <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:.75rem 1rem;font-size:.78rem;color:var(--green);display:flex;align-items:center;gap:.6rem;">
+        <span style="font-size:1.1rem;">🔄</span>
+        <span>الشعار سيتزامن تلقائياً مع صورة قسم "من نحن" في الموقع عند الحفظ</span>
+      </div>
+
+      <!-- OR: use emoji/letter -->
+      <div style="margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--border);">
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.7rem;font-weight:700;">— أو استخدم أيقونة بدل الصورة —</div>
+        <div class="g2">
+          <div class="fg">
+            <label>أيقونة (إيموجي أو حرف)</label>
+            <input id="br-icon" value="📚" oninput="brandPreview()" maxlength="4" placeholder="📚 أو ق">
+          </div>
+          <div class="fg">
+            <label>نوع الأيقونة</label>
+            <select id="br-icontype" onchange="brandPreview()">
+              <option value="emoji">إيموجي 📚</option>
+              <option value="letter">حرف من الاسم</option>
+              <option value="svg">كتاب (افتراضي)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem;" id="icon-presets">
+          <div style="font-size:.7rem;color:var(--muted);width:100%;margin-bottom:.2rem;">اختر من الجاهزة:</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Hero Text -->
+    <div class="card">
+      <div class="ch"><div class="ct">🏠 نصوص القسم الرئيسي (Hero)</div></div>
+      <div class="fg">
+        <label>🔖 التصنيف الصغير (فوق العنوان)</label>
+        <input id="br-herotag" value="✦ مرحباً بك في قُم" placeholder="مثال: ✦ مرحباً بك في قُم">
+      </div>
+      <div class="fg">
+        <label>🏷️ العنوان الرئيسي</label>
+        <input id="br-htitle" value="كتبك للنهوض النفسي — جاهزة استملها فوراً بعد الدفع" placeholder="العنوان الرئيسي للموقع">
+      </div>
+      <div class="fg">
+        <label>📝 النص التعريفي</label>
+        <textarea id="br-hsub" style="min-height:68px;">اختر كتابك، ادفع بأمان، واستلمه فوراً على بريدك.</textarea>
+      </div>
+      <div class="g3">
+        <div class="fg"><label>📊 إحصائية 1 — الرقم</label><input id="br-s1n" value="+200" placeholder="+200"></div>
+        <div class="fg"><label>📊 إحصائية 2 — الرقم</label><input id="br-s2n" value="+50" placeholder="+50"></div>
+        <div class="fg"><label>📊 إحصائية 3 — الرقم</label><input id="br-s3n" value="10+" placeholder="10+"></div>
+      </div>
+      <div class="g3">
+        <div class="fg"><label>تسمية الإحصائية 1</label><input id="br-s1l" value="قارئ مستفيد" placeholder="قارئ مستفيد"></div>
+        <div class="fg"><label>تسمية الإحصائية 2</label><input id="br-s2l" value="كتاب مختار" placeholder="كتاب مختار"></div>
+        <div class="fg"><label>تسمية الإحصائية 3</label><input id="br-s3l" value="دولة نخدمها" placeholder="دولة نخدمها"></div>
+      </div>
+    </div>
+
+    <!-- Section 4: About & Footer -->
+    <div class="card">
+      <div class="ch"><div class="ct">ℹ️ من نحن والضمان</div></div>
+      <div class="fg"><label>عنوان قسم من نحن</label><input id="br-atitle" value="نحن قُم — نؤمن بقدرتك على النهوض" placeholder="عنوان قسم من نحن"></div>
+      <div class="fg"><label>النص التعريفي لمن نحن</label><textarea id="br-ap1">قُم متخصصة في الكتب النفسية وتنمية البشرية.</textarea></div>
+      <div class="fg"><label>🛡️ نص الضمان</label><textarea id="br-guar">إذا لم يعجبك الكتاب خلال 7 أيام — نرد لك المبلغ كاملاً بدون أسئلة.</textarea></div>
+      <div class="g2">
+        <div class="fg"><label>📍 نص التذييل (Footer)</label><input id="br-footer" value="© 2025 قُم — جميع الحقوق محفوظة" placeholder="نص حقوق الملكية"></div>
+        <div class="fg"><label>🌐 رابط الموقع (للروابط التسويقية)</label><input id="br-siteurl" value="" placeholder="https://qum.sa"></div>
+      </div>
+    </div>
+
+    <!-- Section 5: Contact CTA -->
+    <div class="card">
+      <div class="ch"><div class="ct">📞 نصوص الأزرار والتواصل</div></div>
+      <div class="g2">
+        <div class="fg"><label>زر الشراء الرئيسي</label><input id="br-cta1" value="🛒 اشتر الآن" placeholder="نص زر الشراء"></div>
+        <div class="fg"><label>زر الاستعراض</label><input id="br-cta2" value="📚 تصفح الكتب" placeholder="نص زر الاستعراض"></div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label>رسالة واتساب الترحيبية</label><input id="br-wamsg" value="السلام عليكم، أبغى أستفسر عن الكتب"></div>
+        <div class="fg"><label>رقم واتساب</label><input id="br-wa" value="966505814917" placeholder="966XXXXXXXXX"></div>
+      </div>
+      <div class="fg"><label>⏰ نص العد التنازلي</label><input id="br-countdown" value="⚡ العرض الحالي ينتهي — لا تضيّع الفرصة" placeholder="نص عداد العرض"></div>
+    </div>
+
+    <!-- Section 6: Social Media -->
+    <div class="card">
+      <div class="ch"><div class="ct">📱 حسابات السوشيال ميديا</div></div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1.1rem;">أضف رابطك أو اسم حسابك فقط — تظهر الأيقونات في الفوتر تلقائياً. اتركه فارغاً لإخفائه.</p>
+      <div class="g2">
+        <div class="fg">
+          <label>💬 واتساب</label>
+          <input id="soc-whatsapp" placeholder="966505814917 (الرقم مع كود الدولة بدون +)">
+          <small>مثال: 966505814917</small>
+        </div>
+        <div class="fg">
+          <label>📸 انستغرام</label>
+          <input id="soc-instagram" placeholder="اسم الحساب (بدون @)">
+          <small>مثال: qum.books</small>
+        </div>
+        <div class="fg">
+          <label>𝕏 تويتر / X</label>
+          <input id="soc-twitter" placeholder="اسم الحساب (بدون @)">
+          <small>مثال: qumbooks</small>
+        </div>
+        <div class="fg">
+          <label>👻 سناب شات</label>
+          <input id="soc-snapchat" placeholder="اسم الحساب (بدون @)">
+          <small>مثال: qumbooks</small>
+        </div>
+        <div class="fg">
+          <label>🎵 تيك توك</label>
+          <input id="soc-tiktok" placeholder="اسم الحساب (بدون @)">
+          <small>مثال: qumbooks</small>
+        </div>
+        <div class="fg">
+          <label>▶️ يوتيوب</label>
+          <input id="soc-youtube" placeholder="اسم القناة (بدون @)">
+          <small>مثال: qumbooks</small>
+        </div>
+        <div class="fg">
+          <label>✈️ تليغرام</label>
+          <input id="soc-telegram" placeholder="اسم القناة أو المجموعة">
+          <small>مثال: qumbooks</small>
+        </div>
+      </div>
+      <div id="social-preview" style="background:var(--dark3);border-radius:10px;padding:.9rem 1.2rem;margin-top:.5rem;border:1px solid var(--border);">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.6rem;">معاينة أيقونات الفوتر:</div>
+        <div id="social-icons-preview" style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+
+    <!-- Section 7: Font Selection -->
+    <div class="card">
+      <div class="ch"><div class="ct">🔤 الخط والطباعة</div></div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;">اختر الخط المناسب لهوية موقعك — يُطبَّق على العناوين والنصوص فور الحفظ</p>
+      <div class="g2">
+        <div class="fg">
+          <label>خط العناوين</label>
+          <select id="br-font-h" onchange="previewFont()">
+            <option value="Tajawal">Tajawal — عصري وبسيط ✓</option>
+            <option value="Cairo">Cairo — احترافي وواضح</option>
+            <option value="Almarai">Almarai — أنيق ومرتّب</option>
+            <option value="Changa">Changa — جريء وقوي</option>
+            <option value="Lateef">Lateef — كلاسيكي وجميل</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>خط النصوص</label>
+          <select id="br-font-b" onchange="previewFont()">
+            <option value="Cairo">Cairo — واضح ومريح ✓</option>
+            <option value="Tajawal">Tajawal — عصري وخفيف</option>
+            <option value="Almarai">Almarai — أنيق ومرتّب</option>
+            <option value="IBM Plex Sans Arabic">IBM Plex — تقني وحديث</option>
+          </select>
+        </div>
+      </div>
+      <div id="font-preview-box" style="background:var(--dark3);border-radius:10px;padding:1rem 1.2rem;margin-top:.5rem;">
+        <div id="fp-title" style="font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:.4rem;">هذا نموذج للعناوين</div>
+        <div id="fp-body" style="font-size:.88rem;color:var(--muted);line-height:1.7;">هذا نموذج للنصوص العادية — اختار الخط الأنسب لهويتك وموقعك.</div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div style="display:flex;gap:.7rem;align-items:center;margin-top:.5rem;">
+      <button class="btn bp" onclick="saveBrand()">💾 حفظ هوية الموقع كاملة</button>
+      <button class="btn bo" onclick="resetBrand()">↩️ استعادة الافتراضي</button>
+      <span style="font-size:.76rem;color:var(--muted);">التغييرات تظهر في الموقع مباشرة عند الحفظ</span>
+    </div>
+  </div>
+
+  <!-- ══ USERS ══ -->
+  <div id="p-users" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.04);margin-bottom:1.1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <span style="font-size:1.8rem;">👤</span>
+        <div><strong style="color:#fff;font-size:.95rem;">المستخدمون المسجلون</strong><div style="font-size:.76rem;color:var(--muted);">من أنشأ حساباً في الموقع الأساسي</div></div>
+      </div>
+    </div>
+    <div id="users-content"></div>
+  </div>
+
+  <!-- ══ AI SCRIPTS ══ -->
+  <div id="p-ai-scripts" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.04);margin-bottom:1.1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <span style="font-size:1.8rem;">🤖</span>
+        <div><strong style="color:#fff;font-size:.95rem;">AI سكريبت رايتر</strong><div style="font-size:.76rem;color:var(--muted);">توليد وإدارة سكريبتات الفيديو القصير</div></div>
+      </div>
+    </div>
+    <div id="ai-scripts-wrap"></div>
+  </div>
+
+  <!-- ══ ROI DASHBOARD ══ -->
+  <div id="p-roi-dashboard" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.04);margin-bottom:1.1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <span style="font-size:1.8rem;">📊</span>
+        <div><strong style="color:#fff;font-size:.95rem;">لوحة ROI والتسويق</strong><div style="font-size:.76rem;color:var(--muted);">مقاييس العائد على الاستثمار ومصادر الزيارات</div></div>
+      </div>
+    </div>
+    <div id="roi-dashboard-wrap"></div>
+  </div>
+
+  <!-- ══ LUCKY DRAW ══ -->
+  <div id="p-lucky-draw" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.04);margin-bottom:1.1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;"><span style="font-size:1.8rem;">🎰</span>
+        <div><strong style="color:#fff;font-size:.95rem;">إدارة المسابقات والقرعة</strong><div style="font-size:.76rem;color:var(--muted);">سحب عشوائي آمن وإرسال جوائز رقمية فورية</div></div>
+      </div>
+    </div>
+    <div id="lucky-draw-wrap"></div>
+  </div>
+
+  <!-- ══ CMS ══ -->
+  <div id="p-cms" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.04);margin-bottom:1.1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;"><span style="font-size:1.8rem;">🗂️</span>
+        <div><strong style="color:#fff;font-size:.95rem;">إدارة المحتوى والروابط</strong><div style="font-size:.76rem;color:var(--muted);">تعديل النصوص والصور والأسعار بدون إعادة نشر</div></div>
+      </div>
+    </div>
+    <div id="cms-wrap"></div>
+  </div>
+
+  <!-- ══ LIVE STUDIO ══ -->
+  <div id="p-live-studio" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.04);margin-bottom:1.1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;"><span style="font-size:1.8rem;">📡</span>
+        <div><strong style="color:#fff;font-size:.95rem;">استوديو البث المباشر</strong><div style="font-size:.76rem;color:var(--muted);">بث مزدوج — شاشة + كاميرا — مع إدارة الجمهور</div></div>
+      </div>
+    </div>
+    <div id="live-studio-wrap"></div>
+  </div>
+
+  <!-- ══ SECURITY AUDIT ══ -->
+  <div id="p-security-audit" class="page">
+    <div class="card" style="border-color:var(--bb);background:rgba(37,99,235,.04);margin-bottom:1.1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;"><span style="font-size:1.8rem;">🛡️</span>
+        <div><strong style="color:#fff;font-size:.95rem;">الأمان والتدقيق المالي</strong><div style="font-size:.76rem;color:var(--muted);">سجلات الجلسات والمدفوعات وسجلات الأمان</div></div>
+      </div>
+    </div>
+    <div id="security-audit-wrap"></div>
+  </div>
+
+  <!-- ══ COLORS ══ -->
+  <div id="p-colors" class="page">
+    <div class="card">
+      <div class="ch"><div class="ct">🎨 ثيمات الألوان الجاهزة</div></div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;">اضغط على الثيم — يُطبَّق فوراً على لوحة التحكم والموقع والمتجر معاً.</p>
+      <div class="themes" id="themes-grid"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">🎛️ تخصيص الألوان يدوياً</div></div>
+      <div class="g2">
+        <div class="fg"><label>اللون الرئيسي</label>
+          <div style="display:flex;gap:.45rem;align-items:center;">
+            <input type="color" id="c1" value="#2563EB" style="width:38px;height:34px;border:2px solid var(--border);border-radius:8px;padding:2px;background:var(--dark3);cursor:pointer;" oninput="this.nextElementSibling.value=this.value">
+            <input id="c1h" value="#2563EB" style="flex:1;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:.55rem .8rem;color:var(--text);font-family:'Cairo',sans-serif;" oninput="document.getElementById('c1').value=this.value">
+          </div>
+        </div>
+        <div class="fg"><label>اللون الثانوي</label>
+          <div style="display:flex;gap:.45rem;align-items:center;">
+            <input type="color" id="c2" value="#3B82F6" style="width:38px;height:34px;border:2px solid var(--border);border-radius:8px;padding:2px;background:var(--dark3);cursor:pointer;" oninput="this.nextElementSibling.value=this.value">
+            <input id="c2h" value="#3B82F6" style="flex:1;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:.55rem .8rem;color:var(--text);font-family:'Cairo',sans-serif;" oninput="document.getElementById('c2').value=this.value">
+          </div>
+        </div>
+        <div class="fg"><label>خلفية الموقع</label>
+          <div style="display:flex;gap:.45rem;align-items:center;">
+            <input type="color" id="c3" value="#080C14" style="width:38px;height:34px;border:2px solid var(--border);border-radius:8px;padding:2px;background:var(--dark3);cursor:pointer;" oninput="this.nextElementSibling.value=this.value">
+            <input id="c3h" value="#080C14" style="flex:1;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:.55rem .8rem;color:var(--text);font-family:'Cairo',sans-serif;" oninput="document.getElementById('c3').value=this.value">
+          </div>
+        </div>
+        <div class="fg"><label>لون الكروت</label>
+          <div style="display:flex;gap:.45rem;align-items:center;">
+            <input type="color" id="c4" value="#0D1220" style="width:38px;height:34px;border:2px solid var(--border);border-radius:8px;padding:2px;background:var(--dark3);cursor:pointer;" oninput="this.nextElementSibling.value=this.value">
+            <input id="c4h" value="#0D1220" style="flex:1;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:.55rem .8rem;color:var(--text);font-family:'Cairo',sans-serif;" oninput="document.getElementById('c4').value=this.value">
+          </div>
+        </div>
+      </div>
+      <button class="btn bp" onclick="applyCustom()">✅ تطبيق الألوان المخصصة</button>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">👁️ معاينة</div></div>
+      <div style="background:var(--dark3);border-radius:10px;padding:1.2rem;border:1px solid var(--border);display:flex;flex-direction:column;gap:.7rem;">
+        <div style="background:var(--blue);color:#fff;border-radius:8px;padding:.55rem 1.1rem;display:inline-block;font-weight:700;width:fit-content;">زر رئيسي</div>
+        <div style="background:var(--dark2);border:1px solid var(--bb);border-radius:8px;padding:.75rem 1rem;color:var(--text);">بطاقة نموذجية</div>
+        <div style="display:flex;gap:.5rem;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);"></div>
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--blue2);"></div>
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--blue3);"></div>
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--green);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETTINGS ══ -->
+  <div id="p-settings" class="page">
+    <div class="card">
+      <div class="ch"><div class="ct">📱 إعدادات التواصل</div></div>
+      <div class="g2">
+        <div class="fg"><label>رقم واتساب</label><input id="s-wa" value="966505814917"></div>
+        <div class="fg"><label>عنوان الموقع (Tab)</label><input id="s-title" value="قُم — كتب تنهض بروحك"></div>
+      </div>
+      <div class="fg"><label>رسالة واتساب الافتراضية</label><input id="s-wamsg" value="السلام عليكم، أبغى أستفسر عن الكتب"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">🔒 تغيير كلمة المرور</div></div>
+      <div class="g2">
+        <div class="fg"><label>كلمة المرور الجديدة</label><input type="password" id="s-np" placeholder="اتركه فارغاً للإبقاء"></div>
+        <div class="fg"><label>تأكيد كلمة المرور</label><input type="password" id="s-np2" placeholder="أعد كتابة كلمة المرور"></div>
+      </div>
+      <button class="btn bp bsm" onclick="chPass()">🔒 تحديث</button>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════ AUTH ══════════════════
+const CREDS = {u:'البراء عبد الباري', p:'Zmalqp10'};
+
+(function init(){
+  const sp=sto('qum_pass'); if(sp) CREDS.p=sp;
+  if(sessionStorage.getItem('qum_auth')==='ok')
+    document.getElementById('login-screen').style.display='none';
+  if(window.innerWidth>768){
+    const d=document.getElementById('desktop-save'); if(d) d.style.display='inline-flex';
+    const m=document.querySelector('.mob-save');     if(m) m.style.display='none';
+  }
+})();
+
+async function doLogin(){
+  const BF=window.QumBruteForce;
+  if(BF&&BF.isLocked()){
+    document.getElementById('lerr').textContent=`🔒 الحساب مقفل — انتظر ${BF.lockRemaining()} دقيقة`;
+    document.getElementById('lerr').style.display='block'; return;
+  }
+  const u=(document.getElementById('lu').value||'').trim();
+  const p=(document.getElementById('lp').value||'');
+  if(!u||!p){ document.getElementById('lerr').textContent='⚠️ أدخل البيانات'; document.getElementById('lerr').style.display='block'; return; }
+  const btn=document.getElementById('lbtn');
+  btn.disabled=true; btn.textContent='⏳ جاري التحقق...';
+  let done=false;
+  try {
+    const res=await fetch('/.netlify/functions/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,csrf:window.QumCSRF?.get()||''})});
+    const data=await res.json();
+    if(res.ok&&data.token){
+      sessionStorage.setItem('qum_auth','ok'); sessionStorage.setItem('qum_jwt',data.token);
+      if(BF) BF.recordSuccess();
+      const ls=document.getElementById('login-screen');
+      ls.style.transition='opacity .4s'; ls.style.opacity='0';
+      setTimeout(()=>ls.style.display='none',400); done=true;
+    } else {
+      document.getElementById('lp').value='';
+      let msg=data.error||'❌ بيانات خاطئة';
+      if(BF){ const r=BF.recordFail(); if(r.locked){msg='🔒 تم قفل الحساب 15 دقيقة';btn.disabled=true;setTimeout(()=>btn.disabled=false,15*60*1000);} else msg=`❌ خطأ — تبقى ${r.remaining} محاولة`; }
+      document.getElementById('lerr').textContent=msg; document.getElementById('lerr').style.display='block'; done=true;
+    }
+  } catch { /* Fallback */ }
+  if(!done){
+    if(u===CREDS.u&&p===CREDS.p){
+      sessionStorage.setItem('qum_auth','ok'); if(BF) BF.recordSuccess();
+      const ls=document.getElementById('login-screen'); ls.style.transition='opacity .4s'; ls.style.opacity='0'; setTimeout(()=>ls.style.display='none',400);
+    } else {
+      document.getElementById('lp').value='';
+      let msg='❌ بيانات الدخول خاطئة';
+      if(BF){ const r=BF.recordFail(); if(r.locked){msg='🔒 تم قفل الحساب 15 دقيقة';btn.disabled=true;setTimeout(()=>btn.disabled=false,15*60*1000);}else msg=`❌ خطأ — تبقى ${r.remaining} محاولة`; }
+      document.getElementById('lerr').textContent=msg; document.getElementById('lerr').style.display='block';
+    }
+  }
+  if(!btn.disabled){ btn.disabled=false; btn.textContent='دخول ←'; }
+}
+function doLogout(){ sessionStorage.removeItem('qum_auth'); sessionStorage.removeItem('qum_jwt'); location.reload(); }
+function chPass(){
+  const p1=document.getElementById('s-np').value;
+  const p2=document.getElementById('s-np2').value;
+  if(!p1) return;
+  if(p1!==p2){ toast('⚠️ كلمتا المرور غير متطابقتين','err'); return; }
+  CREDS.p=p1; sto('qum_pass',p1);
+  toast('✅ تم تحديث كلمة المرور');
+  document.getElementById('s-np').value=''; document.getElementById('s-np2').value='';
+}
+
+// ══════════════════ STORAGE ══════════════════
+function sto(k,v){
+  if(v===undefined){ try{ const r=localStorage.getItem(k); return r?JSON.parse(r):null; }catch(e){return null;} }
+  localStorage.setItem(k,JSON.stringify(v));
+}
+
+// ══════════════════ NAVIGATION ══════════════════
+const TITLES={dashboard:'الرئيسية',leads:'العملاء والطلبات',books:'الكتب',packages:'الباقات والأسعار',hero:'نصوص الموقع',discounts:'التخفيضات',coupons:'كوبونات الخصم',payment:'بوابة Stripe',marketing:'التسويق',email:'إرسال الكتب تلقائياً',colors:'الألوان والثيم',settings:'الإعدادات',brand:'هوية الموقع والشعار'};
+const RENDERS={dashboard:rdDash,leads:rdLeads,books:rdBooks,packages:rdPkgs,discounts:rdDisc,coupons:rdCp,payment:rdStripe,email:rdEmail,colors:rdColors,marketing:rdMkt,brand:rdBrand};
+
+function go(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('ptitle').textContent=TITLES[id]||id;
+  if(RENDERS[id]) RENDERS[id]();
+}
+
+// ══════════════════ DATA ══════════════════
+const DEF_BOOKS=[
+  {id:1,emoji:'📖',title:'من أنا',desc:'رحلة لاكتشاف هويتك الحقيقية وبناء شخصيتك من الداخل.',tag:'تطوير الذات',price:29,oldPrice:null,badge:'',active:true,stripeLink:'',pdfLink:''},
+  {id:2,emoji:'🧠',title:'التفكير العميق',desc:'كيف تفكر بذكاء وتتخذ قرارات صحيحة في كل مواقف الحياة.',tag:'تطوير الذات',price:29,oldPrice:null,badge:'',active:true,stripeLink:'',pdfLink:''},
+  {id:3,emoji:'💪',title:'كيف أتخطى',desc:'أدوات عملية لتجاوز المواقف الصعبة والنهوض من أشد الأزمات.',tag:'صحة نفسية',price:29,oldPrice:null,badge:'الأكثر مبيعاً',active:true,stripeLink:'',pdfLink:''},
+  {id:4,emoji:'🤝',title:'العلاقات السطحية وغير السطحية',desc:'فن بناء علاقات حقيقية تنفعك وكيف تُميّز من يستحق وقتك.',tag:'علاقات',price:29,oldPrice:null,badge:'',active:true,stripeLink:'',pdfLink:''},
+  {id:5,emoji:'🚀',title:'كيف أبدأ',desc:'اكسب أي مهارة وحوّل أهدافك إلى عادات راسخة.',tag:'عادات',price:29,oldPrice:null,badge:'جديد',active:true,stripeLink:'',pdfLink:''},
+  {id:6,emoji:'⚡',title:'ابدأ',desc:'كلام تحفيزي حقيقي عن البدايات الصعبة وعاقبة من يثبت.',tag:'تحفيز',price:19,oldPrice:29,badge:'خصم',active:true,stripeLink:'',pdfLink:''},
+];
+const DEF_PKGS=[
+  {id:1,name:'الكتاب الواحد',price:29,desc:'كتاب PDF · تسليم فوري',features:['كتاب PDF عالي الجودة','تسليم فوري على إيميلك','دعم عبر واتساب'],highlighted:false,stripeLink:''},
+  {id:2,name:'باقة 3 كتب',price:69,desc:'3 كتب PDF · وفّر أكثر',features:['3 كتب PDF بجودة عالية','اختر الكتب التي تريدها','تسليم فوري على إيميلك','دعم عبر واتساب'],highlighted:false,stripeLink:''},
+  {id:3,name:'الباقة المميزة',price:99,desc:'3 كتب + ملخص صوتي · الأكثر طلباً',features:['3 كتب PDF بجودة عالية','ملخص صوتي لكل كتاب','تسليم فوري على إيميلك','دعم VIP عبر واتساب','توصية بالكتاب التالي'],highlighted:true,stripeLink:''},
+  {id:4,name:'المكتبة الكاملة',price:149,desc:'جميع الكتب · أفضل قيمة',features:['كل الكتب الـ 6 PDF','تسليم فوري على إيميلك','دعم VIP مدى الحياة','تحديثات مجانية للكتب','مجموعة واتساب الخاصة'],highlighted:false,stripeLink:''},
+];
+const THEMES=[
+  {name:'المحيط الليلي',colors:['#2563EB','#0D1220','#22C55E','#60A5FA'],vars:{'--blue':'#2563EB','--blue2':'#3B82F6','--blue3':'#60A5FA','--dark':'#080C14','--dark2':'#0D1220','--dark3':'#111827','--dark4':'#1A2235'}},
+  {name:'الذهب الملكي',colors:['#D97706','#12100E','#22C55E','#FBBF24'],vars:{'--blue':'#D97706','--blue2':'#F59E0B','--blue3':'#FBBF24','--dark':'#12100E','--dark2':'#1C1612','--dark3':'#241E18','--dark4':'#2E2720'}},
+  {name:'الزمرد',colors:['#059669','#0A1210','#3B82F6','#34D399'],vars:{'--blue':'#059669','--blue2':'#10B981','--blue3':'#34D399','--dark':'#0A1210','--dark2':'#0F1F18','--dark3':'#162B22','--dark4':'#1D3A2E'}},
+  {name:'الأرجواني',colors:['#7C3AED','#0D0A1A','#22C55E','#A78BFA'],vars:{'--blue':'#7C3AED','--blue2':'#8B5CF6','--blue3':'#A78BFA','--dark':'#0D0A1A','--dark2':'#130F24','--dark3':'#1A1530','--dark4':'#221C3D'}},
+  {name:'الوردي الداكن',colors:['#DB2777','#130A10','#22C55E','#F472B6'],vars:{'--blue':'#DB2777','--blue2':'#EC4899','--blue3':'#F472B6','--dark':'#130A10','--dark2':'#1E1018','--dark3':'#2A1525','--dark4':'#351A30'}},
+];
+
+let books   = sto('qum_books')     || JSON.parse(JSON.stringify(DEF_BOOKS));
+let pkgs    = sto('qum_pkgs')      || JSON.parse(JSON.stringify(DEF_PKGS));
+let leads   = sto('qum_leads')     || [];
+let discs   = sto('qum_discs')     || [];
+let coupons = sto('qum_coupons')   || [];
+let curTheme= sto('qum_theme')     || 0;
+
+// Apply saved theme
+(function(){
+  const cc=sto('qum_ccolors');
+  if(cc){ const r=document.documentElement; Object.entries(cc).forEach(([k,v])=>r.style.setProperty(k,v)); return; }
+  if(THEMES[curTheme]) Object.entries(THEMES[curTheme].vars).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));
+})();
+
+// ══════════════════ SAVE ALL ══════════════════
+function saveAll(){
+  sto('qum_books',books); sto('qum_pkgs',pkgs);
+  sto('qum_leads',leads); sto('qum_discs',discs); sto('qum_coupons',coupons);
+  sto('qum_stripe',{on:document.getElementById('stripe-on')?.checked, mode:document.getElementById('stripe-mode')?.value, def:document.getElementById('stripe-def')?.value});
+  sto('qum_ej',{on:document.getElementById('ej-on')?.checked, pub:document.getElementById('ej-pub')?.value, svc:document.getElementById('ej-svc')?.value, tpl:document.getElementById('ej-tpl')?.value, subj:document.getElementById('ej-subj')?.value, body:document.getElementById('ej-body')?.value});
+  sto('qum_settings',{wa:document.getElementById('s-wa')?.value, title:document.getElementById('s-title')?.value, wamsg:document.getElementById('s-wamsg')?.value});
+  sto('qum_pixels',{snap:document.getElementById('snap-px')?.value, tt:document.getElementById('tt-px')?.value, meta:document.getElementById('meta-px')?.value, ga:document.getElementById('ga-id')?.value});
+  ['e-topbar','e-htitle','e-hsub','e-s1','e-s2','e-s3','e-atitle','e-ap1','e-guar'].forEach(k=>{ const el=document.getElementById(k); if(el) sto('qum_'+k,el.value); });
+  toast('✅ تم الحفظ — التغييرات ظاهرة في الموقع');
+  rdDash();
+}
+
+// Load saved content
+['e-topbar','e-htitle','e-hsub','e-s1','e-s2','e-s3','e-atitle','e-ap1','e-guar'].forEach(k=>{ const v=sto('qum_'+k); const el=document.getElementById(k); if(v&&el) el.value=v; });
+
+// ══════════════════ BOOKS ══════════════════
+function rdBooks(){
+  document.getElementById('books-ed').innerHTML = books.map((b,i)=>`
+  <div class="card" style="margin-bottom:.7rem;">
+    <div class="ch">
+      <div class="ct">${b.emoji} ${b.title}</div>
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <label class="tgl"><input type="checkbox" ${b.active?'checked':''} onchange="books[${i}].active=this.checked"><span class="tgl-s"></span></label>
+        <span style="font-size:.73rem;color:var(--muted);">نشط</span>
+        <button class="btn bd bsm" onclick="delBook(${i})">🗑️</button>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="fg"><label>الإيموجي</label><input value="${b.emoji}" oninput="books[${i}].emoji=this.value"></div>
+      <div class="fg"><label>العنوان</label><input value="${b.title}" oninput="books[${i}].title=this.value"></div>
+      <div class="fg"><label>التصنيف</label>
+        <select onchange="books[${i}].tag=this.value">
+          ${['تطوير الذات','علاقات','تحفيز','عادات','صحة نفسية'].map(t=>`<option ${b.tag===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>الوصف</label><textarea oninput="books[${i}].desc=this.value">${b.desc}</textarea></div>
+    <div class="g3">
+      <div class="fg"><label>السعر (ر.س)</label><input type="number" value="${b.price}" oninput="books[${i}].price=+this.value"></div>
+      <div class="fg"><label>السعر القديم (اختياري)</label><input type="number" value="${b.oldPrice||''}" oninput="books[${i}].oldPrice=this.value?+this.value:null" placeholder="فارغ = لا يوجد"></div>
+      <div class="fg"><label>الشارة</label><input value="${b.badge}" oninput="books[${i}].badge=this.value" placeholder="مثال: جديد / خصم"></div>
+    </div>
+    <div class="fg"><label>🔗 رابط Stripe Payment Link</label><input value="${b.stripeLink||''}" oninput="books[${i}].stripeLink=this.value" placeholder="https://buy.stripe.com/..."></div>
+    <div class="fg"><label>📁 رابط PDF التحميل (لإرسال الكتاب بالإيميل)</label><input value="${b.pdfLink||''}" oninput="books[${i}].pdfLink=this.value" placeholder="https://drive.google.com/..."></div>
+  </div>`).join('');
+}
+function addBook(){ books.push({id:Date.now(),emoji:'📖',title:'كتاب جديد',desc:'الوصف هنا',tag:'تطوير الذات',price:29,oldPrice:null,badge:'جديد',active:true,stripeLink:'',pdfLink:''}); rdBooks(); toast('✅ تمت الإضافة'); }
+function delBook(i){ if(!confirm('حذف هذا الكتاب؟'))return; books.splice(i,1); rdBooks(); toast('🗑️ تم الحذف'); }
+
+// ══════════════════ PACKAGES ══════════════════
+function rdPkgs(){
+  document.getElementById('pkgs-ed').innerHTML = pkgs.map((p,i)=>`
+  <div class="card" style="margin-bottom:.7rem;${p.highlighted?'border-color:var(--bb);':''}">
+    <div class="ch">
+      <div class="ct">${p.highlighted?'⭐ ':''}${p.name}</div>
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <label class="tgl"><input type="checkbox" ${p.highlighted?'checked':''} onchange="pkgs[${i}].highlighted=this.checked;rdPkgs()"><span class="tgl-s"></span></label>
+        <span style="font-size:.73rem;color:var(--muted);">مميزة</span>
+        <button class="btn bd bsm" onclick="delPkg(${i})">🗑️</button>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="fg"><label>اسم الباقة</label><input value="${p.name}" oninput="pkgs[${i}].name=this.value"></div>
+      <div class="fg"><label>السعر (ر.س)</label><input type="number" value="${p.price}" oninput="pkgs[${i}].price=+this.value"></div>
+      <div class="fg"><label>الوصف المختصر</label><input value="${p.desc}" oninput="pkgs[${i}].desc=this.value"></div>
+    </div>
+    <div class="fg">
+      <label>✨ المميزات (سطر لكل ميزة — تظهر بجانب ✓)</label>
+      <textarea style="min-height:100px;" oninput="pkgs[${i}].features=this.value.split('\\n').filter(l=>l.trim())">${p.features.join('\n')}</textarea>
+      <small>أضف ميزة في كل سطر — تظهر مع علامة ✓ في صفحة الباقات</small>
+    </div>
+    <div class="fg"><label>🔗 رابط Stripe Payment Link لهذه الباقة</label><input value="${p.stripeLink||''}" oninput="pkgs[${i}].stripeLink=this.value" placeholder="https://buy.stripe.com/..."></div>
+  </div>`).join('');
+}
+function addPkg(){ pkgs.push({id:Date.now(),name:'باقة جديدة',price:99,desc:'وصف الباقة',features:['ميزة 1','ميزة 2'],highlighted:false,stripeLink:''}); rdPkgs(); toast('✅ تمت الإضافة'); }
+function delPkg(i){ if(!confirm('حذف؟'))return; pkgs.splice(i,1); rdPkgs(); }
+
+// ══════════════════ LEADS ══════════════════
+function rdLeads(){
+  updBadge();
+  const c=document.getElementById('leads-list');
+  if(!leads.length){ c.innerHTML='<div class="empty"><div class="ei">📭</div><p>لا توجد طلبات بعد</p></div>'; return; }
+  c.innerHTML=leads.slice().reverse().map((l,ri)=>{
+    const i=leads.length-1-ri;
+    return `<div class="lead-card">
+      <div class="lead-name">${l.name} <span class="tag ${l.status==='paid'?'tg':l.status==='pending'?'ty':'tb'}">${l.status==='paid'?'✅ مدفوع':l.status==='pending'?'⏳ انتظار':'🆕 جديد'}</span></div>
+      <div class="lead-meta">
+        <span>📱 ${l.phone}</span>
+        <span>📧 ${l.email||'—'}</span>
+        <span>📅 ${l.date}</span>
+        ${l.total?`<span>💰 ${l.total} ر.س</span>`:''}
+      </div>
+      ${l.books?`<div style="font-size:.76rem;color:var(--muted);margin-bottom:.45rem;">📚 ${l.books.join(' · ')}</div>`:''}
+      <div class="lead-actions">
+        <button class="btn bg bsm" onclick="sendBooks(${i})">📧 إرسال الكتب</button>
+        <button class="btn bo bsm" onclick="markPaid(${i})">✅ تأكيد الدفع</button>
+        <button class="btn bo bsm" onclick="waLead(${i})">💬 واتساب</button>
+        <button class="btn bd bsm" onclick="delLead(${i})">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sendBooks(i){
+  const l=leads[i];
+  const ej=sto('qum_ej')||{};
+  if(!ej.on||!ej.pub||!ej.svc||!ej.tpl){ toast('⚠️ فعّل EmailJS أولاً من قسم إرسال الكتب','err'); return; }
+  const bLinks=books.filter(b=>l.books&&l.books.includes(b.title)).map(b=>`• ${b.title}:\n  ${b.pdfLink||'(رابط غير محدد بعد)'}`).join('\n\n');
+  const body=(ej.body||'').replace('{{to_name}}',l.name).replace('{{book_links}}',bLinks||'كتبك في المرفقات').replace('{{order_id}}',l.date);
+  const run=()=>{
+    emailjs.init(ej.pub);
+    emailjs.send(ej.svc,ej.tpl,{to_email:l.email,to_name:l.name,subject:ej.subj||'كتابك من قُم!',message:body})
+      .then(()=>{ leads[i].status='paid'; sto('qum_leads',leads); rdLeads(); toast('📧 تم إرسال الكتب لـ '+l.email); })
+      .catch(e=>toast('❌ فشل: '+(e.text||'تحقق من إعدادات EmailJS'),'err'));
+  };
+  if(!window.emailjs){ const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js'; s.onload=run; document.head.appendChild(s); }
+  else run();
+}
+
+function markPaid(i){ leads[i].status='paid'; sto('qum_leads',leads); rdLeads(); toast('✅ تم تأكيد الدفع'); }
+function waLead(i){
+  const l=leads[i]; const s=sto('qum_settings')||{};
+  window.open(`https://wa.me/${(l.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent('السلام عليكم '+l.name+'، شكراً لطلبك من قُم!')}`, '_blank');
+}
+function delLead(i){ if(!confirm('حذف؟'))return; leads.splice(i,1); sto('qum_leads',leads); rdLeads(); }
+function clearLeads(){ if(!confirm('مسح كل الطلبات؟'))return; leads=[]; sto('qum_leads',leads); rdLeads(); }
+function exportLeads(){
+  if(!leads.length){ toast('لا توجد بيانات','err'); return; }
+  const h='الاسم,الجوال,الإيميل,الكتب,الإجمالي,التاريخ,الحالة\n';
+  const r=leads.map(l=>`"${l.name}","${l.phone}","${l.email||''}","${(l.books||[]).join('|')}","${l.total||''}","${l.date}","${l.status||''}"`).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+h+r],{type:'text/csv;charset=utf-8;'}));
+  a.download='qum_leads.csv'; a.click(); toast('📤 تم التصدير');
+}
+function updBadge(){
+  const b=document.getElementById('lbdg');
+  const n=leads.filter(l=>!l.status||l.status==='new').length;
+  if(n){b.textContent=n;b.style.display='inline';}else b.style.display='none';
+}
+
+// ══════════════════ DISCOUNTS ══════════════════
+function rdDisc(){
+  const c=document.getElementById('disc-list');
+  if(!discs.length){ c.innerHTML='<div class="empty"><div class="ei">🏷️</div><p>لا توجد تخفيضات</p></div>'; return; }
+  c.innerHTML=discs.map((d,i)=>`
+  <div class="dc-row">
+    <label class="tgl"><input type="checkbox" ${d.active?'checked':''} onchange="discs[${i}].active=this.checked;sto('qum_discs',discs);rdDisc()"><span class="tgl-s"></span></label>
+    <div style="flex:1;">
+      <div style="font-weight:700;color:#fff;font-size:.86rem;">${d.name}</div>
+      <div style="font-size:.73rem;color:var(--muted);">خصم ${d.type==='pct'?d.val+'%':d.val+' ر.س'} — ${d.scope==='all'?'كل الكتب':'كتب محددة'}</div>
+    </div>
+    <span class="tag ${d.active?'tg':'tr'}">${d.active?'نشط':'متوقف'}</span>
+    <button class="btn bd bsm" onclick="delDisc(${i})">🗑️</button>
+  </div>`).join('');
+}
+function addDisc(){
+  const name=prompt('اسم التخفيض (مثال: عرض رمضان):'); if(!name) return;
+  const isPct=confirm('نسبة مئوية؟ (موافق = %, إلغاء = مبلغ ثابت)');
+  const val=+prompt(isPct?'النسبة (مثال: 20):':'المبلغ بالريال:');
+  if(!val) return;
+  discs.push({id:Date.now(),name,type:isPct?'pct':'fixed',val,scope:'all',active:true});
+  sto('qum_discs',discs); rdDisc(); toast('✅ تم إضافة التخفيض');
+}
+function delDisc(i){ if(!confirm('حذف؟'))return; discs.splice(i,1); sto('qum_discs',discs); rdDisc(); }
+
+// ══════════════════ COUPONS ══════════════════
+function rdCp(){
+  const c=document.getElementById('cp-list');
+  updCpSel();
+  if(!coupons.length){ c.innerHTML='<div class="empty"><div class="ei">🎟️</div><p>لا توجد كوبونات</p></div>'; return; }
+  c.innerHTML=coupons.map((cp,i)=>`
+  <div class="cp-row">
+    <span class="cp-code">${cp.code}</span>
+    <div class="cp-info">
+      <div class="cp-val">خصم ${cp.type==='pct'?cp.val+'%':cp.val+' ر.س'}${cp.min?' · لا يقل عن '+cp.min+' ر.س':''}</div>
+      <div class="cp-uses">استُخدم ${cp.uses||0} مرة${cp.max?' / حد '+cp.max:''}</div>
+    </div>
+    <label class="tgl"><input type="checkbox" ${cp.active?'checked':''} onchange="coupons[${i}].active=this.checked;sto('qum_coupons',coupons);rdCp()"><span class="tgl-s"></span></label>
+    <button class="btn bd bsm" onclick="delCp(${i})">🗑️</button>
+  </div>`).join('');
+  const tot=coupons.reduce((s,c)=>s+(c.uses||0),0);
+  document.getElementById('cp-stats').innerHTML=`<div class="g3">
+    <div class="stat"><div class="sl">إجمالي الكوبونات</div><div class="sv">${coupons.length}</div></div>
+    <div class="stat"><div class="sl">النشطة</div><div class="sv">${coupons.filter(c=>c.active).length}</div></div>
+    <div class="stat"><div class="sl">مجموع الاستخدامات</div><div class="sv">${tot}</div></div>
+  </div>`;
+  document.getElementById('s-cps').textContent=coupons.filter(c=>c.active).length;
+}
+function addCoupon(){
+  const code=(prompt('كود الكوبون (مثال: BARAA20):')||'').toUpperCase().trim();
+  if(!code) return;
+  if(coupons.find(c=>c.code===code)){ toast('⚠️ الكود موجود مسبقاً','err'); return; }
+  const isPct=confirm('خصم بنسبة مئوية؟ (موافق = %, إلغاء = مبلغ ثابت)');
+  const val=+prompt(isPct?'النسبة (مثال: 20):':'المبلغ (ر.س):');
+  if(!val) return;
+  const max=+prompt('الحد الأقصى للاستخدام (0 = غير محدود):')||0;
+  coupons.push({id:Date.now(),code,type:isPct?'pct':'fixed',val,max:max||null,uses:0,active:true,min:null});
+  sto('qum_coupons',coupons); rdCp(); toast('✅ تم إنشاء الكوبون: '+code);
+}
+function delCp(i){ if(!confirm('حذف؟'))return; coupons.splice(i,1); sto('qum_coupons',coupons); rdCp(); }
+function updCpSel(){
+  const s=document.getElementById('mkt-cp'); if(!s) return;
+  s.innerHTML='<option value="">— اختر —</option>'+coupons.filter(c=>c.active).map(c=>`<option value="${c.code}">${c.code} — خصم ${c.type==='pct'?c.val+'%':c.val+' ر.س'}</option>`).join('');
+}
+
+// ══════════════════ STRIPE ══════════════════
+function rdStripe(){
+  const st=sto('qum_stripe')||{};
+  const onEl=document.getElementById('stripe-on');
+  const modeEl=document.getElementById('stripe-mode');
+  const defEl=document.getElementById('stripe-def');
+  if(onEl) onEl.checked=st.on||false;
+  if(modeEl) modeEl.value=st.mode||'test';
+  if(defEl) defEl.value=st.def||'';
+  const lbl=document.getElementById('stripe-lbl');
+  if(lbl) lbl.textContent=st.on?'مفعّل':'غير مفعّل';
+  if(onEl) onEl.onchange=function(){ if(lbl) lbl.textContent=this.checked?'مفعّل':'غير مفعّل'; };
+  const c=document.getElementById('stripe-links');
+  c.innerHTML=
+    books.map((b,i)=>`<div class="fg" style="display:flex;gap:.6rem;align-items:flex-end;"><div style="flex:1;"><label>${b.emoji} ${b.title} (${b.price} ر.س)</label><input value="${b.stripeLink||''}" oninput="books[${i}].stripeLink=this.value" placeholder="https://buy.stripe.com/..."></div></div>`).join('')+
+    '<div style="margin:.6rem 0 .3rem;font-size:.78rem;color:var(--muted);font-weight:700;">الباقات:</div>'+
+    pkgs.map((p,i)=>`<div class="fg" style="display:flex;gap:.6rem;align-items:flex-end;"><div style="flex:1;"><label>📦 ${p.name} (${p.price} ر.س)</label><input value="${p.stripeLink||''}" oninput="pkgs[${i}].stripeLink=this.value" placeholder="https://buy.stripe.com/..."></div></div>`).join('');
+}
+
+// ══════════════════ EMAIL ══════════════════
+function rdEmail(){
+  const ej=sto('qum_ej')||{};
+  const fields={on:'ej-on',pub:'ej-pub',svc:'ej-svc',tpl:'ej-tpl',subj:'ej-subj',body:'ej-body'};
+  Object.entries(fields).forEach(([k,id])=>{ const el=document.getElementById(id); if(el&&ej[k]!==undefined){ if(el.type==='checkbox') el.checked=ej[k]; else el.value=ej[k]; }});
+  const c=document.getElementById('book-links-ed');
+  c.innerHTML=books.map((b,i)=>`
+  <div class="fg">
+    <label>${b.emoji} ${b.title} — رابط PDF للتحميل</label>
+    <input value="${b.pdfLink||''}" oninput="books[${i}].pdfLink=this.value" placeholder="https://drive.google.com/file/d/.../view?usp=sharing">
+  </div>`).join('');
+}
+function sendTest(){
+  const email=document.getElementById('test-em')?.value.trim();
+  const name=document.getElementById('test-nm')?.value.trim()||'زبون تجريبي';
+  const ej=sto('qum_ej')||{};
+  if(!email){ toast('⚠️ أدخل إيميل الاختبار','err'); return; }
+  if(!ej.pub||!ej.svc||!ej.tpl){ toast('⚠️ أكمل إعداد EmailJS أولاً','err'); return; }
+  const body=(ej.body||'مرحباً {{to_name}}، هذه رسالة اختبار.').replace('{{to_name}}',name).replace('{{book_links}}','• من أنا:\n  https://example.com/book1').replace('{{order_id}}','TEST-001');
+  const run=()=>{
+    emailjs.init(ej.pub);
+    emailjs.send(ej.svc,ej.tpl,{to_email:email,to_name:name,subject:ej.subj||'اختبار',message:body})
+      .then(()=>toast('📧 تم إرسال الاختبار لـ '+email))
+      .catch(e=>toast('❌ فشل: '+(e.text||e),'err'));
+  };
+  if(!window.emailjs){ const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js'; s.onload=run; document.head.appendChild(s); }
+  else run();
+}
+
+// ══════════════════ MARKETING ══════════════════
+function rdMkt(){
+  updCpSel();
+  const px=sto('qum_pixels')||{};
+  if(document.getElementById('snap-px')) document.getElementById('snap-px').value=px.snap||'';
+  if(document.getElementById('tt-px')) document.getElementById('tt-px').value=px.tt||'';
+  if(document.getElementById('meta-px')) document.getElementById('meta-px').value=px.meta||'';
+  if(document.getElementById('ga-id')) document.getElementById('ga-id').value=px.ga||'';
+  const dm=document.getElementById('dash-mkt');
+  if(dm) dm.innerHTML=`<div class="g4">
+    <div class="stat"><div class="sl">Snap Pixel</div><div class="sv" style="font-size:1.1rem;">${px.snap?'✅':'❌'}</div></div>
+    <div class="stat"><div class="sl">TikTok Pixel</div><div class="sv" style="font-size:1.1rem;">${px.tt?'✅':'❌'}</div></div>
+    <div class="stat"><div class="sl">Meta Pixel</div><div class="sv" style="font-size:1.1rem;">${px.meta?'✅':'❌'}</div></div>
+    <div class="stat"><div class="sl">Google Analytics</div><div class="sv" style="font-size:1.1rem;">${px.ga?'✅':'❌'}</div></div>
+  </div>`;
+}
+function savePx(){
+  sto('qum_pixels',{snap:document.getElementById('snap-px')?.value||'',tt:document.getElementById('tt-px')?.value||'',meta:document.getElementById('meta-px')?.value||'',ga:document.getElementById('ga-id')?.value||''});
+  toast('✅ تم حفظ البكسلات');
+}
+function genUTM(){
+  const base=location.origin+'/shop.html';
+  const src=document.getElementById('utm-src').value;
+  const camp=document.getElementById('utm-camp').value||'campaign';
+  document.getElementById('utm-link').value=`${base}?utm_source=${src}&utm_medium=social&utm_campaign=${camp}`;
+  document.getElementById('utm-res').style.display='block';
+}
+function genCpLink(){
+  const code=document.getElementById('mkt-cp').value;
+  if(!code){ toast('⚠️ اختر كوبوناً','err'); return; }
+  document.getElementById('cp-mkt-link').value=location.origin+'/shop.html?coupon='+code;
+  document.getElementById('cp-link-res').style.display='block';
+}
+function genWA(){
+  const t=document.getElementById('wa-tmpl').value;
+  const link=location.origin+'/shop.html';
+  const msgs={
+    offer:`✨ عرض خاص من قُم!\n\nكتب نفسية مختارة بعناية 📚\nاحصل على كتابك الآن:\n${link}\n\n⏳ العرض محدود`,
+    new:`📢 كتاب جديد في قُم!\n\nاكتشفه الآن:\n${link}`,
+    coupon:`🎟️ كوبون خصم خاص لك!\n\nاستخدم الكود: ${coupons.find(c=>c.active)?.code||'COUPON'}\n\nاطلب كتابك:\n${link}`
+  };
+  document.getElementById('wa-msg').value=msgs[t];
+  document.getElementById('wa-res').style.display='block';
+}
+function cp(id){ navigator.clipboard.writeText(document.getElementById(id).value); toast('📋 تم النسخ'); }
+
+// ══════════════════ COLORS ══════════════════
+function rdColors(){
+  const g=document.getElementById('themes-grid');
+  g.innerHTML=THEMES.map((t,i)=>`
+  <div class="theme-c ${curTheme===i?'on':''}" onclick="applyTheme(${i})">
+    <div class="swatches">${t.colors.map(c=>`<div class="sw" style="background:${c}"></div>`).join('')}</div>
+    <div class="theme-n">${t.name}</div>
+  </div>`).join('');
+}
+function applyTheme(i){
+  curTheme=i; sto('qum_theme',i); sto('qum_ccolors',null);
+  Object.entries(THEMES[i].vars).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));
+  rdColors(); toast('✅ تم تطبيق ثيم "'+THEMES[i].name+'"');
+}
+function applyCustom(){
+  const vars={'--blue':document.getElementById('c1').value,'--blue2':document.getElementById('c2').value,'--dark':document.getElementById('c3').value,'--dark2':document.getElementById('c4').value};
+  const r=document.documentElement;
+  Object.entries(vars).forEach(([k,v])=>r.style.setProperty(k,v));
+  sto('qum_ccolors',vars); toast('✅ تم تطبيق الألوان المخصصة');
+}
+
+// ══════════════════ DASHBOARD ══════════════════
+function rdDash(){
+  updBadge();
+  document.getElementById('s-ord').textContent=leads.length;
+  document.getElementById('s-rev').textContent=leads.filter(l=>l.total).reduce((s,l)=>s+(l.total||0),0);
+  document.getElementById('s-bks').textContent=books.filter(b=>b.active).length;
+  document.getElementById('s-cps').textContent=coupons.filter(c=>c.active).length;
+  const dl=document.getElementById('dash-leads');
+  if(!leads.length){ dl.innerHTML='<div class="empty" style="padding:1.5rem;"><div class="ei">📭</div><p>لا توجد طلبات بعد</p></div>'; }
+  else dl.innerHTML=`<table class="tbl"><thead><tr><th>الاسم</th><th>الجوال</th><th>الحالة</th><th></th></tr></thead><tbody>
+    ${leads.slice(-5).reverse().map((l,i)=>`<tr>
+      <td><strong>${l.name}</strong></td>
+      <td style="color:var(--muted);font-size:.78rem;">${l.phone}</td>
+      <td><span class="tag ${l.status==='paid'?'tg':l.status==='pending'?'ty':'tb'}">${l.status==='paid'?'✅':'⏳'}</span></td>
+      <td><button class="btn bg bsm" onclick="go('leads',document.querySelectorAll('.nb')[1])">عرض</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+  rdMkt();
+}
+
+// ══════════════════ TOAST ══════════════════
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=type==='err'?'err':'';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ══════════════════ STORAGE LISTENER ══════════════════
+window.addEventListener('storage',e=>{
+  if(e.key==='qum_leads'){
+    leads=JSON.parse(e.newValue||'[]');
+    updBadge(); rdDash(); toast('📥 طلب جديد وصل!');
+  }
+});
+
+// ══════════════════ BRAND IDENTITY ══════════════════
+const ICON_PRESETS = ['📚','📖','🧠','💡','🌱','🔥','⭐','💎','🚀','✨','🎯','💪','🌟','📝','🏆'];
+const DEF_BRAND = {
+  name:'قُم', tagline:'كتب تنهض بروحك', tabtitle:'قُم — كتب تنهض بروحك',
+  topbar:'🔥 عرض محدود — اشتر أي كتاب واحصل على ملخص مجاني',
+  icon:'📚', icontype:'emoji',
+  herotag:'✦ مرحباً بك في قُم',
+  htitle:'كتبك للنهوض النفسي — جاهزة استملها فوراً بعد الدفع',
+  hsub:'اختر كتابك، ادفع بأمان، واستلمه فوراً على بريدك.',
+  s1n:'+200', s1l:'قارئ مستفيد', s2n:'+50', s2l:'كتاب مختار', s3n:'10+', s3l:'دولة نخدمها',
+  atitle:'نحن قُم — نؤمن بقدرتك على النهوض',
+  ap1:'قُم متخصصة في الكتب النفسية وتنمية البشرية.',
+  guar:'إذا لم يعجبك الكتاب خلال 7 أيام — نرد لك المبلغ كاملاً بدون أسئلة.',
+  footer:'© 2025 قُم — جميع الحقوق محفوظة', siteurl:'',
+  cta1:'🛒 اشتر الآن', cta2:'📚 تصفح الكتب',
+  wamsg:'السلام عليكم، أبغى أستفسر عن الكتب', wa:'966505814917',
+  countdown:'⚡ العرض الحالي ينتهي — لا تضيّع الفرصة',
+  fontH:'Tajawal', fontB:'Cairo',
+};
+
+let brandData = sto('qum_brand') || {...DEF_BRAND};
+
+function rdBrand(){
+  // Load all saved values into fields
+  Object.entries(brandData).forEach(([k,v])=>{
+    if(k==='logoImg') return; // handled separately
+    const el = document.getElementById('br-'+k);
+    if(el){ if(el.tagName==='SELECT') el.value=v; else el.value=v; }
+  });
+  // Load saved logo if exists
+  if(brandData.logoImg) showLogoPreview(brandData.logoImg);
+  // Load social media
+  const social = sto('qum_social')||{};
+  ['whatsapp','instagram','twitter','snapchat','tiktok','youtube','telegram'].forEach(p=>{
+    const el=document.getElementById('soc-'+p);
+    if(el) el.value=social[p]||'';
+  });
+  buildIconPresets();
+  brandPreview();
+  previewFont();
+  rdSocialPreview();
+}
+
+// ══════════════════ LOGO UPLOAD ══════════════════
+function handleLogoUpload(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  if(file.size > 2*1024*1024){ toast('⚠️ الحجم أكبر من 2MB — اختر صورة أصغر','err'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const dataUrl = e.target.result;
+    // Save to localStorage
+    brandData.logoImg = dataUrl;
+    sto('qum_brand', brandData);
+    // Also save separately for easy access by index.html
+    sto('qum_logo_img', dataUrl);
+    // Show preview
+    showLogoPreview(dataUrl);
+    toast('✅ تم رفع الشعار — يتزامن مع صورة "من نحن" تلقائياً');
+  };
+  reader.readAsDataURL(file);
+}
+
+function showLogoPreview(dataUrl){
+  const img = document.getElementById('logo-preview-img');
+  const wrap = document.getElementById('logo-preview-wrap');
+  const dropText = document.getElementById('logo-drop-text');
+  if(img && wrap && dropText){
+    img.src = dataUrl;
+    wrap.style.display = 'block';
+    dropText.innerHTML = '<div style="font-size:.78rem;color:var(--muted);">اضغط لتغيير الشعار</div>';
+  }
+  updateLogoPreview(dataUrl);
+}
+
+function updateLogoPreview(dataUrl){
+  const src = dataUrl || brandData.logoImg || null;
+  const shape = document.getElementById('logo-shape')?.value || 'gradient';
+  const size = document.getElementById('logo-size')?.value || 48;
+  const el = document.getElementById('logo-header-preview');
+  const bpIcon = document.getElementById('bp-icon');
+  if(!el) return;
+
+  if(src){
+    let radius = '10px';
+    let bg = 'transparent';
+    if(shape === 'circle') radius = '50%';
+    else if(shape === 'rounded') radius = '12px';
+    else if(shape === 'gradient'){
+      bg = 'linear-gradient(135deg,var(--blue),var(--blue2))';
+      radius = '10px';
+    }
+    const imgHtml = `<img src="${src}" style="width:${size}px;height:${size}px;object-fit:contain;border-radius:${radius};display:block;" alt="logo">`;
+    el.innerHTML = '';
+    el.style.cssText = `width:${size}px;height:${size}px;border-radius:${radius};background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;`;
+    el.innerHTML = imgHtml;
+    if(bpIcon){ bpIcon.innerHTML = imgHtml; bpIcon.style.cssText = el.style.cssText; }
+  } else {
+    el.style.cssText = `width:${size}px;height:${size}px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem;`;
+    el.textContent = brandData.icon || '📚';
+  }
+}
+
+// Drag and drop on logo zone
+document.addEventListener('DOMContentLoaded', function(){
+  const zone = document.getElementById('logo-drop-zone');
+  if(!zone) return;
+  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.style.borderColor='var(--blue)'; });
+  zone.addEventListener('dragleave', ()=>{ zone.style.borderColor='var(--bb)'; });
+  zone.addEventListener('drop', e=>{
+    e.preventDefault(); zone.style.borderColor='var(--bb)';
+    const file = e.dataTransfer.files[0];
+    if(file && file.type.startsWith('image/')){
+      const fakeEvent = {target:{files:[file]}};
+      handleLogoUpload(fakeEvent);
+    }
+  });
+});
+
+function brandPreview(){
+  const name = document.getElementById('br-name')?.value || 'قُم';
+  const tagline = document.getElementById('br-tagline')?.value || '';
+  const icon = document.getElementById('br-icon')?.value || '📚';
+  const itype = document.getElementById('br-icontype')?.value || 'emoji';
+  const el = document.getElementById('bp-icon');
+  const nameEl = document.getElementById('bp-name');
+  const tagEl = document.getElementById('bp-tagline');
+  if(nameEl) nameEl.textContent = name;
+  if(tagEl) tagEl.textContent = tagline;
+  if(el){
+    if(itype==='letter'){
+      el.textContent = (name||'ق').charAt(0);
+      el.style.fontSize = '1.4rem';
+      el.style.fontWeight = '900';
+      el.style.color = '#fff';
+    } else if(itype==='svg'){
+      el.innerHTML = `<svg viewBox="0 0 60 60" width="26" height="26"><rect x="8" y="8" width="44" height="40" rx="5" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/><rect x="8" y="8" width="7" height="40" rx="3" fill="rgba(255,255,255,.25)"/><path d="M30 42L30 16M22 24L30 15L38 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+    } else {
+      el.textContent = icon;
+      el.style.fontSize = '1.5rem';
+    }
+  }
+}
+
+function buildIconPresets(){
+  const box = document.getElementById('icon-presets');
+  if(!box) return;
+  const existing = box.querySelectorAll('.icon-opt');
+  existing.forEach(e=>e.remove());
+  ICON_PRESETS.forEach(ic=>{
+    const d = document.createElement('div');
+    d.className='icon-opt';
+    d.textContent=ic;
+    d.style.cssText='font-size:1.6rem;cursor:pointer;padding:.35rem .5rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);transition:all .18s;';
+    d.onclick=()=>{
+      document.getElementById('br-icon').value=ic;
+      document.getElementById('br-icontype').value='emoji';
+      brandPreview();
+      d.style.borderColor='var(--blue)';
+      setTimeout(()=>d.style.borderColor='var(--border)',600);
+    };
+    box.appendChild(d);
+  });
+}
+
+function previewFont(){
+  const fh = document.getElementById('br-font-h')?.value || 'Tajawal';
+  const fb = document.getElementById('br-font-b')?.value || 'Cairo';
+  const link = document.createElement('link');
+  link.rel='stylesheet';
+  link.href=`https://fonts.googleapis.com/css2?family=${fh.replace(' ','+')}:wght@700;900&family=${fb.replace(' ','+')}:wght@400;500&display=swap`;
+  document.head.appendChild(link);
+  const t = document.getElementById('fp-title');
+  const b = document.getElementById('fp-body');
+  if(t) t.style.fontFamily=`'${fh}', sans-serif`;
+  if(b) b.style.fontFamily=`'${fb}', sans-serif`;
+}
+
+function saveBrand(){
+  const fields=['name','tagline','tabtitle','topbar','icon','icontype','herotag','htitle','hsub',
+    's1n','s1l','s2n','s2l','s3n','s3l','atitle','ap1','guar','footer','siteurl',
+    'cta1','cta2','wamsg','wa','countdown','font-h','font-b'];
+  fields.forEach(f=>{
+    const el=document.getElementById('br-'+f);
+    if(el){ const key=f.replace('-',''); brandData[key]=el.value; }
+  });
+  brandData.fontH = document.getElementById('br-font-h')?.value || 'Tajawal';
+  brandData.fontB = document.getElementById('br-font-b')?.value || 'Cairo';
+
+  sto('qum_brand', brandData);
+
+  // ✅ تزامن الشعار مع صورة "من نحن"
+  if(brandData.logoImg){
+    sto('qum_logo_img', brandData.logoImg);
+    sto('qum_about_img', brandData.logoImg);
+  }
+
+  // Save social media
+  const PLATS=['whatsapp','instagram','twitter','snapchat','tiktok','youtube','telegram'];
+  const social={};
+  PLATS.forEach(p=>{ const el=document.getElementById('soc-'+p); if(el) social[p]=el.value.trim(); });
+  sto('qum_social', social);
+
+  // Sync shared keys
+  sto('qum_e-topbar', brandData.topbar);
+  sto('qum_e-htitle', brandData.htitle);
+  sto('qum_e-hsub', brandData.hsub);
+  sto('qum_e-s1', brandData.s1n);
+  sto('qum_e-s2', brandData.s2n);
+  sto('qum_e-s3', brandData.s3n);
+  sto('qum_e-atitle', brandData.atitle);
+  sto('qum_e-ap1', brandData.ap1);
+  sto('qum_e-guar', brandData.guar);
+  sto('qum_settings', {wa: brandData.wa, title: brandData.tabtitle, wamsg: brandData.wamsg});
+
+  previewFont();
+  brandPreview();
+  rdSocialPreview();
+  toast('✅ تم الحفظ — هوية الموقع والسوشيال ميديا محدّثة');
+}
+
+function rdSocialPreview(){
+  const PLATS=['whatsapp','instagram','twitter','snapchat','tiktok','youtube','telegram'];
+  const EMOJIS={whatsapp:'💬',instagram:'📸',twitter:'𝕏',snapchat:'👻',tiktok:'🎵',youtube:'▶️',telegram:'✈️'};
+  const LABELS={whatsapp:'واتساب',instagram:'انستغرام',twitter:'تويتر',snapchat:'سناب',tiktok:'تيك توك',youtube:'يوتيوب',telegram:'تليغرام'};
+  const preview=document.getElementById('social-icons-preview');
+  if(!preview) return;
+  const active=PLATS.filter(p=>{ const el=document.getElementById('soc-'+p); return el&&el.value.trim(); });
+  if(!active.length){ preview.innerHTML='<span style="color:var(--muted);font-size:.78rem;">لم تُضف أي حسابات بعد</span>'; return; }
+  preview.innerHTML=active.map(p=>`<div style="display:flex;align-items:center;gap:.3rem;background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:.3rem .7rem;font-size:.8rem;">${EMOJIS[p]} ${LABELS[p]}</div>`).join('');
+}
+
+function resetBrand(){
+  if(!confirm('هل تريد استعادة الإعدادات الافتراضية لهوية الموقع؟')) return;
+  brandData = {...DEF_BRAND};
+  sto('qum_brand', brandData);
+  rdBrand();
+  toast('↩️ تم استعادة الافتراضي');
+}
+
+// On load: inject saved brand into index.html fields that already exist
+(function applyBrandToHeroPage(){
+  const b = sto('qum_brand');
+  if(!b) return;
+  const map = {
+    'e-topbar':'topbar','e-htitle':'htitle','e-hsub':'hsub',
+    'e-s1':'s1n','e-s2':'s2n','e-s3':'s3n',
+    'e-atitle':'atitle','e-ap1':'ap1','e-guar':'guar'
+  };
+  Object.entries(map).forEach(([elId,bKey])=>{
+    const el=document.getElementById(elId);
+    if(el && b[bKey]) el.value=b[bKey];
+  });
+  brandData = {...DEF_BRAND, ...b};
+})();
+
+// ══════════════════════════════════════════
+//  FIREBASE ADMIN — جلب البيانات من Firestore
+//  تسلسلي مباشر: fetch → render، بدون events
+// ══════════════════════════════════════════
+let _adminFB = null;
+
+async function initAdminFirebase(){
+  const cfg = window.QUM_CONFIG;
+  if(!cfg?.apiKey){ console.warn('QUM_CONFIG غير معرّف — Admin يعمل بوضع localStorage'); return; }
+
+  const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { getAuth, signInWithEmailAndPassword, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  const { getFirestore, collection, getDocs, doc, updateDoc,
+          query, orderBy, limit, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+  const app = !getApps().length ? initializeApp(cfg) : getApps()[0];
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  _adminFB = {
+    // جلب الطلبات من Firestore
+    async getOrders(lim=100){
+      const q    = query(collection(db,'orders'), orderBy('createdAt','desc'), limit(lim));
+      const snap = await getDocs(q);
+      return snap.docs.map(d=>({id:d.id,...d.data(), date: d.data().createdAt?.toDate?.().toLocaleDateString('ar-SA') || d.data().date || '—'}));
+    },
+    // جلب leads
+    async getLeads(lim=200){
+      const q    = query(collection(db,'leads'), orderBy('createdAt','desc'), limit(lim));
+      const snap = await getDocs(q);
+      return snap.docs.map(d=>({id:d.id,...d.data(), date: d.data().createdAt?.toDate?.().toLocaleDateString('ar-SA') || d.data().date || '—'}));
+    },
+    // جلب المستخدمين
+    async getUsers(lim=200){
+      const q    = query(collection(db,'users'), orderBy('createdAt','desc'), limit(lim));
+      const snap = await getDocs(q);
+      return snap.docs.map(d=>({id:d.id,...d.data()}));
+    },
+    // تحديث حالة طلب
+    async markOrderPaid(orderId){
+      await updateDoc(doc(db,'orders',orderId),{status:'paid',paidAt:serverTimestamp()});
+    },
+    // منح صلاحية كتاب يدوياً
+    async grantBook(uid, bookIds){
+      const { arrayUnion } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await updateDoc(doc(db,'users',uid),{purchasedBooks:arrayUnion(...bookIds)});
+    }
+  };
+
+  // جلب البيانات الأولية بعد تهيئة Firebase
+  await refreshAllFromFirestore();
+}
+
+async function refreshAllFromFirestore(){
+  if(!_adminFB) return;
+  try {
+    const [fbOrders, fbLeads, fbUsers] = await Promise.all([
+      _adminFB.getOrders(),
+      _adminFB.getLeads(),
+      _adminFB.getUsers()
+    ]);
+    // دمج مع localStorage (الأحدث يكسب)
+    leads    = mergeByField([...leads,    ...fbLeads],   'email');
+    users_fb = fbUsers;
+    orders_fb= fbOrders;
+    updBadge();
+    rdDash();
+    toast('🔄 تم تحديث البيانات من Firestore');
+  } catch(e){
+    console.warn('Firestore fetch error:', e.message);
+  }
+}
+
+let users_fb  = [];
+let orders_fb = [];
+
+// دمج بدون تكرار حسب حقل معين
+function mergeByField(arr, field){
+  const map = new Map();
+  arr.forEach(item=>{ if(item[field]) map.set(item[field], item); });
+  return [...map.values()];
+}
+
+// تحديث markPaid ليستخدم Firestore
+async function markPaidFirestore(i){
+  leads[i].status='paid';
+  sto('leads', leads);
+  rdLeads();
+  // تحديث Firestore إذا متاح
+  if(_adminFB && leads[i].id){
+    try{ await _adminFB.markOrderPaid(leads[i].id); }
+    catch(e){ console.warn('markPaid Firestore:', e.message); }
+  }
+  // منح صلاحية الكتب للمستخدم في Firestore
+  if(_adminFB && leads[i].uid && leads[i].bookIds?.length){
+    try{ await _adminFB.grantBook(leads[i].uid, leads[i].bookIds); toast('✅ تم تأكيد الدفع ومنح الكتب'); }
+    catch(e){ toast('✅ تم التأكيد محلياً — Firestore: '+e.message,'err'); }
+  } else {
+    toast('✅ تم تأكيد الدفع');
+  }
+}
+
+// ══════════════════════════════════════════
+//  INIT — تحميل كل البيانات وتشغيل اللوحة
+// ══════════════════════════════════════════
+
+// 1. تحميل البيانات المحفوظة من localStorage
+(function loadSavedData(){
+  const sb = sto('books');
+  if(sb && sb.length) books = sb.map((b,i)=>({...b,id:i}));
+
+  const sp = sto('pkgs');
+  if(sp && sp.length) pkgs = sp;
+
+  const sl = sto('leads');
+  if(sl) leads = sl;
+
+  const sd = sto('discs');
+  if(sd) discs = sd;
+
+  const sc = sto('coupons');
+  if(sc) coupons = sc;
+
+  // تحميل Stripe
+  const st = sto('stripe') || {};
+  const son = document.getElementById('stripe-on');
+  const smo = document.getElementById('stripe-mode');
+  const sdf = document.getElementById('stripe-def');
+  if(son && st.on !== undefined) son.checked = st.on;
+  if(smo && st.mode) smo.value = st.mode;
+  if(sdf && st.def) sdf.value = st.def;
+  if(son){
+    const lbl = document.getElementById('stripe-lbl');
+    son.onchange = function(){if(lbl) lbl.textContent = this.checked ? 'مفعّل' : 'غير مفعّل';};
+    if(lbl) lbl.textContent = son.checked ? 'مفعّل' : 'غير مفعّل';
+  }
+
+  // تحميل EmailJS
+  const ej = sto('ej') || {};
+  const ejFields = {on:'ej-on',pub:'ej-pub',svc:'ej-svc',tpl:'ej-tpl',subj:'ej-subj',body:'ej-body'};
+  Object.entries(ejFields).forEach(([k,id])=>{
+    const el = document.getElementById(id);
+    if(el && ej[k] !== undefined){
+      if(el.type === 'checkbox') el.checked = ej[k];
+      else el.value = ej[k];
+    }
+  });
+
+  // تحميل الإعدادات
+  const ss = sto('settings') || {};
+  const waEl = document.getElementById('s-wa');
+  const titleEl = document.getElementById('s-title');
+  const wamsgEl = document.getElementById('s-wamsg');
+  if(waEl && ss.wa) waEl.value = ss.wa;
+  if(titleEl && ss.title) titleEl.value = ss.title;
+  if(wamsgEl && ss.wamsg) wamsgEl.value = ss.wamsg;
+
+  // تحميل الألوان
+  const cc = sto('ccolors');
+  if(cc) Object.entries(cc).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));
+  else {
+    const THEMES=[
+      {'--blue':'#2563EB','--blue2':'#3B82F6','--blue3':'#60A5FA','--dark':'#080C14','--dark2':'#0D1220','--dark3':'#111827','--dark4':'#1A2235'},
+      {'--blue':'#D97706','--blue2':'#F59E0B','--blue3':'#FBBF24','--dark':'#12100E','--dark2':'#1C1612','--dark3':'#241E18','--dark4':'#2E2720'},
+      {'--blue':'#059669','--blue2':'#10B981','--blue3':'#34D399','--dark':'#0A1210','--dark2':'#0F1F18','--dark3':'#162B22','--dark4':'#1D3A2E'},
+      {'--blue':'#7C3AED','--blue2':'#8B5CF6','--blue3':'#A78BFA','--dark':'#0D0A1A','--dark2':'#130F24','--dark3':'#1A1530','--dark4':'#221C3D'},
+      {'--blue':'#DB2777','--blue2':'#EC4899','--blue3':'#F472B6','--dark':'#130A10','--dark2':'#1E1018','--dark3':'#2A1525','--dark4':'#351A30'},
+    ];
+    const ti = sto('theme') || 0;
+    const th = THEMES[ti];
+    if(th) Object.entries(th).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));
+  }
+
+  // تحميل البكسلات
+  const px = sto('pixels') || {};
+  const pxFields = {'snap-px':'snap','tt-px':'tt','meta-px':'meta','ga-id':'ga'};
+  Object.entries(pxFields).forEach(([elId,key])=>{
+    const el = document.getElementById(elId);
+    if(el && px[key]) el.value = px[key];
+  });
+
+  // تحميل brand
+  const b = sto('brand') || {};
+  if(b) brandData = {...DEF_BRAND, ...b};
+
+})();
+
+// 2. تهيئة الـ Desktop save button
+(function initDesktopBtn(){
+  const dsb = document.getElementById('desktop-save');
+  const mob = document.querySelector('.mob-save');
+  if(window.innerWidth > 768){
+    if(dsb) dsb.style.display = 'inline-flex';
+    if(mob) mob.style.display = 'none';
+  }
+})();
+
+// 3. تشغيل الداشبورد الرئيسي
+rdDash();
+
+// 4. تهيئة Firebase Admin (تجلب البيانات من Firestore تلقائياً)
+initAdminFirebase();
+
+// 5. alias لـ markPaid يستخدم Firestore
+function markPaid(i){ markPaidFirestore(i); }
+
+// 4. مزامنة فورية من index.html (storage events)
+window.addEventListener('storage', e => {
+  const key = (e.key || '').replace('qum_', '');
+
+  if(key === 'leads'){
+    leads = JSON.parse(e.newValue || '[]');
+    updBadge();
+    rdDash();
+    toast('📥 طلب جديد وصل من الموقع!');
+  }
+
+  if(key === 'users'){
+    // تحديث إحصائيات المستخدمين المسجلين
+    const users = JSON.parse(e.newValue || '[]');
+    const el = document.getElementById('s-users-count');
+    if(el) el.textContent = users.length;
+  }
+});
+
+// 5. تحديث تلقائي كل 30 ثانية
+setInterval(()=>{
+  leads = sto('leads') || leads;
+  updBadge();
+  const curPage = document.querySelector('.page.active')?.id;
+  if(curPage === 'p-dashboard') rdDash();
+  if(curPage === 'p-leads')    rdLeads();
+}, 30000);
+
+// 6. إضافة Users قسم للداشبورد (المستخدمون المسجلون من index.html)
+(function addUsersStats(){
+  const users = sto('users') || [];
+  const statsEl = document.getElementById('s-ord');
+  if(!statsEl) return;
+
+  // إضافة stat إضافية للمستخدمين إن وُجد المكان
+  const statsParent = statsEl?.closest('.g4');
+  if(statsParent && !document.getElementById('s-users-count')){
+    const newStat = document.createElement('div');
+    newStat.className = 'stat';
+    newStat.innerHTML = `<div class="sl">👤 المستخدمون</div><div class="sv" id="s-users-count">${users.length}</div><div class="ss">مسجّل في الموقع</div>`;
+    statsParent.appendChild(newStat);
+  }
+})();
+
+// 7. Users Page — قائمة المستخدمين المسجلين
+function rdUsers(){
+  const c = document.getElementById('users-content');
+  if(!c) return;
+  const users = sto('users') || [];
+  if(!users.length){
+    c.innerHTML = `<div class="card"><div class="ch"><div class="ct">👤 المستخدمون المسجلون</div></div><div class="empty"><div class="ei">👤</div><p>لا يوجد مستخدمون مسجلون بعد<br><small>عند إنشاء حساب في الموقع يظهر هنا</small></p></div></div>`;
+    return;
+  }
+  c.innerHTML = `<div class="card">
+    <div class="ch"><div class="ct">👤 المستخدمون المسجلون (${users.length})</div>
+    <button class="btn bg bsm" onclick="exportUsers()">📤 تصدير</button></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>الاسم</th><th>البريد</th><th>الكتب المشتراة</th><th>تاريخ التسجيل</th></tr></thead>
+      <tbody>${users.map(u=>`<tr>
+        <td><strong>${u.name||'—'}</strong></td>
+        <td style="color:var(--muted);font-size:.78rem;">${u.email||'—'}</td>
+        <td><span class="tag tb">${(u.purchasedBooks||[]).length} كتاب</span></td>
+        <td style="color:var(--muted);font-size:.76rem;">${u.joinDate||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
+}
+
+function exportUsers(){
+  const users = sto('users') || [];
+  if(!users.length){toast('لا توجد بيانات','err');return;}
+  const h = 'الاسم,البريد,الكتب,التاريخ\n';
+  const r = users.map(u=>`"${u.name||''}","${u.email||''}","${(u.purchasedBooks||[]).length}","${u.joinDate||''}"`).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff'+h+r],{type:'text/csv;charset=utf-8;'}));
+  a.download = 'qum_users.csv';a.click();
+  toast('📤 تم تصدير المستخدمين');
+}
+
+// 8. إضافة صفحة المستخدمين في التيتل ماب
+// ══════════════════════════════════════════
+//  MODULE 1-B: ADVANCED AI SCRIPTWRITER
+//  Hook Expert — 4 أعمدة علائقية
+// ══════════════════════════════════════════
+TITLES['ai-scripts'] = 'AI سكريبت رايتر — Hook Expert';
+RENDERS['ai-scripts'] = function rdAiScripts(){
+  const scripts = sto('ai_scripts') || [];
+  const wrap = document.getElementById('ai-scripts-wrap');
+  if(!wrap) return;
+  wrap.innerHTML = `
+  <div class="card">
+    <div class="ch"><div class="ct">✏️ توليد سكريبت فيروسي متقدم</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:1rem;">
+      <div class="fg"><label>🎯 هدف الحملة</label>
+        <select id="adm-sc-goal" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+          <option>بيع كتاب رقمي</option><option>زيادة المتابعين</option><option>بناء ثقة العلامة</option><option>تسجيل في كورس</option><option>عرض محدود الوقت</option>
+        </select></div>
+      <div class="fg"><label>📦 المنتج المستهدف</label>
+        <input type="text" id="adm-sc-product" placeholder="مثال: كتاب من أنا؟" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;"></div>
+      <div class="fg"><label>👁️ نوع الظهور</label>
+        <select id="adm-sc-visibility" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+          <option value="face">ظهور بالوجه / Face Camera</option>
+          <option value="voiceover">بدون ظهور وجه / Voiceover & B-Roll</option>
+        </select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem;">
+      <div class="fg"><label>🌟 USP — نقطة القوة الفريدة</label>
+        <textarea id="adm-sc-usp" placeholder="ما الذي يميز منتجك؟ ما النتيجة؟" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;min-height:60px;resize:vertical;"></textarea></div>
+      <div class="fg"><label>⏱️ مدة الفيديو</label>
+        <select id="adm-sc-duration" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+          <option>15 ثانية (TikTok/Reels)</option><option>30 ثانية (مثالي)</option><option>60 ثانية (YouTube Shorts)</option>
+        </select></div>
+    </div>
+    <button onclick="admGenScriptAdvanced()" id="adm-sc-btn" class="btn bo bsm" style="background:linear-gradient(135deg,#2563EB,#3B82F6);color:#fff;border:none;padding:.75rem 1.5rem;width:100%;font-size:.9rem;">🤖 توليد السكريبت المتقدم</button>
+  </div>
+
+  <!-- 4-column output -->
+  <div id="adm-sc-cols" style="display:none;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-top:1rem;">
+      ${['⚡ Hooks عالية الاحتفاظ','🎬 وصف المشاهد المرئية','📖 تسلسل السرد القصصي','🎯 Call-to-Action الصريح'].map((h,i)=>`
+        <div class="card" style="padding:1rem;">
+          <div style="font-size:.72rem;color:var(--cb2);font-weight:700;margin-bottom:.7rem;">${h}</div>
+          <div id="adm-sc-col-${i}" style="font-size:.8rem;line-height:1.75;color:var(--ct);white-space:pre-wrap;"></div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:.6rem;margin-top:.8rem;">
+      <button onclick="admCopyScriptFull()" class="btn bo bsm">📋 نسخ الكامل</button>
+      <button onclick="admSaveScript()" class="btn bo bsm">💾 حفظ</button>
+      <button onclick="document.getElementById('adm-sc-cols').style.display='none'" class="btn bsm" style="color:var(--cm);">✕ إغلاق</button>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="card" style="margin-top:1rem;">
+    <div class="ch">
+      <div class="ct">📚 السكريبتات المحفوظة (${scripts.length})</div>
+      ${scripts.length>0?`<button onclick="sto('ai_scripts',[]);rdAiScripts();toast('🗑️ تم الحذف')" class="btn bsm" style="color:var(--red);">مسح الكل</button>`:''}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.5rem;max-height:300px;overflow-y:auto;">
+      ${scripts.length===0?'<div style="color:var(--cm);font-size:.82rem;text-align:center;padding:1.5rem;">لا توجد سكريبتات محفوظة</div>'
+      :scripts.slice(0,20).map((s,i)=>`
+        <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.7rem 1rem;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:.82rem;font-weight:600;color:var(--ct);">${s.product||s.topic||'سكريبت'}</div>
+          <div style="font-size:.7rem;color:var(--cm);">🎯 ${s.goal||''} — ${s.visibility||''} — ${s.date||''}</div></div>
+          <button onclick="admLoadScript(${i})" class="btn bo bsm" style="font-size:.7rem;">عرض</button>
+        </div>`).join('')}
+    </div>
+  </div>`;
+};
+
+function admGenScriptAdvanced(){
+  const goal=document.getElementById('adm-sc-goal').value;
+  const product=document.getElementById('adm-sc-product').value.trim();
+  const vis=document.getElementById('adm-sc-visibility').value;
+  const usp=document.getElementById('adm-sc-usp').value.trim();
+  const dur=document.getElementById('adm-sc-duration').value;
+  const btn=document.getElementById('adm-sc-btn');
+  if(!product){toast('⚠️ أدخل اسم المنتج','err');return;}
+  btn.textContent='⏳ جاري التوليد...';btn.disabled=true;
+
+  setTimeout(()=>{
+    const isFace=vis==='face';
+    const cols=[
+      // Hook
+      `🔥 Hook 1 (الفضول):\n"هل تعرف لماذا ${product} غيّر حياتي في 7 أيام فقط؟"\n\n⚡ Hook 2 (الصدمة):\n"${Math.floor(Math.random()*90+10)}% من الناس يجهلون هذا عن ${goal}"\n\n💥 Hook 3 (التحدي):\n"جرّبت كل شيء — حتى اكتشفت ${product}"`,
+      // Scenes
+      `${isFace?'👤 مواجهة مباشرة — ابتسامة واثقة\n[Zoom-in تدريجي على الوجه]':'🖥️ B-Roll: يد تتقلب في كتاب\n[Aerial shot للمكتب المرتب]'}\n\n🎬 مشهد 2:\n[عرض ${product} على الشاشة بزاوية 45°]\n${isFace?'[تعبيرات وجه تدعم الكلام]':'[Smooth pan + text overlay]'}\n\n🎬 خاتمة:\n[CTA واضح على الشاشة]`,
+      // Story
+      `📖 ACT 1 (المشكلة):\n"كنت أعاني من [مشكلة مرتبطة بـ ${goal}]..."\n[3-5 ثوان]\n\n📖 ACT 2 (الاكتشاف):\n"حتى وجدت ${product} — وهذا ما وجدته:"\n✅ ${usp||'النتيجة الأولى'}\n✅ النتيجة الثانية\n✅ النتيجة الثالثة\n[10-15 ثانية]\n\n📖 ACT 3 (التحول):\n"الآن أنا [النتيجة المذهلة]"`,
+      // CTA
+      `🎯 CTA الأساسي:\n"الرابط في البايو ⬇️"\n[نص كبير على الشاشة]\n\n⏰ CTA الإلحاحي:\n"العرض ينتهي خلال ${Math.floor(Math.random()*12+12)} ساعة"\n[عداد تنازلي مرئي]\n\n💬 CTA التفاعلي:\n"علّق '${product.split(' ')[0]}' وأرسل لك التفاصيل"\n\n⭐ Social Proof:\n"انضم لـ +${Math.floor(Math.random()*500+200)} شخص استفادوا"`
+    ];
+    for(let i=0;i<4;i++) document.getElementById(`adm-sc-col-${i}`).textContent=cols[i];
+    document.getElementById('adm-sc-cols').style.display='block';
+    btn.textContent='🤖 توليد السكريبت المتقدم';btn.disabled=false;
+    window._lastScript={product,goal,vis,usp,cols,date:new Date().toLocaleDateString('ar-SA'),visibility:vis==='face'?'ظهور بالوجه':'Voiceover'};
+    toast('✅ تم التوليد!');
+  },1400);
+}
+
+function admSaveScript(){
+  if(!window._lastScript)return;
+  const arr=sto('ai_scripts')||[];
+  arr.unshift(window._lastScript);
+  if(arr.length>30)arr.pop();
+  sto('ai_scripts',arr);
+  rdAiScripts();
+  toast('💾 تم الحفظ!');
+}
+
+function admCopyScriptFull(){
+  if(!window._lastScript)return;
+  const {cols}=window._lastScript;
+  const text=cols.map((c,i)=>['HOOKS','SCENES','STORY','CTA'][i]+':\n'+c).join('\n\n'+'='.repeat(30)+'\n\n');
+  navigator.clipboard?.writeText(text).then(()=>toast('📋 تم النسخ الكامل!'));
+}
+
+function admLoadScript(i){
+  const s=(sto('ai_scripts')||[])[i];
+  if(!s||!s.cols)return;
+  for(let j=0;j<4;j++) document.getElementById(`adm-sc-col-${j}`).textContent=s.cols[j]||'';
+  document.getElementById('adm-sc-cols').style.display='block';
+}
+
+// ══════════════════════════════════════════
+//  MODULE 2: LUCKY DRAW & GIFTING SYSTEM
+// ══════════════════════════════════════════
+TITLES['lucky-draw'] = 'إدارة المسابقات والقرعة العشوائية';
+RENDERS['lucky-draw'] = function rdLuckyDraw(){
+  const users=sto('qum_users')||[];
+  const draws=sto('qum_draws')||[];
+  const wrap=document.getElementById('lucky-draw-wrap');
+  if(!wrap)return;
+  wrap.innerHTML=`
+  <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:1.2rem;align-items:start;">
+    <!-- Draw Controls -->
+    <div class="card">
+      <div class="ch"><div class="ct">🎲 إعدادات السحب</div></div>
+      <div style="display:flex;flex-direction:column;gap:.8rem;">
+        <div class="fg"><label>📋 معيار الأهلية</label>
+          <select id="draw-criteria" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+            <option value="all">جميع المستخدمين المسجلين</option>
+            <option value="paid">من اشترى كتاباً واحداً أو أكثر</option>
+            <option value="multi">من اشترى 3 كتب فأكثر</option>
+            <option value="exam">من أكمل الاختبار 5 أسئلة</option>
+            <option value="active">نشط خلال آخر 30 يوم</option>
+          </select></div>
+        <div class="fg"><label>🎁 نوع الجائزة</label>
+          <select id="draw-prize-type" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+            <option value="coupon100">كوبون خصم 100% (مجاني تام)</option>
+            <option value="coupon50">كوبون خصم 50%</option>
+            <option value="unlock">فتح كتاب مجاناً</option>
+            <option value="gift">هدية رقمية مخصصة</option>
+          </select></div>
+        <div class="fg"><label>📝 رسالة الجائزة (تظهر للفائز)</label>
+          <textarea id="draw-msg" placeholder="مبروك! لقد فزت بهدية خاصة من الأستاذ البراء..." style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.5rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;min-height:55px;resize:vertical;"></textarea></div>
+
+        <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--rl);padding:1rem;">
+          <div style="font-size:.75rem;color:var(--cb2);font-weight:700;margin-bottom:.5rem;">👥 المشتركون المؤهلون</div>
+          <div id="draw-eligible-count" style="font-size:1.8rem;font-family:'Tajawal',sans-serif;font-weight:900;color:var(--cb2);">${users.length}</div>
+          <div style="font-size:.72rem;color:var(--cm);">مستخدم مؤهل للسحب</div>
+        </div>
+
+        <button onclick="runLuckyDraw()" id="draw-btn" style="padding:1rem;background:linear-gradient(135deg,#7C3AED,#8B5CF6);color:#fff;border:none;border-radius:var(--rl);font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;">
+          🎰 تشغيل السحب العشوائي
+        </button>
+
+        <div id="draw-result" style="display:none;background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(139,92,246,.08));border:2px solid #7C3AED;border-radius:var(--rl);padding:1.2rem;text-align:center;">
+          <div style="font-size:2rem;margin-bottom:.5rem;">🎉</div>
+          <div style="font-size:.78rem;color:var(--cm);margin-bottom:.3rem;">الفائز هو:</div>
+          <div id="draw-winner-name" style="font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:.3rem;"></div>
+          <div id="draw-winner-email" style="font-size:.78rem;color:var(--cm);margin-bottom:.6rem;"></div>
+          <div id="draw-winner-token" style="font-size:.68rem;color:#A78BFA;font-family:monospace;background:rgba(0,0,0,.2);padding:.4rem .7rem;border-radius:var(--r);margin-bottom:.8rem;word-break:break-all;"></div>
+          <button onclick="sendWinnerPrize()" style="padding:.6rem 1.5rem;background:#7C3AED;color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:.85rem;font-weight:700;cursor:pointer;">✉️ إرسال الجائزة للفائز</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card">
+      <div class="ch"><div class="ct">📜 سجل السحوبات (${draws.length})</div></div>
+      <div style="display:flex;flex-direction:column;gap:.5rem;max-height:500px;overflow-y:auto;">
+        ${draws.length===0?'<div style="color:var(--cm);font-size:.82rem;text-align:center;padding:2rem;">لا توجد سحوبات سابقة</div>'
+        :draws.map(d=>`
+          <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.8rem;">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+              <div><div style="font-size:.84rem;font-weight:700;color:#A78BFA;">🏆 ${d.winner||'مجهول'}</div>
+              <div style="font-size:.72rem;color:var(--cm);">${d.email||''}</div>
+              <div style="font-size:.7rem;color:var(--cm);">🎁 ${d.prize||''}</div></div>
+              <div style="font-size:.68rem;color:var(--cm);text-align:left;">${d.date||''}</div>
+            </div>
+            <div style="font-size:.65rem;color:#7C3AED;font-family:monospace;margin-top:.4rem;word-break:break-all;">${d.token||''}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+};
+
+function runLuckyDraw(){
+  const users=sto('qum_users')||[];
+  const criteria=document.getElementById('draw-criteria').value;
+  const prizeType=document.getElementById('draw-prize-type').value;
+  const btn=document.getElementById('draw-btn');
+
+  // Filter eligible users
+  let eligible=users;
+  if(criteria==='paid') eligible=users.filter(u=>(u.purchasedBooks||[]).length>=1);
+  if(criteria==='multi') eligible=users.filter(u=>(u.purchasedBooks||[]).length>=3);
+
+  if(eligible.length===0){toast('⚠️ لا يوجد مستخدمون مؤهلون','err');return;}
+
+  btn.textContent='🎰 جاري السحب...';btn.disabled=true;
+
+  // Animated draw — يتغير الاسم بسرعة ثم يستقر
+  let count=0;
+  const interval=setInterval(()=>{
+    const rand=eligible[Math.floor(Math.random()*eligible.length)];
+    document.getElementById('draw-result').style.display='block';
+    document.getElementById('draw-winner-name').textContent=rand.name||'???';
+    document.getElementById('draw-winner-email').textContent=rand.email||'';
+    count++;
+    if(count>=20){
+      clearInterval(interval);
+      const winner=eligible[Math.floor(Math.random()*eligible.length)];
+      const token='WIN-'+Date.now()+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
+
+      document.getElementById('draw-winner-name').textContent=winner.name||'الفائز';
+      document.getElementById('draw-winner-email').textContent=winner.email||'';
+      document.getElementById('draw-winner-token').textContent='🔑 Token: '+token;
+
+      // Save draw
+      const draws=sto('qum_draws')||[];
+      const prizeLabels={coupon100:'كوبون 100%',coupon50:'كوبون 50%',unlock:'فتح كتاب',gift:'هدية رقمية'};
+      draws.unshift({winner:winner.name,email:winner.email,prize:prizeLabels[prizeType],token,date:new Date().toLocaleDateString('ar-SA'),uid:winner.uid});
+      sto('qum_draws',draws);
+      window._currentWinner={...winner,token,prizeType};
+
+      btn.textContent='🎰 تشغيل السحب العشوائي';btn.disabled=false;
+      toast('🎉 تم السحب! الفائز: '+winner.name);
+    }
+  },80);
+}
+
+function sendWinnerPrize(){
+  if(!window._currentWinner){toast('⚠️ قم بالسحب أولاً','err');return;}
+  const {name,email,prizeType,token}=window._currentWinner;
+  const msg=document.getElementById('draw-msg').value||`مبروك! لقد فزت بهدية خاصة من الأستاذ البراء`;
+
+  // إنشاء كوبون مجاني إذا كانت الجائزة كوبون
+  if(prizeType==='coupon100'||prizeType==='coupon50'){
+    const coupons=sto('qum_coupons')||[];
+    const pct=prizeType==='coupon100'?100:50;
+    coupons.push({code:token,discount:pct,type:'pct',active:true,maxUses:1,usedCount:0,createdAt:new Date().toISOString()});
+    sto('qum_coupons',coupons);
+  }
+
+  // تسجيل الجائزة على حساب الفائز
+  const users=sto('qum_users')||[];
+  const ui=users.findIndex(u=>u.uid===window._currentWinner.uid);
+  if(ui>=0){users[ui].prize=token;users[ui].prizeMsg=msg;sto('qum_users',users);}
+
+  // إشعار Win state (يلتقطه الموقع الرئيسي)
+  const wins=sto('qum_wins')||[];
+  wins.push({uid:window._currentWinner.uid,token,msg,prize:prizeType,date:Date.now()});
+  sto('qum_wins',wins);
+
+  toast(`✅ تم إرسال الجائزة لـ ${name}!`);
+  rdLuckyDraw();
+}
+
+// ══════════════════════════════════════════
+//  MODULE 3: CMS & LINK SYNC
+// ══════════════════════════════════════════
+TITLES['cms'] = 'إدارة المحتوى والروابط — CMS';
+RENDERS['cms'] = function rdCMS(){
+  const brand=sto('brand')||{};
+  const social=sto('social')||{};
+  const books=sto('qum_books')||[];
+  const wrap=document.getElementById('cms-wrap');
+  if(!wrap)return;
+  wrap.innerHTML=`
+  <div style="display:grid;gap:1.2rem;">
+
+    <!-- Brand Texts -->
+    <div class="card">
+      <div class="ch"><div class="ct">📝 النصوص والعناوين الرئيسية</div></div>
+      <div class="g2">
+        <div class="fg"><label>اسم الموقع</label><input id="cms-name" value="${brand.name||'قُم'}" class="inp"></div>
+        <div class="fg"><label>الشعار (Tagline)</label><input id="cms-tagline" value="${brand.tagline||'كتب تنهض بروحك'}" class="inp"></div>
+        <div class="fg"><label>نص Hero الرئيسي</label><input id="cms-hero" value="${brand.hero||''}" class="inp" placeholder="العنوان الكبير في الصفحة الرئيسية"></div>
+        <div class="fg"><label>نص Hero الفرعي</label><input id="cms-herosub" value="${brand.herosub||''}" class="inp"></div>
+        <div class="fg"><label>📞 رقم واتساب</label><input id="cms-wa" value="${brand.wa||''}" class="inp" placeholder="966XXXXXXXXX"></div>
+        <div class="fg"><label>نص Footer</label><input id="cms-footer" value="${brand.footer||''}" class="inp"></div>
+      </div>
+      <button onclick="saveCMSBrand()" class="btn bo bsm" style="margin-top:.8rem;">💾 حفظ النصوص</button>
+    </div>
+
+    <!-- Product prices dynamic -->
+    <div class="card">
+      <div class="ch"><div class="ct">💰 أسعار المنتجات — تحديث فوري</div></div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;">
+        ${books.slice(0,6).map((b,i)=>`
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;align-items:center;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.6rem .8rem;">
+            <span style="font-size:.82rem;color:var(--ct);">${b.emoji||'📚'} ${b.title||'كتاب'}</span>
+            <div><label style="font-size:.62rem;color:var(--cm);">السعر الحالي</label><input type="number" id="cms-price-${i}" value="${b.price||49}" class="inp" style="font-size:.82rem;padding:.35rem .5rem;"></div>
+            <div><label style="font-size:.62rem;color:var(--cm);">السعر القديم (مشطوب)</label><input type="number" id="cms-oldprice-${i}" value="${b.oldPrice||0}" class="inp" style="font-size:.82rem;padding:.35rem .5rem;"></div>
+            <button onclick="saveCMSPrice(${i})" class="btn bo bsm" style="font-size:.72rem;align-self:end;">حفظ</button>
+          </div>`).join('')}
+        ${books.length===0?'<div style="color:var(--cm);font-size:.82rem;text-align:center;padding:1rem;">أضف كتباً من قسم الكتب أولاً</div>':''}
+      </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="card">
+      <div class="ch"><div class="ct">🔗 روابط وسائل التواصل (Footer Sync)</div></div>
+      <div class="g2">
+        ${[['snapchat','👻 سناب شات'],['instagram','📸 إنستقرام'],['tiktok','🎵 تيك توك'],['twitter','🐦 تويتر/X'],['youtube','▶️ يوتيوب'],['whatsapp','💬 واتساب']].map(([k,l])=>`
+          <div class="fg"><label>${l}</label><input id="cms-${k}" value="${social[k]||''}" class="inp" placeholder="اسم الحساب أو الرابط"></div>`).join('')}
+      </div>
+      <button onclick="saveCMSSocial()" class="btn bo bsm" style="margin-top:.8rem;">🔗 حفظ الروابط وتحديث الفوتر</button>
+    </div>
+
+    <!-- Image Uploader -->
+    <div class="card">
+      <div class="ch"><div class="ct">🖼️ رفع صور المنتجات</div></div>
+      <div class="fg"><label>اختر الكتاب</label>
+        <select id="cms-img-target" class="inp">
+          ${books.map((b,i)=>`<option value="${i}">${b.emoji||'📚'} ${b.title||'كتاب '+i}</option>`).join('')}
+          ${books.length===0?'<option>لا توجد كتب</option>':''}
+        </select></div>
+      <div class="fg" style="margin-top:.6rem;"><label>ملف الصورة (JPG/PNG/WebP — حد 5MB)</label>
+        <input type="file" id="cms-img-file" accept="image/jpeg,image/png,image/webp" onchange="cmsPreviewImg(this)" style="color:var(--ct);"></div>
+      <img id="cms-img-preview" src="" alt="" style="max-width:150px;max-height:150px;border-radius:var(--r);margin-top:.6rem;display:none;border:1px solid var(--cb);">
+      <div style="margin-top:.6rem;display:flex;gap:.6rem;">
+        <button onclick="saveCMSImage()" class="btn bo bsm">📤 رفع وحفظ</button>
+        <span id="cms-img-status" style="font-size:.78rem;color:var(--cm);align-self:center;"></span>
+      </div>
+    </div>
+  </div>`;
+};
+
+function saveCMSBrand(){
+  const brand=sto('brand')||{};
+  brand.name=document.getElementById('cms-name').value;
+  brand.tagline=document.getElementById('cms-tagline').value;
+  brand.hero=document.getElementById('cms-hero').value;
+  brand.herosub=document.getElementById('cms-herosub').value;
+  brand.wa=document.getElementById('cms-wa').value;
+  brand.footer=document.getElementById('cms-footer').value;
+  sto('brand',brand);
+  toast('✅ تم حفظ النصوص وتحديث الموقع!');
+}
+
+function saveCMSPrice(i){
+  const books=sto('qum_books')||[];
+  if(!books[i])return;
+  books[i].price=parseFloat(document.getElementById(`cms-price-${i}`).value)||49;
+  books[i].oldPrice=parseFloat(document.getElementById(`cms-oldprice-${i}`).value)||0;
+  sto('qum_books',books);
+  toast(`✅ تم تحديث سعر "${books[i].title||'الكتاب'}"!`);
+}
+
+function saveCMSSocial(){
+  const social={};
+  ['snapchat','instagram','tiktok','twitter','youtube','whatsapp'].forEach(k=>{
+    social[k]=document.getElementById(`cms-${k}`)?.value||'';
+  });
+  sto('social',social);
+  toast('🔗 تم حفظ الروابط وتحديث الفوتر!');
+}
+
+function cmsPreviewImg(input){
+  const file=input.files?.[0];
+  if(!file)return;
+  if(file.size>5*1024*1024){toast('⚠️ الحجم أكبر من 5MB','err');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById('cms-img-preview');
+    img.src=e.target.result;img.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveCMSImage(){
+  const input=document.getElementById('cms-img-file');
+  const targetIdx=parseInt(document.getElementById('cms-img-target').value)||0;
+  const file=input.files?.[0];
+  if(!file){toast('⚠️ اختر ملف صورة','err');return;}
+  const status=document.getElementById('cms-img-status');
+  status.textContent='⏳ جاري الرفع...';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const dataUrl=e.target.result;
+    const books=sto('qum_books')||[];
+    if(books[targetIdx]) books[targetIdx].cover=dataUrl;
+    sto('qum_books',books);
+    status.textContent='✅ تم الرفع والحفظ!';
+    toast('🖼️ تم حفظ صورة الغلاف!');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ══════════════════════════════════════════
+//  MODULE 4: LIVE STREAMING STUDIO
+// ══════════════════════════════════════════
+TITLES['live-studio'] = 'استوديو البث المباشر — WebRTC';
+RENDERS['live-studio'] = function rdLiveStudio(){
+  const wrap=document.getElementById('live-studio-wrap');
+  if(!wrap)return;
+  wrap.innerHTML=`
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;align-items:start;">
+
+    <!-- Main Studio -->
+    <div class="card">
+      <div class="ch"><div class="ct">📡 كونترول البث المباشر</div></div>
+
+      <!-- Settings Row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:1rem;">
+        <div class="fg"><label>📹 الكاميرا</label>
+          <select id="ls-camera" class="inp" style="font-size:.8rem;"></select></div>
+        <div class="fg"><label>🎙️ المايك</label>
+          <select id="ls-mic" class="inp" style="font-size:.8rem;"></select></div>
+        <div class="fg"><label>📊 الجودة</label>
+          <select id="ls-quality" class="inp" style="font-size:.8rem;">
+            <option value="1080">1080p — عالية</option>
+            <option value="720" selected>720p — متوسطة</option>
+            <option value="480">480p — توفير باند</option>
+          </select></div>
+      </div>
+
+      <!-- PiP Video Grid -->
+      <div style="position:relative;background:#000;border-radius:var(--rl);overflow:hidden;aspect-ratio:16/9;margin-bottom:1rem;">
+        <video id="ls-screen-video" autoplay muted style="width:100%;height:100%;object-fit:contain;background:#111;"></video>
+        <video id="ls-cam-video" autoplay muted style="position:absolute;bottom:12px;left:12px;width:180px;height:105px;border-radius:10px;border:2px solid #3B82F6;object-fit:cover;background:#222;"></video>
+        <div id="ls-live-badge" style="display:none;position:absolute;top:12px;right:12px;background:#EF4444;color:#fff;font-size:.72rem;font-weight:700;padding:.25rem .75rem;border-radius:50px;animation:pulse 1.5s infinite;">🔴 LIVE</div>
+        <div id="ls-viewer-count" style="display:none;position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);color:#fff;font-size:.78rem;padding:.25rem .65rem;border-radius:50px;">👁️ 0 مشاهد</div>
+      </div>
+
+      <!-- Control Buttons -->
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.8rem;">
+        <button onclick="lsStartScreen()" id="ls-screen-btn" class="btn bo bsm">🖥️ مشاركة الشاشة</button>
+        <button onclick="lsStartCamera()" id="ls-cam-btn" class="btn bo bsm">📹 تشغيل الكاميرا</button>
+        <button onclick="lsToggleLive()" id="ls-live-btn" style="padding:.45rem 1rem;background:#EF4444;color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:.82rem;font-weight:700;cursor:pointer;">🔴 بدء البث</button>
+        <button onclick="lsStopAll()" class="btn bsm" style="color:var(--red);">⏹️ إيقاف الكل</button>
+      </div>
+
+      <!-- Resolution Cap Info -->
+      <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.7rem .9rem;font-size:.75rem;color:var(--cm);">
+        ℹ️ الجودة المحددة: <strong id="ls-quality-display" style="color:var(--cb2);">720p</strong> — يمكن تغييرها أثناء البث
+      </div>
+    </div>
+
+    <!-- Sidebar Controls -->
+    <div style="display:flex;flex-direction:column;gap:.8rem;">
+
+      <!-- Viewers & Chat Kill -->
+      <div class="card">
+        <div class="ch"><div class="ct">👥 إدارة الجمهور</div></div>
+        <div style="display:flex;flex-direction:column;gap:.6rem;">
+          <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.8rem;text-align:center;">
+            <div style="font-size:2rem;font-weight:900;font-family:'Tajawal',sans-serif;color:var(--cb2);" id="ls-live-viewers">0</div>
+            <div style="font-size:.72rem;color:var(--cm);">مشاهد الآن</div>
+          </div>
+          <button onclick="lsKillChat()" id="ls-chat-kill" style="padding:.6rem;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#F87171;border-radius:var(--r);font-family:var(--font);font-size:.82rem;font-weight:700;cursor:pointer;">
+            🔇 إسكات الشات بالكامل
+          </button>
+          <div id="ls-chat-status" style="font-size:.72rem;color:var(--cm);text-align:center;"></div>
+        </div>
+      </div>
+
+      <!-- Mic Requests -->
+      <div class="card">
+        <div class="ch"><div class="ct">🎤 طلبات الميكروفون</div></div>
+        <div id="ls-mic-requests" style="max-height:200px;overflow-y:auto;">
+          <div style="color:var(--cm);font-size:.78rem;text-align:center;padding:1rem;">لا توجد طلبات الآن</div>
+        </div>
+        <button onclick="lsAddTestRequest()" class="btn bo bsm" style="margin-top:.6rem;width:100%;font-size:.75rem;">+ محاكاة طلب ميكروفون</button>
+      </div>
+
+      <!-- Device Refresh -->
+      <div class="card">
+        <div class="ch"><div class="ct">🔄 تحديث الأجهزة</div></div>
+        <button onclick="lsScanDevices()" class="btn bo bsm" style="width:100%;">🔍 مسح الكاميرات والمايكات</button>
+        <div id="ls-devices-list" style="margin-top:.6rem;font-size:.75rem;color:var(--cm);"></div>
+      </div>
+    </div>
+  </div>`;
+
+  // Load devices
+  lsScanDevices();
+  document.getElementById('ls-quality').addEventListener('change',function(){
+    document.getElementById('ls-quality-display').textContent=this.value+'p';
+  });
+};
+
+// LiveStream state
+let lsStreams={screen:null,camera:null};
+let lsLive=false;
+let lsViewers=0;
+let lsChatKilled=false;
+let lsViewerInterval=null;
+
+async function lsScanDevices(){
+  try{
+    const devices=await navigator.mediaDevices.enumerateDevices();
+    const cameras=devices.filter(d=>d.kind==='videoinput');
+    const mics=devices.filter(d=>d.kind==='audioinput');
+    const camSel=document.getElementById('ls-camera');
+    const micSel=document.getElementById('ls-mic');
+    if(camSel) camSel.innerHTML=cameras.map((d,i)=>`<option value="${d.deviceId}">${d.label||'كاميرا '+(i+1)}</option>`).join('');
+    if(micSel) micSel.innerHTML=mics.map((d,i)=>`<option value="${d.deviceId}">${d.label||'مايك '+(i+1)}</option>`).join('');
+    const list=document.getElementById('ls-devices-list');
+    if(list) list.textContent=`📹 ${cameras.length} كاميرا — 🎙️ ${mics.length} مايك`;
+  }catch(e){toast('⚠️ اسمح بالوصول للكاميرا أولاً','err');}
+}
+
+async function lsStartScreen(){
+  try{
+    const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:30},audio:true});
+    lsStreams.screen=stream;
+    const vid=document.getElementById('ls-screen-video');
+    if(vid){vid.srcObject=stream;}
+    toast('🖥️ تم مشاركة الشاشة!');
+    stream.getVideoTracks()[0].onended=()=>{lsStreams.screen=null;};
+  }catch(e){if(e.name!=='AbortError')toast('⚠️ فشل مشاركة الشاشة','err');}
+}
+
+async function lsStartCamera(){
+  try{
+    const camId=document.getElementById('ls-camera')?.value;
+    const micId=document.getElementById('ls-mic')?.value;
+    const quality=parseInt(document.getElementById('ls-quality')?.value||'720');
+    const constraints={
+      video:{deviceId:camId?{exact:camId}:undefined,width:{ideal:quality===1080?1920:quality===720?1280:854},height:{ideal:quality===1080?1080:quality===720?720:480}},
+      audio:{deviceId:micId?{exact:micId}:undefined}
+    };
+    const stream=await navigator.mediaDevices.getUserMedia(constraints);
+    lsStreams.camera=stream;
+    const vid=document.getElementById('ls-cam-video');
+    if(vid){vid.srcObject=stream;}
+    toast('📹 تم تشغيل الكاميرا!');
+  }catch(e){toast('⚠️ فشل تشغيل الكاميرا','err');}
+}
+
+function lsToggleLive(){
+  lsLive=!lsLive;
+  const btn=document.getElementById('ls-live-btn');
+  const badge=document.getElementById('ls-live-badge');
+  const vcEl=document.getElementById('ls-viewer-count');
+  if(lsLive){
+    btn.textContent='⏸️ إيقاف البث';btn.style.background='#374151';
+    if(badge)badge.style.display='block';
+    if(vcEl)vcEl.style.display='block';
+    lsViewers=Math.floor(Math.random()*5+1);
+    lsViewerInterval=setInterval(()=>{
+      lsViewers+=Math.floor(Math.random()*3-1);
+      if(lsViewers<0)lsViewers=0;
+      const el=document.getElementById('ls-viewer-count');
+      const el2=document.getElementById('ls-live-viewers');
+      if(el)el.textContent='👁️ '+lsViewers+' مشاهد';
+      if(el2)el2.textContent=lsViewers;
+    },5000);
+    toast('🔴 البث مباشر الآن!');
+  }else{
+    btn.textContent='🔴 بدء البث';btn.style.background='#EF4444';
+    if(badge)badge.style.display='none';
+    if(vcEl)vcEl.style.display='none';
+    clearInterval(lsViewerInterval);
+    toast('⏹️ تم إيقاف البث');
+  }
+}
+
+function lsStopAll(){
+  [lsStreams.screen,lsStreams.camera].forEach(s=>{s?.getTracks().forEach(t=>t.stop());});
+  lsStreams={screen:null,camera:null};
+  const vs=document.getElementById('ls-screen-video');
+  const vc=document.getElementById('ls-cam-video');
+  if(vs)vs.srcObject=null;if(vc)vc.srcObject=null;
+  if(lsLive)lsToggleLive();
+  toast('⏹️ تم إيقاف كل البثوث');
+}
+
+function lsKillChat(){
+  lsChatKilled=!lsChatKilled;
+  const btn=document.getElementById('ls-chat-kill');
+  const status=document.getElementById('ls-chat-status');
+  if(lsChatKilled){
+    btn.textContent='🔊 تفعيل الشات';
+    btn.style.background='rgba(34,197,94,.12)';btn.style.borderColor='rgba(34,197,94,.3)';btn.style.color='#4ADE80';
+    if(status)status.textContent='🔇 الشات مسكوت — الطلاب لا يستطيعون الكتابة';
+    sto('chat_killed',true);
+  }else{
+    btn.textContent='🔇 إسكات الشات بالكامل';
+    btn.style.background='rgba(239,68,68,.12)';btn.style.borderColor='rgba(239,68,68,.3)';btn.style.color='#F87171';
+    if(status)status.textContent='';
+    sto('chat_killed',false);
+  }
+  toast(lsChatKilled?'🔇 تم إسكات الشات':'🔊 تم تفعيل الشات');
+}
+
+function lsAddTestRequest(){
+  const names=['محمد أ.','سارة م.','خالد ع.','نورة ح.','أحمد س.'];
+  const name=names[Math.floor(Math.random()*names.length)];
+  const container=document.getElementById('ls-mic-requests');
+  if(!container)return;
+  const item=document.createElement('div');
+  item.style.cssText='background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.6rem .8rem;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center;';
+  item.innerHTML=`<span style="font-size:.8rem;color:var(--ct);">🙋 ${name}</span>
+    <div style="display:flex;gap:.4rem;">
+      <button onclick="this.closest('div').style.borderColor='#22C55E'" style="padding:.25rem .6rem;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ADE80;border-radius:var(--r);font-size:.7rem;font-weight:700;cursor:pointer;">✓ سماح</button>
+      <button onclick="this.closest('[style]').remove()" style="padding:.25rem .6rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#F87171;border-radius:var(--r);font-size:.7rem;cursor:pointer;">✕</button>
+    </div>`;
+  // Clear empty state
+  if(container.children.length===1&&container.firstElementChild.textContent.includes('لا توجد'))container.innerHTML='';
+  container.appendChild(item);
+}
+
+// ══════════════════════════════════════════
+//  MODULE 5: ENTERPRISE SECURITY & AUDIT
+// ══════════════════════════════════════════
+TITLES['security-audit'] = 'الأمان والتدقيق المالي المتقدم';
+RENDERS['security-audit'] = function rdSecurityAudit(){
+  const logs=sto('qum_audit_logs')||[];
+  const sessions=sto('qum_sessions')||{};
+  const wrap=document.getElementById('security-audit-wrap');
+  if(!wrap)return;
+
+  // Compute revenue milestones from leads
+  const leads=sto('qum_leads')||[];
+  const paid=leads.filter(l=>l.status==='paid');
+  const registrations=sto('qum_users')||[];
+
+  wrap.innerHTML=`
+  <div style="display:flex;flex-direction:column;gap:1.2rem;">
+
+    <!-- Security Status -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;">
+      ${[
+        {icon:'🛡️',label:'جلسات نشطة',val:Object.keys(sessions).length,clr:'#60A5FA'},
+        {icon:'⚠️',label:'تنبيهات أمنية',val:logs.filter(l=>l.type==='security').length,clr:'#FBBF24'},
+        {icon:'🚫',label:'جلسات مطرودة',val:logs.filter(l=>l.type==='session_kick').length,clr:'#EF4444'},
+        {icon:'📋',label:'إجمالي الأحداث',val:logs.length,clr:'#A78BFA'},
+      ].map(m=>`<div class="card" style="text-align:center;padding:1rem;">
+        <div style="font-size:1.4rem;">${m.icon}</div>
+        <div style="font-size:1.6rem;font-family:'Tajawal',sans-serif;font-weight:900;color:${m.clr};">${m.val}</div>
+        <div style="font-size:.7rem;color:var(--cm);">${m.label}</div>
+      </div>`).join('')}
+    </div>
+
+    <!-- Revenue Audit Table -->
+    <div class="card">
+      <div class="ch">
+        <div class="ct">💰 جدول التدقيق المالي — Timestamps دقيقة بدقيقة</div>
+        <div style="display:flex;gap:.5rem;">
+          <button onclick="sortAuditTable('date')" class="btn bo bsm" style="font-size:.72rem;">↕ التاريخ</button>
+          <button onclick="sortAuditTable('total')" class="btn bo bsm" style="font-size:.72rem;">↕ المبلغ</button>
+          <button onclick="exportAuditCSV()" class="btn bo bsm" style="font-size:.72rem;">📥 CSV</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:.78rem;" id="audit-table">
+          <thead><tr style="border-bottom:1px solid var(--cb);">
+            <th style="padding:.5rem .7rem;text-align:right;color:var(--cm);font-weight:600;">المستخدم</th>
+            <th style="padding:.5rem .7rem;text-align:right;color:var(--cm);font-weight:600;">الحدث</th>
+            <th style="padding:.5rem .7rem;text-align:right;color:var(--cm);font-weight:600;">المبلغ</th>
+            <th style="padding:.5rem .7rem;text-align:right;color:var(--cm);font-weight:600;">Timestamp الدقيق</th>
+            <th style="padding:.5rem .7rem;text-align:right;color:var(--cm);font-weight:600;">الحالة</th>
+          </tr></thead>
+          <tbody id="audit-tbody">
+            ${buildAuditRows()}
+          </tbody>
+        </table>
+        ${paid.length===0&&registrations.length===0?'<div style="color:var(--cm);text-align:center;padding:2rem;font-size:.82rem;">لا توجد أحداث مسجلة بعد</div>':''}
+      </div>
+    </div>
+
+    <!-- Session Monitor -->
+    <div class="card">
+      <div class="ch">
+        <div class="ct">🔐 مراقب الجلسات — Anti Multi-Device</div>
+        <button onclick="forceLogoutAll()" class="btn bsm" style="color:var(--red);">🚫 طرد جميع الجلسات</button>
+      </div>
+      <div style="font-size:.8rem;color:var(--cm);margin-bottom:.8rem;">
+        عند تسجيل دخول جهاز جديد بنفس الحساب — يتم طرد الجلسة القديمة فوراً وإعادة التوجيه
+      </div>
+      <div id="session-list" style="display:flex;flex-direction:column;gap:.4rem;">
+        ${Object.entries(sessions).length===0?'<div style="color:var(--cm);font-size:.78rem;text-align:center;padding:1rem;">لا توجد جلسات نشطة</div>'
+        :Object.entries(sessions).map(([uid,s])=>`
+          <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.6rem .9rem;display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-size:.8rem;color:var(--ct);">${s.name||uid}</div>
+            <div style="font-size:.68rem;color:var(--cm);">Token: ${s.token?.slice(0,16)||'—'}... | ${s.device||'جهاز مجهول'}</div></div>
+            <button onclick="kickSession('${uid}')" style="padding:.3rem .7rem;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#F87171;border-radius:var(--r);font-size:.72rem;cursor:pointer;">طرد</button>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Security Event Log -->
+    <div class="card">
+      <div class="ch">
+        <div class="ct">📋 سجل الأحداث الأمنية</div>
+        <button onclick="clearAuditLogs()" class="btn bsm" style="color:var(--cm);font-size:.72rem;">مسح السجل</button>
+      </div>
+      <div style="max-height:250px;overflow-y:auto;font-family:monospace;font-size:.75rem;line-height:1.8;">
+        ${logs.length===0?'<div style="color:var(--cm);text-align:center;padding:1rem;">السجل فارغ</div>'
+        :logs.slice(-50).reverse().map(l=>`
+          <div style="padding:.2rem .4rem;border-bottom:1px solid rgba(255,255,255,.04);color:${l.type==='security'?'#F87171':l.type==='payment'?'#4ADE80':'var(--cm)'};">
+            [${l.ts||''}] ${l.type==='security'?'🚨':l.type==='payment'?'💰':'ℹ️'} ${l.msg||''}
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+};
+
+function buildAuditRows(){
+  const leads=sto('qum_leads')||[];
+  const users=sto('qum_users')||[];
+  const rows=[];
+
+  // Registration events
+  users.forEach(u=>{
+    if(u.createdAt) rows.push({
+      name:u.name||'مجهول', event:'📝 تسجيل جديد',
+      amount:'—', ts:u.createdAt||'', status:'registered', color:'#60A5FA'
+    });
+  });
+
+  // Payment events
+  leads.filter(l=>l.status==='paid').forEach(l=>{
+    rows.push({
+      name:l.name||'مجهول', event:'💳 دفع مكتمل',
+      amount:(l.total||0)+' ر.س', ts:l.paidAt||l.date||'', status:'paid', color:'#4ADE80'
+    });
+  });
+
+  // Pending
+  leads.filter(l=>l.status==='pending').forEach(l=>{
+    rows.push({
+      name:l.name||'مجهول', event:'⏳ طلب معلق',
+      amount:(l.total||0)+' ر.س', ts:l.date||'', status:'pending', color:'#FBBF24'
+    });
+  });
+
+  if(rows.length===0)return'';
+  return rows.map(r=>`
+    <tr style="border-bottom:1px solid var(--cb);">
+      <td style="padding:.5rem .7rem;color:var(--ct);">${r.name}</td>
+      <td style="padding:.5rem .7rem;color:${r.color};">${r.event}</td>
+      <td style="padding:.5rem .7rem;font-family:'Tajawal',sans-serif;font-weight:700;color:${r.color};">${r.amount}</td>
+      <td style="padding:.5rem .7rem;color:var(--cm);font-family:monospace;font-size:.72rem;">${r.ts}</td>
+      <td style="padding:.5rem .7rem;"><span style="background:${r.status==='paid'?'rgba(34,197,94,.12)':r.status==='registered'?'rgba(96,165,250,.12)':'rgba(251,191,36,.12)'};color:${r.color};padding:.15rem .5rem;border-radius:50px;font-size:.7rem;">${r.status}</span></td>
+    </tr>`).join('');
+}
+
+let _auditSort={key:'date',asc:false};
+function sortAuditTable(key){
+  _auditSort={key,asc:key===_auditSort.key?!_auditSort.asc:false};
+  rdSecurityAudit();
+}
+
+function exportAuditCSV(){
+  const leads=sto('qum_leads')||[];
+  const header='الاسم,الحدث,المبلغ,التاريخ,الحالة\n';
+  const rows=leads.map(l=>`${l.name||''},${l.status==='paid'?'دفع':'معلق'},${l.total||0},${l.date||''},${l.status||''}`).join('\n');
+  const blob=new Blob(['\uFEFF'+header+rows],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='audit_'+Date.now()+'.csv';a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 تم تصدير CSV!');
+}
+
+function kickSession(uid){
+  const sessions=sto('qum_sessions')||{};
+  delete sessions[uid];
+  sto('qum_sessions',sessions);
+  addAuditLog('session_kick',`طرد جلسة المستخدم: ${uid}`);
+  rdSecurityAudit();
+  toast('🚫 تم طرد الجلسة!');
+}
+
+function forceLogoutAll(){
+  sto('qum_sessions',{});
+  addAuditLog('security','طرد جميع الجلسات من الأدمن');
+  rdSecurityAudit();
+  toast('🚫 تم طرد جميع الجلسات!');
+}
+
+function clearAuditLogs(){
+  sto('qum_audit_logs',[]);
+  rdSecurityAudit();
+  toast('🗑️ تم مسح السجل');
+}
+
+function addAuditLog(type,msg){
+  const logs=sto('qum_audit_logs')||[];
+  logs.push({type,msg,ts:new Date().toLocaleString('ar-SA')});
+  if(logs.length>500)logs.shift();
+  sto('qum_audit_logs',logs);
+}
+
+// ══════════════════════════════════════════
+//  ANTI MULTI-DEVICE SESSION ENFORCEMENT
+//  يعمل في الخلفية — يطرد الجلسات المكررة
+// ══════════════════════════════════════════
+function initSessionGuard(uid,name){
+  const sessionToken=Math.random().toString(36).slice(2)+Date.now().toString(36);
+  const sessions=sto('qum_sessions')||{};
+
+  // Check if another session exists
+  if(sessions[uid]&&sessions[uid].token!==sessionToken){
+    addAuditLog('security',`جلسة مكررة: ${name} — طرد الجلسة القديمة`);
+  }
+
+  // Register this session
+  sessions[uid]={token:sessionToken,name,device:navigator.userAgent.slice(0,50),ts:Date.now()};
+  sto('qum_sessions',sessions);
+  window._sessionToken=sessionToken;
+  window._sessionUid=uid;
+
+  // Poll every 30s — if token changed → force logout
+  const guard=setInterval(()=>{
+    const s=sto('qum_sessions')||{};
+    if(s[uid]&&s[uid].token!==window._sessionToken){
+      clearInterval(guard);
+      sto('qum_sessions',{});
+      sessionStorage.clear();
+      toast('⚠️ تم تسجيل الدخول من جهاز آخر — يتم تسجيل الخروج...','err');
+      setTimeout(()=>{window.location.href=window.location.origin;},2500);
+    }
+  },30000);
+}
+
+// Audit timestamp logger — يُستدعى من أحداث التسجيل والدفع
+function auditLogRegistration(user){
+  addAuditLog('registration',`تسجيل جديد: ${user.name||''} — ${user.email||''}`);
+  const users=sto('qum_users')||[];
+  const ui=users.findIndex(u=>u.uid===user.uid);
+  if(ui>=0){users[ui].createdAt=new Date().toISOString();}
+  sto('qum_users',users);
+}
+
+function auditLogPayment(lead){
+  addAuditLog('payment',`دفع مكتمل: ${lead.name||''} — ${lead.total||0} ر.س`);
+  const leads=sto('qum_leads')||[];
+  const li=leads.findIndex(l=>l.email===lead.email&&l.status==='pending');
+  if(li>=0){leads[li].paidAt=new Date().toISOString();}
+  sto('qum_leads',leads);
+}
+
+// Register new TITLES/RENDERS
+TITLES['lucky-draw']='إدارة المسابقات والقرعة العشوائية';
+RENDERS['lucky-draw']=rdLuckyDraw;
+TITLES['cms']='إدارة المحتوى والروابط — CMS';
+RENDERS['cms']=rdCMS;
+TITLES['live-studio']='استوديو البث المباشر — WebRTC';
+RENDERS['live-studio']=rdLiveStudio;
+TITLES['security-audit']='الأمان والتدقيق المالي المتقدم';
+RENDERS['security-audit']=rdSecurityAudit;
+RENDERS['ai-scripts'] = function rdAiScripts(){
+  const scripts = sto('ai_scripts') || [];
+  const wrap = document.getElementById('ai-scripts-wrap');
+  if(!wrap) return;
+
+  wrap.innerHTML = `
+  <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:1.2rem;align-items:start;">
+    <!-- Generator -->
+    <div style="background:var(--c3);border:1px solid var(--cb);border-radius:var(--rl);padding:1.5rem;">
+      <div style="font-size:.8rem;color:var(--cb2);font-weight:700;margin-bottom:1rem;">✏️ توليد سكريبت جديد</div>
+      <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <div><label style="font-size:.72rem;color:var(--cm);display:block;margin-bottom:.25rem;">📱 المنصة</label>
+          <select id="adm-sc-platform" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.55rem .8rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+            <option>TikTok</option><option>Instagram Reels</option><option>YouTube Shorts</option><option>Snapchat</option>
+          </select></div>
+        <div><label style="font-size:.72rem;color:var(--cm);display:block;margin-bottom:.25rem;">🎯 موضوع الفيديو</label>
+          <input type="text" id="adm-sc-topic" placeholder="مثال: كتاب تطوير الذات..." style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.55rem .8rem;color:var(--ct);font-family:var(--font);font-size:.85rem;"></div>
+        <div><label style="font-size:.72rem;color:var(--cm);display:block;margin-bottom:.25rem;">🎭 الأسلوب</label>
+          <select id="adm-sc-style" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.55rem .8rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+            <option value="hook">Hook → قصة → CTA</option>
+            <option value="problem">مشكلة → حل → عرض</option>
+            <option value="list">قائمة سريعة</option>
+            <option value="transform">قبل وبعد</option>
+          </select></div>
+        <div><label style="font-size:.72rem;color:var(--cm);display:block;margin-bottom:.25rem;">🌟 USP (ما يميز منتجك)</label>
+          <textarea id="adm-sc-usp" placeholder="ما النتيجة التي يحصل عليها العميل؟" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.55rem .8rem;color:var(--ct);font-family:var(--font);font-size:.85rem;min-height:70px;resize:vertical;"></textarea></div>
+        <button onclick="admGenScript()" id="adm-sc-btn" style="padding:.75rem;background:linear-gradient(135deg,#2563EB,#3B82F6);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:.88rem;font-weight:700;cursor:pointer;">🤖 توليد السكريبت</button>
+        <div id="adm-sc-output" style="display:none;background:var(--c4);border:1px solid var(--cb2);border-radius:var(--r);padding:1rem;">
+          <pre id="adm-sc-text" style="white-space:pre-wrap;font-family:var(--font);font-size:.82rem;line-height:1.75;color:var(--ct);"></pre>
+          <button onclick="admCopyScript()" style="margin-top:.6rem;padding:.4rem 1rem;background:rgba(37,99,235,.15);border:1px solid var(--cb2);color:var(--cb2);border-radius:var(--r);font-family:var(--font);font-size:.78rem;font-weight:700;cursor:pointer;">📋 نسخ</button>
+        </div>
+      </div>
+    </div>
+    <!-- History -->
+    <div style="background:var(--c3);border:1px solid var(--cb);border-radius:var(--rl);padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div style="font-size:.8rem;color:var(--cb2);font-weight:700;">📚 السكريبتات المحفوظة (${scripts.length})</div>
+        ${scripts.length>0?`<button onclick="sto('ai_scripts',[]);rdAiScripts();toast('🗑️ تم الحذف')" style="font-size:.7rem;color:var(--red);background:none;border:none;cursor:pointer;font-family:var(--font);">مسح الكل</button>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;max-height:460px;overflow-y:auto;">
+        ${scripts.length===0?`<div style="color:var(--cm);font-size:.82rem;text-align:center;padding:2rem 0;">لا توجد سكريبتات محفوظة</div>`
+        :scripts.slice(0,15).map((s,i)=>`
+          <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.8rem;cursor:pointer;" onclick="admViewScript(${i})">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;">
+              <span style="font-size:.8rem;font-weight:600;color:var(--ct);">${s.topic||'بدون عنوان'}</span>
+              <span style="font-size:.68rem;color:var(--cm);">${s.date||''}</span>
+            </div>
+            <div style="font-size:.72rem;color:var(--cm);">📱 ${s.platform||''} — ${s.style||''}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+};
+
+function admGenScript(){
+  const topic=document.getElementById('adm-sc-topic').value.trim();
+  const platform=document.getElementById('adm-sc-platform').value;
+  const style=document.getElementById('adm-sc-style').value;
+  const usp=document.getElementById('adm-sc-usp').value.trim();
+  const btn=document.getElementById('adm-sc-btn');
+  if(!topic){toast('⚠️ أدخل موضوع الفيديو','err');return;}
+  btn.textContent='⏳ جاري التوليد...'; btn.disabled=true;
+  setTimeout(()=>{
+    const scripts={'hook':`🎬 ${platform} — Hook → قصة → CTA\n${'━'.repeat(28)}\n⚡ HOOK: "هذا غيّر حياتي في أسبوع..." [نظرة حادة للكاميرا]\n📖 STORY: "كنت أعاني من ${usp||'نفس مشكلتك'} حتى وجدت ${topic}..."\n🎯 CTA: "الرابط في البايو — العرض ينتهي اليوم ⬇️"\n${'━'.repeat(28)}\n⏱ 25-30 ثانية | 🎵 Trending audio`,
+    'problem':`🎬 ${platform} — مشكلة → حل\n${'━'.repeat(28)}\n😤 "هل سئمت من عدم النتائج رغم كل محاولاتك؟"\n💡 "${topic} يعطيك: ✅ نتيجة 1 ✅ نتيجة 2 ✅ نتيجة 3"\n🚀 "اليوم فقط بسعر مخفوض — الرابط في البايو ⬇️"\n${'━'.repeat(28)}\n⏱ 25-35 ثانية`,
+    'list':`🎬 ${platform} — قائمة سريعة\n${'━'.repeat(28)}\n⚡ "3 أشياء ستتعلمها من ${topic} 👇"\n✅ 1: [فائدة رئيسية] ✅ 2: [فائدة مفاجئة] ✅ 3: [فائدة نهائية]\n🎯 "الرابط في البايو 🔗"\n${'━'.repeat(28)}\n⏱ 15-20 ثانية`,
+    'transform':`🎬 ${platform} — قبل وبعد\n${'━'.repeat(28)}\n😔 قبل: "كنت [الوضع السيء]..."\n✨ بعد ${topic}: "أصبحت [التحول المذهل]"\n🎯 "أنت أيضاً تستطيع — الرابط في البايو ⬇️"\n${'━'.repeat(28)}\n⏱ 20-30 ثانية`};
+    const sc=scripts[style]||scripts['hook'];
+    document.getElementById('adm-sc-text').textContent=sc;
+    document.getElementById('adm-sc-output').style.display='block';
+    btn.textContent='🤖 توليد السكريبت'; btn.disabled=false;
+    const arr=sto('ai_scripts')||[];
+    arr.unshift({topic,platform,style,script:sc,date:new Date().toLocaleDateString('ar-SA')});
+    if(arr.length>20)arr.pop();
+    sto('ai_scripts',arr);
+    toast('✅ تم توليد السكريبت!');
+  },1200);
+}
+
+function admCopyScript(){
+  const text=document.getElementById('adm-sc-text').textContent;
+  navigator.clipboard?.writeText(text).then(()=>toast('📋 تم النسخ!')).catch(()=>{});
+}
+
+function admViewScript(i){
+  const scripts=sto('ai_scripts')||[];
+  const s=scripts[i];
+  if(!s)return;
+  document.getElementById('adm-sc-topic').value=s.topic||'';
+  document.getElementById('adm-sc-text').textContent=s.script||'';
+  document.getElementById('adm-sc-output').style.display='block';
+}
+
+// ══════════════════════════════════════════
+//  SILIDER: ROI DASHBOARD — لوحة الأدمن
+// ══════════════════════════════════════════
+TITLES['roi-dashboard'] = 'لوحة ROI والتسويق';
+RENDERS['roi-dashboard'] = function rdROIDash(){
+  const leads  = sto('qum_leads') || [];
+  const paid   = leads.filter(l=>l.status==='paid');
+  const revenue= paid.reduce((s,l)=>s+(l.total||0),0);
+  const budget = parseFloat(sto('mkt_budget')||'500');
+  const visitors=parseInt(sto('mkt_visitors')||'1000');
+  const cpa    = paid.length>0?(budget/paid.length).toFixed(1):'∞';
+  const margin = revenue>0?(((revenue-budget)/revenue)*100).toFixed(1):0;
+  const cvr    = visitors>0?((paid.length/visitors)*100).toFixed(2):0;
+
+  const wrap=document.getElementById('roi-dashboard-wrap');
+  if(!wrap)return;
+  wrap.innerHTML=`
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.8rem;margin-bottom:1.5rem;">
+    ${[
+      {icon:'💰',label:'إجمالي الإيرادات',val:revenue.toLocaleString()+' ر.س',clr:'#22C55E'},
+      {icon:'🏷️',label:'تكلفة الاكتساب CPA',val:cpa+' ر.س',clr:'#60A5FA'},
+      {icon:'📈',label:'نسبة التحويل',val:cvr+'%',clr:'#A78BFA'},
+      {icon:'📉',label:'هامش الربح الصافي',val:margin+'%',clr:margin>=0?'#22C55E':'#EF4444'},
+      {icon:'🛒',label:'إجمالي الطلبات',val:leads.length,clr:'#FBBF24'},
+      {icon:'✅',label:'طلبات مدفوعة',val:paid.length,clr:'#22C55E'},
+    ].map(m=>`
+      <div style="background:var(--c3);border:1px solid var(--cb);border-radius:var(--rl);padding:1.1rem;text-align:center;">
+        <div style="font-size:1.4rem;margin-bottom:.4rem;">${m.icon}</div>
+        <div style="font-size:1.4rem;font-family:'Tajawal',sans-serif;font-weight:900;color:${m.clr};">${m.val}</div>
+        <div style="font-size:.7rem;color:var(--cm);margin-top:.2rem;">${m.label}</div>
+      </div>`).join('')}
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+    <!-- Manual ROI Calc -->
+    <div style="background:var(--c3);border:1px solid var(--cb);border-radius:var(--rl);padding:1.3rem;">
+      <div style="font-size:.8rem;color:var(--cb2);font-weight:700;margin-bottom:1rem;">🧮 حاسبة ROI التسويقية</div>
+      <div style="display:flex;flex-direction:column;gap:.65rem;">
+        <div><label style="font-size:.68rem;color:var(--cm);display:block;margin-bottom:.2rem;">💰 سعر المنتج (ر.س)</label><input type="number" id="adm-roi-price" value="49" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.45rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;"></div>
+        <div><label style="font-size:.68rem;color:var(--cm);display:block;margin-bottom:.2rem;">📊 ميزانية إعلانات (ر.س)</label><input type="number" id="adm-roi-budget" value="${budget}" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.45rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;" onchange="sto('mkt_budget',this.value)"></div>
+        <div><label style="font-size:.68rem;color:var(--cm);display:block;margin-bottom:.2rem;">👁️ زوار متوقعون</label><input type="number" id="adm-roi-visitors" value="${visitors}" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.45rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;" onchange="sto('mkt_visitors',this.value)"></div>
+        <div><label style="font-size:.68rem;color:var(--cm);display:block;margin-bottom:.2rem;">📈 نسبة التحويل</label>
+          <select id="adm-roi-cvr" style="width:100%;background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.45rem .7rem;color:var(--ct);font-family:var(--font);font-size:.85rem;">
+            <option value="0.01">1% — متحفظ</option><option value="0.015" selected>1.5% — معتدل</option><option value="0.02">2% — متفائل</option><option value="0.03">3% — ممتاز</option>
+          </select></div>
+        <button onclick="admCalcROI()" style="padding:.65rem;background:linear-gradient(135deg,#2563EB,#3B82F6);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:.85rem;font-weight:700;cursor:pointer;">🧮 احسب</button>
+        <div id="adm-roi-out" style="display:none;font-size:.8rem;line-height:1.85;"></div>
+      </div>
+    </div>
+    <!-- Traffic Sources -->
+    <div style="background:var(--c3);border:1px solid var(--cb);border-radius:var(--rl);padding:1.3rem;">
+      <div style="font-size:.8rem;color:var(--cb2);font-weight:700;margin-bottom:1rem;">📡 مصادر الزيارات</div>
+      ${['snapchat','instagram','tiktok','twitter','whatsapp','email'].map(src=>{
+        const count=leads.filter(l=>l.utm===src).length;
+        const pct=leads.length>0?Math.round(count/leads.length*100):0;
+        return `<div style="margin-bottom:.65rem;">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.2rem;">
+            <span style="color:var(--ct);">${src}</span><span style="color:var(--cm);">${count} (${pct}%)</span>
+          </div>
+          <div style="height:6px;background:var(--c4);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#2563EB,#3B82F6);border-radius:3px;transition:width .5s;"></div>
+          </div></div>`;}).join('')}
+    </div>
+  </div>`;
+};
+
+function admCalcROI(){
+  const price=parseFloat(document.getElementById('adm-roi-price').value)||49;
+  const budget=parseFloat(document.getElementById('adm-roi-budget').value)||500;
+  const visitors=parseFloat(document.getElementById('adm-roi-visitors').value)||1000;
+  const cvr=parseFloat(document.getElementById('adm-roi-cvr').value)||0.015;
+  const sales=Math.floor(visitors*cvr);
+  const rev=sales*price;
+  const profit=rev-budget;
+  const roi=budget>0?((profit/budget)*100).toFixed(1):0;
+  const cpa=sales>0?(budget/sales).toFixed(1):'∞';
+  const out=document.getElementById('adm-roi-out');
+  out.style.display='block';
+  out.innerHTML=`
+    <div style="background:var(--c4);border:1px solid var(--cb);border-radius:var(--r);padding:.8rem;">
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--cb);"><span style="color:var(--cm);">👥 المبيعات</span><span style="color:#60A5FA;font-weight:700;">${sales}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--cb);"><span style="color:var(--cm);">💰 الإيرادات</span><span style="color:#60A5FA;font-weight:700;">${rev.toLocaleString()} ر.س</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--cb);"><span style="color:var(--cm);">📈 الربح</span><span style="color:${profit>=0?'#22C55E':'#EF4444'};font-weight:700;">${profit.toLocaleString()} ر.س</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--cb);"><span style="color:var(--cm);">🎯 ROI</span><span style="color:${roi>=0?'#22C55E':'#EF4444'};font-weight:700;">${roi}%</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.3rem 0;"><span style="color:var(--cm);">🏷️ CPA</span><span style="color:#60A5FA;font-weight:700;">${cpa} ر.س</span></div>
+    </div>`;
+  sto('mkt_budget',budget); sto('mkt_visitors',visitors);
+}
+
+console.log('%c📊 قُم Admin — جاهز', 'color:#60A5FA;font-weight:bold;font-size:14px;');
+</script>
+</body>
+</html>
