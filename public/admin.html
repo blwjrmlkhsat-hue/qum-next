@@ -244,7 +244,7 @@ input:checked+.tgl-s::before{transform:translateX(-17px);}
     <button class="nb" onclick="go('settings',this)"><span class="ic">⚙️</span>الإعدادات</button>
   </nav>
   <div class="sfooter">
-    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.28rem;">👤 admin</div>
+    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.28rem;">👤 البراء عبد الباري</div>
     <div style="font-size:.73rem;color:var(--muted);"><span class="sdot"></span>الموقع يعمل</div>
     <button class="slogout" onclick="doLogout()">🚪 تسجيل خروج</button>
   </div>
@@ -1027,33 +1027,25 @@ async function doLogin(){
   if(!u||!p){ document.getElementById('lerr').textContent='⚠️ أدخل البيانات'; document.getElementById('lerr').style.display='block'; return; }
   const btn=document.getElementById('lbtn');
   btn.disabled=true; btn.textContent='⏳ جاري التحقق...';
-  let done=false;
-  try {
-    const res=await fetch('/api/auth/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,csrf:window.QumCSRF?.get()||''})});
-    const data=await res.json();
-    if(res.ok&&data.token){
-      sessionStorage.setItem('qum_auth','ok'); sessionStorage.setItem('qum_jwt',data.token);
-      if(BF) BF.recordSuccess();
-      const ls=document.getElementById('login-screen');
-      ls.style.transition='opacity .4s'; ls.style.opacity='0';
-      setTimeout(()=>ls.style.display='none',400); done=true;
-    } else {
-      document.getElementById('lp').value='';
-      let msg=data.error||'❌ بيانات خاطئة';
-      if(BF){ const r=BF.recordFail(); if(r.locked){msg='🔒 تم قفل الحساب 15 دقيقة';btn.disabled=true;setTimeout(()=>btn.disabled=false,15*60*1000);} else msg=`❌ خطأ — تبقى ${r.remaining} محاولة`; }
-      document.getElementById('lerr').textContent=msg; document.getElementById('lerr').style.display='block'; done=true;
-    }
-  } catch { /* Fallback */ }
-  if(!done){
-    if(u===CREDS.u&&p===CREDS.p){
-      sessionStorage.setItem('qum_auth','ok'); if(BF) BF.recordSuccess();
-      const ls=document.getElementById('login-screen'); ls.style.transition='opacity .4s'; ls.style.opacity='0'; setTimeout(()=>ls.style.display='none',400);
-    } else {
-      document.getElementById('lp').value='';
-      let msg='❌ بيانات الدخول خاطئة';
-      if(BF){ const r=BF.recordFail(); if(r.locked){msg='🔒 تم قفل الحساب 15 دقيقة';btn.disabled=true;setTimeout(()=>btn.disabled=false,15*60*1000);}else msg=`❌ خطأ — تبقى ${r.remaining} محاولة`; }
-      document.getElementById('lerr').textContent=msg; document.getElementById('lerr').style.display='block';
-    }
+
+  // تحقق مباشر بدون Netlify Function
+  await new Promise(r=>setTimeout(r,600));
+  const sp=sto('qum_pass'); if(sp) CREDS.p=sp;
+
+  if(u===CREDS.u && p===CREDS.p){
+    sessionStorage.setItem('qum_auth','ok');
+    sessionStorage.setItem('qum_jwt','local-'+Date.now());
+    if(BF) BF.recordSuccess();
+    const ls=document.getElementById('login-screen');
+    ls.style.transition='opacity .4s'; ls.style.opacity='0';
+    setTimeout(()=>ls.style.display='none',400);
+  } else {
+    document.getElementById('lp').value='';
+    let msg='❌ بيانات الدخول خاطئة';
+    if(BF){ const r=BF.recordFail(); if(r.locked){msg='🔒 تم قفل الحساب 15 دقيقة';btn.disabled=true;setTimeout(()=>{btn.disabled=false;btn.textContent='دخول ←';},15*60*1000);}else msg=`❌ خطأ — تبقى ${r.remaining} محاولة`; }
+    document.getElementById('lerr').textContent=msg;
+    document.getElementById('lerr').style.display='block';
+    btn.disabled=false; btn.textContent='دخول ←';
   }
   if(!btn.disabled){ btn.disabled=false; btn.textContent='دخول ←'; }
 }
@@ -2872,13 +2864,13 @@ function auditLogPayment(lead){
 
 // Register new TITLES/RENDERS
 TITLES['lucky-draw']='إدارة المسابقات والقرعة العشوائية';
-RENDERS['lucky-draw']=function(){rdLuckyDraw&&rdLuckyDraw();};
+RENDERS['lucky-draw']=function(){ if(typeof rdLuckyDraw==='function') rdLuckyDraw(); };
 TITLES['cms']='إدارة المحتوى والروابط — CMS';
-RENDERS['cms']=rdCMS;
+RENDERS['cms']=function(){ if(typeof rdCMS==='function') rdCMS(); };
 TITLES['live-studio']='استوديو البث المباشر — WebRTC';
-RENDERS['live-studio']=rdLiveStudio;
+RENDERS['live-studio']=function(){ if(typeof rdLiveStudio==='function') rdLiveStudio(); };
 TITLES['security-audit']='الأمان والتدقيق المالي المتقدم';
-RENDERS['security-audit']=rdSecurityAudit;
+RENDERS['security-audit']=function(){ if(typeof rdSecurityAudit==='function') rdSecurityAudit(); };
 RENDERS['ai-scripts'] = function rdAiScripts(){
   const scripts = sto('ai_scripts') || [];
   const wrap = document.getElementById('ai-scripts-wrap');
