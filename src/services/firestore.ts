@@ -48,3 +48,20 @@ export const query = (() => ({})) as any;
 export const where = (() => ({})) as any;
 export const getDocs = (async () => ({ docs: [] })) as any;
 export function writeLog(..._args: any[]) {}
+export async function getProduct(..._args: any[]) { return null; }
+export async function createOrder(..._args: any[]) { return 'order-id'; }
+export async function getProducts(..._args: any[]) { return []; }
+export async function getOrders(..._args: any[]) { return []; }
+export async function getUsers(..._args: any[]) { return []; }
+export async function getLeads(..._args: any[]) { return []; }
+export async function getCoupon(..._args: any[]) { return null; }
+export async function saveSiteConfig(..._args: any[]) {}
+export async function getSiteConfig(..._args: any[]) { return null; }
+export async function markOrderPaid(..._args: any[]) {}
+export async function incrementCouponUsage(..._args: any[]) {}
+export async function updateUser(..._args: any[]) {}
+export async function getUser(..._args: any[]) { return null; }
+export async function createUser(..._args: any[]) {}
+export async function adminUpdateProduct(..._args: any[]) {}
+export async function updateReadingProgress(..._args: any[]) {}
+export async function hasBookAccess(..._args: any[]) { return false; }
