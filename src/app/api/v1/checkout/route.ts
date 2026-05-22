@@ -139,7 +139,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       stripeSessionId: '',                    // filled by webhook after payment
       status:          'pending',
       paidAt:          null,
-    } satisfies Omit<Order, 'createdAt' | 'paidAt'>);
+    } as 'createdAt' | 'paidAt'>);
 
     // ── 9. Fire-and-forget log ────────────────────────────
     writeLog(tenantId, 'order.created', verifiedUid || null, {
