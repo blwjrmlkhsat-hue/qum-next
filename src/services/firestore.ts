@@ -1,6 +1,5 @@
-imporِt { z } from 'zod';
+import { z } from 'zod';
 
-// إعداد السكيمات الحقيقية التي تبحث عنها الصفحات
 export const couponSchema = z.object({
   code: z.string(),
   discount: z.number(),
@@ -38,9 +37,8 @@ export const userSchema = z.object({
   role: z.string(),
 });
 
-// إعداد دالات قاعدة البيانات الافتراضية لمنع أي خطأ استدعاء
 export const db = {} as any;
-export const collection = (() => ({ doc: (() => ({})) })) as any;
+export const collection = (() => ({})) as any;
 export const doc = (() => ({})) as any;
 export const setDoc = (async () => ({})) as any;
 export const getDoc = (async () => ({ exists: () => false, data: () => ({}) })) as any;
