@@ -13,7 +13,7 @@
 //   exhausted = HTTP 429 + Retry-After
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Redis }                     from '@upstash/redis/edge';
+import { Redis }                     from '@upstash/redis';
 import crypto                        from 'node:crypto';
 
 // ── Bucket config ─────────────────────────────────────────
