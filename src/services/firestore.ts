@@ -1,4 +1,4 @@
-import { z } from 'zod';
+imporِt { z } from 'zod';
 
 // إعداد السكيمات الحقيقية التي تبحث عنها الصفحات
 export const couponSchema = z.object({
@@ -49,3 +49,4 @@ export const deleteDoc = (async () => ({})) as any;
 export const query = (() => ({})) as any;
 export const where = (() => ({})) as any;
 export const getDocs = (async () => ({ docs: [] })) as any;
+export function writeLog() {}
