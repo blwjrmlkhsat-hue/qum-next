@@ -2872,7 +2872,7 @@ function auditLogPayment(lead){
 
 // Register new TITLES/RENDERS
 TITLES['lucky-draw']='إدارة المسابقات والقرعة العشوائية';
-RENDERS['lucky-draw']=rdLuckyDraw;
+RENDERS['lucky-draw']=function(){rdLuckyDraw&&rdLuckyDraw();};
 TITLES['cms']='إدارة المحتوى والروابط — CMS';
 RENDERS['cms']=rdCMS;
 TITLES['live-studio']='استوديو البث المباشر — WebRTC';
