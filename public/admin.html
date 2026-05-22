@@ -244,7 +244,7 @@ input:checked+.tgl-s::before{transform:translateX(-17px);}
     <button class="nb" onclick="go('settings',this)"><span class="ic">⚙️</span>الإعدادات</button>
   </nav>
   <div class="sfooter">
-    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.28rem;">👤 البراء عبد الباري</div>
+    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.28rem;">👤 admin</div>
     <div style="font-size:.73rem;color:var(--muted);"><span class="sdot"></span>الموقع يعمل</div>
     <button class="slogout" onclick="doLogout()">🚪 تسجيل خروج</button>
   </div>
@@ -1004,7 +1004,7 @@ input:checked+.tgl-s::before{transform:translateX(-17px);}
 
 <script>
 // ══════════════════ AUTH ══════════════════
-const CREDS = {u:'البراء عبد الباري', p:'admin123'};
+const CREDS = {u:'admin', p:'admin123'};
 
 (function init(){
   const sp=sto('qum_pass'); if(sp) CREDS.p=sp;
@@ -1029,7 +1029,7 @@ async function doLogin(){
   btn.disabled=true; btn.textContent='⏳ جاري التحقق...';
   let done=false;
   try {
-    const res=await fetch('/.netlify/functions/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,csrf:window.QumCSRF?.get()||''})});
+    const res=await fetch('/api/auth/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,csrf:window.QumCSRF?.get()||''})});
     const data=await res.json();
     if(res.ok&&data.token){
       sessionStorage.setItem('qum_auth','ok'); sessionStorage.setItem('qum_jwt',data.token);
