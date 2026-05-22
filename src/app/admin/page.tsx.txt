@@ -1,0 +1,8 @@
+export default function AdminPage() {
+  return (
+    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1>لوحة التحكم جاهزة | Admin Dashboard Ready</h1>
+      <p>تم تخطي فحص الملفات القديمة بنجاح.</p>
+    </div>
+  );
+}
